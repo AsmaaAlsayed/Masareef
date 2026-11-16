@@ -1,0 +1,60 @@
+{
+  "project": "Masareef",
+  "client": "Internal",
+  "phase": "design",
+  "gates": {
+    "requirements": {
+      "by": "Amr Samy",
+      "at": "2026-11-16T16:47:36.287Z",
+      "doc": "docs/02-requirements.md",
+      "sha256": "0b139eeb54b0a56198833ab98bbe8c1954d9fff30f4234312acee24a8ef6aaea"
+    },
+    "design": {
+      "by": "Amr Samy",
+      "at": "2026-11-16T16:48:02.528Z",
+      "doc": "docs/03-architecture.md",
+      "sha256": "8a9c758b59048a1c480d5a701ee54c4c7a5b37cdd3de6284d9d900ced2a39580"
+    },
+    "release": null
+  },
+  "verdict": null,
+  "history": [
+    {
+      "at": "2026-11-15T22:55:36.124Z",
+      "event": "init"
+    },
+    {
+      "at": "2026-11-15T23:00:28.364Z",
+      "event": "phase",
+      "phase": "requirements"
+    },
+    {
+      "at": "2026-11-16T11:27:30.451Z",
+      "event": "phase",
+      "phase": "requirements"
+    },
+    {
+      "at": "2026-11-16T12:41:22.102Z",
+      "event": "signoff",
+      "gate": "requirements",
+      "by": "Amr Samy"
+    },
+    {
+      "at": "2026-11-16T16:26:50.223Z",
+      "event": "phase",
+      "phase": "design"
+    },
+    {
+      "at": "2026-11-16T16:47:36.288Z",
+      "event": "signoff",
+      "gate": "requirements",
+      "by": "Amr Samy"
+    },
+    {
+      "at": "2026-11-16T16:48:02.530Z",
+      "event": "signoff",
+      "gate": "design",
+      "by": "Amr Samy"
+    }
+  ]
+}
