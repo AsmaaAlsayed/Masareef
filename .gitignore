@@ -1,0 +1,42 @@
+# Dependency folders
+node_modules/
+
+# Build output
+dist/
+build/
+coverage/
+*.tsbuildinfo
+.wrangler/
+.gradle/
+*.apk
+*.aab
+
+# Local configuration and secrets (only the *.example files are committed)
+.env
+.env.*
+!.env.example
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+*.jks
+*.keystore
+
+# Audio files: test audio is kept outside the repository (see docs/04-plan.md, PQ-04)
+*.wav
+*.mp3
+*.m4a
+*.aac
+*.ogg
+*.opus
+*.flac
+*.amr
+*.3gp
+*.pcm
+*.webm
+
+# Editors, operating systems, logs
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+*.log

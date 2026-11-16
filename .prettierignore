@@ -1,0 +1,10 @@
+# Generated
+node_modules/
+dist/
+build/
+coverage/
+package-lock.json
+
+# Owned by the planner and the tester, and signed off as written: never reformatted
+docs/
+.software-house/state.json
