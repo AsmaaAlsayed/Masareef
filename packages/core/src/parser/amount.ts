@@ -4,8 +4,8 @@ import {
   FRACTION_WORDS,
   INDEFINITE_ARTICLE,
   PIASTRE_WORDS,
-  POUND_WORDS,
 } from './lexicon/numbers.js';
+import { CURRENCY_VOCABULARY, UNIT_WORDS } from './lexicon/currencies.js';
 import { DATE_AND_NUMBER_VOCABULARY, findDates } from './dates.js';
 import { normalize } from './normalize.js';
 import { readNumber } from './numbers.js';
@@ -35,7 +35,13 @@ interface Piece {
   readonly piastres: boolean;
 }
 
-const lookup = (record: Readonly<Record<string, number>>, token: string | undefined) =>
+/** The vocabulary the convenience functions normalise with, so token positions agree. */
+export const AMOUNT_VOCABULARY: ReadonlySet<string> = new Set([
+  ...DATE_AND_NUMBER_VOCABULARY,
+  ...CURRENCY_VOCABULARY,
+]);
+
+const lookup = <Value>(record: Readonly<Record<string, Value>>, token: string | undefined) =>
   token !== undefined && Object.hasOwn(record, token) ? record[token] : undefined;
 
 /** Skips "و"/"and" at `index` when one is there. */
@@ -56,11 +62,11 @@ function readFraction(tokens: readonly string[], index: number): Piece | undefin
   if (tokens[at] === INDEFINITE_ARTICLE) {
     at += 1;
   }
-  const hundredthsOfPound = lookup(FRACTION_WORDS, tokens[at]);
-  if (hundredthsOfPound === undefined) {
+  const hundredthsOfUnit = lookup(FRACTION_WORDS, tokens[at]);
+  if (hundredthsOfUnit === undefined) {
     return undefined;
   }
-  return { value: decimal(hundredthsOfPound, 2), end: at + 1, piastres: false };
+  return { value: decimal(hundredthsOfUnit, 2), end: at + 1, piastres: false };
 }
 
 /** "وخمسين قرش", "and fifty piastres", "50 piastres", "قرشين": a number of piastres. */
@@ -76,10 +82,13 @@ function readPiastres(tokens: readonly string[], index: number): Piece | undefin
   return { value: hundredths(number.value), end: number.end + 1, piastres: true };
 }
 
-/** What may follow pounds: a fraction, or piastres with or without a conjunction. */
-function readPoundTail(tokens: readonly string[], index: number): Piece | undefined {
+/**
+ * What may follow a currency word: a fraction ("دولار ونص"), and after pounds only, piastres
+ * with or without a conjunction.
+ */
+function readUnitTail(tokens: readonly string[], index: number, pound: boolean): Piece | undefined {
   const fraction = readFraction(tokens, index);
-  if (fraction !== undefined) {
+  if (fraction !== undefined || !pound) {
     return fraction;
   }
   const at = afterConjunction(tokens, index, false) ?? index;
@@ -95,7 +104,7 @@ const withTail = (head: Piece, tail: Piece | undefined): Piece =>
         piastres: head.piastres || tail.piastres,
       };
 
-/** A number, then optionally a pound word, a fraction or piastres. */
+/** A number, then optionally a currency word, a fraction or piastres. */
 function readNumberAmount(tokens: readonly string[], start: number): Piece | undefined {
   const piastres = readPiastres(tokens, start);
   if (piastres !== undefined) {
@@ -106,44 +115,45 @@ function readNumberAmount(tokens: readonly string[], start: number): Piece | und
     return undefined;
   }
   const head: Piece = { value: number.value, end: number.end, piastres: false };
-  if (lookup(POUND_WORDS, tokens[head.end]) !== undefined) {
-    // "خمسة جنيه ونص", "two pounds and fifty piastres".
-    const pounds = { ...head, end: head.end + 1 };
-    return withTail(pounds, readPoundTail(tokens, pounds.end));
+  const unit = lookup(UNIT_WORDS, tokens[head.end]);
+  if (unit !== undefined) {
+    // "خمسة جنيه ونص", "two pounds and fifty piastres", "خمسة دولار ونص".
+    const units = { ...head, end: head.end + 1 };
+    return withTail(units, readUnitTail(tokens, units.end, unit.pound));
   }
   const fraction = readFraction(tokens, head.end);
   if (fraction !== undefined) {
     // "five and a half pounds", "خمسة ونص".
     const joined = withTail(head, fraction);
-    const pound = lookup(POUND_WORDS, tokens[joined.end]) !== undefined;
-    return pound ? { ...joined, end: joined.end + 1 } : joined;
+    const unitAfter = lookup(UNIT_WORDS, tokens[joined.end]) !== undefined;
+    return unitAfter ? { ...joined, end: joined.end + 1 } : joined;
   }
   return head;
 }
 
-/** A pound word with no number before it: "جنيه ونص" is 1.50, "جنيهين" is 2. */
-function readPoundWordAmount(tokens: readonly string[], start: number): Piece | undefined {
-  const pounds = lookup(POUND_WORDS, tokens[start]);
-  if (pounds === undefined) {
+/** A currency word with no number before it: "جنيه ونص" is 1.50, "دولارين" is 2. */
+function readUnitWordAmount(tokens: readonly string[], start: number): Piece | undefined {
+  const unit = lookup(UNIT_WORDS, tokens[start]);
+  if (unit === undefined) {
     return undefined;
   }
-  const head: Piece = { value: decimal(pounds), end: start + 1, piastres: false };
-  const tail = readPoundTail(tokens, head.end);
-  // A lone "جنيه" or "pounds" is not an amount; the dual "جنيهين" is.
-  return tail === undefined && pounds === 1 ? undefined : withTail(head, tail);
+  const head: Piece = { value: decimal(unit.count), end: start + 1, piastres: false };
+  const tail = readUnitTail(tokens, head.end, unit.pound);
+  // A lone "جنيه", "pounds" or "دولار" is not an amount; the dual "جنيهين" is.
+  return tail === undefined && unit.count === 1 ? undefined : withTail(head, tail);
 }
 
-/** "نص جنيه", "ربع جنيه", "half a pound". */
-function readFractionOfPound(tokens: readonly string[], start: number): Piece | undefined {
-  const hundredthsOfPound = lookup(FRACTION_WORDS, tokens[start]);
-  if (hundredthsOfPound === undefined) {
+/** "نص جنيه", "ربع دولار", "half a pound". */
+function readFractionOfUnit(tokens: readonly string[], start: number): Piece | undefined {
+  const hundredthsOfUnit = lookup(FRACTION_WORDS, tokens[start]);
+  if (hundredthsOfUnit === undefined) {
     return undefined;
   }
   const at = tokens[start + 1] === INDEFINITE_ARTICLE ? start + 2 : start + 1;
-  if (lookup(POUND_WORDS, tokens[at]) !== 1) {
+  if (lookup(UNIT_WORDS, tokens[at])?.count !== 1) {
     return undefined;
   }
-  return { value: decimal(hundredthsOfPound, 2), end: at + 1, piastres: false };
+  return { value: decimal(hundredthsOfUnit, 2), end: at + 1, piastres: false };
 }
 
 /**
@@ -156,8 +166,8 @@ function findAmountsBetween(tokens: readonly string[], from: number, to: number)
   for (let start = 0; start < segment.length;) {
     const found =
       readNumberAmount(segment, start) ??
-      readPoundWordAmount(segment, start) ??
-      readFractionOfPound(segment, start);
+      readUnitWordAmount(segment, start) ??
+      readFractionOfUnit(segment, start);
     if (found === undefined) {
       start += 1;
       continue;
@@ -173,9 +183,10 @@ function findAmountsBetween(tokens: readonly string[], from: number, to: number)
 }
 
 /**
- * Finds every amount in normalised tokens, left to right: numbers with their pound words,
- * halves, quarters and piastres combined exactly ("اتنين جنيه وخمسين قرش" is 2.5). Choosing
- * which amount is used when there are several is the job of the amount rule (T-005).
+ * Finds every amount in normalised tokens, left to right: numbers with their currency words,
+ * halves, quarters and piastres combined exactly ("اتنين جنيه وخمسين قرش" is 2.5). An amount's
+ * span includes the currency noun that follows it. Choosing which amount is used when there
+ * are several is the job of `resolveMoney`.
  *
  * No amount uses a token inside an `excluded` span: pass the date expressions from
  * `findDates` so that "تلات" in "من تلات أيام" cannot become the amount (FR-027, ADR 0003).
@@ -196,9 +207,10 @@ export function findAmounts(
 
 /**
  * The first amount in a transcript that is not part of a date expression, or undefined when
- * it has none.
+ * it has none. To choose the amount by the rule of ADR 0003 step 4 and get its currency, use
+ * `parseMoney`.
  */
 export function parseAmount(text: string): AmountMatch | undefined {
-  const tokens = normalize(text, DATE_AND_NUMBER_VOCABULARY);
+  const tokens = normalize(text, AMOUNT_VOCABULARY);
   return findAmounts(tokens, findDates(tokens))[0];
 }

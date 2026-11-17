@@ -1,5 +1,8 @@
 export { findAmounts, parseAmount } from './amount.js';
 export type { AmountMatch, TokenSpan } from './amount.js';
+export { findCurrencies, parseMoney, resolveMoney } from './currency.js';
+export type { CurrencyMatch, ParsedMoney } from './currency.js';
+export { CURRENCY_VOCABULARY } from './lexicon/currencies.js';
 export { findDates, parseDate, resolveDate } from './dates.js';
 export type { DateExpression, DateMatch, ParsedDate } from './dates.js';
 export { DATE_VOCABULARY } from './lexicon/dates.js';
