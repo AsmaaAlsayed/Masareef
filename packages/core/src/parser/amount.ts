@@ -6,6 +6,7 @@ import {
   PIASTRE_WORDS,
   POUND_WORDS,
 } from './lexicon/numbers.js';
+import { DATE_AND_NUMBER_VOCABULARY, findDates } from './dates.js';
 import { normalize } from './normalize.js';
 import { readNumber } from './numbers.js';
 
@@ -20,6 +21,12 @@ export interface AmountMatch {
   readonly start: number;
   readonly end: number;
   readonly impliedCurrency?: 'EGP';
+}
+
+/** A range of tokens, such as a date expression, that no amount may use; `end` is exclusive. */
+export interface TokenSpan {
+  readonly start: number;
+  readonly end: number;
 }
 
 interface Piece {
@@ -140,33 +147,58 @@ function readFractionOfPound(tokens: readonly string[], start: number): Piece | 
 }
 
 /**
- * Finds every amount in normalised tokens, left to right: numbers with their pound words,
- * halves, quarters and piastres combined exactly ("اتنين جنيه وخمسين قرش" is 2.5). Choosing
- * which amount is used when there are several is the job of the amount rule (T-005).
+ * The amounts in `tokens` from `from` up to `to` (exclusive). Only that slice is read, so
+ * no amount reaches past `to` into an excluded span.
  */
-export function findAmounts(tokens: readonly string[]): AmountMatch[] {
+function findAmountsBetween(tokens: readonly string[], from: number, to: number): AmountMatch[] {
+  const segment = tokens.slice(from, to);
   const amounts: AmountMatch[] = [];
-  for (let start = 0; start < tokens.length;) {
+  for (let start = 0; start < segment.length;) {
     const found =
-      readNumberAmount(tokens, start) ??
-      readPoundWordAmount(tokens, start) ??
-      readFractionOfPound(tokens, start);
+      readNumberAmount(segment, start) ??
+      readPoundWordAmount(segment, start) ??
+      readFractionOfPound(segment, start);
     if (found === undefined) {
       start += 1;
       continue;
     }
     const amount = toDecimalString(found.value);
+    const span = { start: from + start, end: from + found.end };
     amounts.push(
-      found.piastres
-        ? { amount, start, end: found.end, impliedCurrency: 'EGP' }
-        : { amount, start, end: found.end },
+      found.piastres ? { amount, ...span, impliedCurrency: 'EGP' } : { amount, ...span },
     );
     start = found.end;
   }
   return amounts;
 }
 
-/** The first amount in a transcript, or undefined when it has none. */
+/**
+ * Finds every amount in normalised tokens, left to right: numbers with their pound words,
+ * halves, quarters and piastres combined exactly ("اتنين جنيه وخمسين قرش" is 2.5). Choosing
+ * which amount is used when there are several is the job of the amount rule (T-005).
+ *
+ * No amount uses a token inside an `excluded` span: pass the date expressions from
+ * `findDates` so that "تلات" in "من تلات أيام" cannot become the amount (FR-027, ADR 0003).
+ */
+export function findAmounts(
+  tokens: readonly string[],
+  excluded: readonly TokenSpan[] = [],
+): AmountMatch[] {
+  const amounts: AmountMatch[] = [];
+  let from = 0;
+  for (const span of [...excluded].sort((a, b) => a.start - b.start)) {
+    amounts.push(...findAmountsBetween(tokens, from, span.start));
+    from = Math.max(from, span.end);
+  }
+  amounts.push(...findAmountsBetween(tokens, from, tokens.length));
+  return amounts;
+}
+
+/**
+ * The first amount in a transcript that is not part of a date expression, or undefined when
+ * it has none.
+ */
 export function parseAmount(text: string): AmountMatch | undefined {
-  return findAmounts(normalize(text))[0];
+  const tokens = normalize(text, DATE_AND_NUMBER_VOCABULARY);
+  return findAmounts(tokens, findDates(tokens))[0];
 }

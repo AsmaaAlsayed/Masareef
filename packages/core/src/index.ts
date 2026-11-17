@@ -13,10 +13,21 @@ export type { Language, Localized } from './language.js';
 export { fromMinor, MAX_AMOUNT, toMinor } from './money.js';
 export type { ToMinorRejection, ToMinorResult } from './money.js';
 export {
+  DATE_VOCABULARY,
   findAmounts,
+  findDates,
   findNumbers,
   normalize,
   NUMBER_VOCABULARY,
   parseAmount,
+  parseDate,
+  resolveDate,
 } from './parser/index.js';
-export type { AmountMatch, NumberMatch } from './parser/index.js';
+export type {
+  AmountMatch,
+  DateExpression,
+  DateMatch,
+  NumberMatch,
+  ParsedDate,
+  TokenSpan,
+} from './parser/index.js';
