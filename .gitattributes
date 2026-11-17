@@ -1,0 +1,6 @@
+# Keep line endings identical on every machine so the format check gives the same result everywhere.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.ico binary
+*.jar binary

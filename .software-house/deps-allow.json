@@ -1,0 +1,8 @@
+{
+  "typescript": "ADR 0010: typescript-eslint 8.72.2 supports <6.1.0",
+  "vitest": "ADR 0010: @cloudflare/vitest-pool-workers 0.23.0 requires ^4.1.0",
+  "@vitest/coverage-v8": "ADR 0010: must match vitest 4.1.x",
+  "com.android.tools.build:gradle": "ADR 0010: Capacitor 8.6.2 template",
+  "gradle": "ADR 0010: Capacitor 8.6.2 template",
+  "org.jetbrains.kotlin:kotlin-gradle-plugin": "ADR 0010: Capacitor 8.6.2 template"
+}

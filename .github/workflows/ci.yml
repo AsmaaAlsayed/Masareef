@@ -1,0 +1,112 @@
+# Pull-request pipeline. Stage order follows the delivery standard and
+# docs/03-architecture.md, "Pull-request pipeline". Every stage fails fast.
+# Actions are pinned to the commit of a released version; tools are pinned by
+# version and their downloads are verified against the published checksums.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  GITLEAKS_VERSION: 8.30.1
+  GITLEAKS_SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
+  SEMGREP_VERSION: 1.185.0
+  OSV_SCANNER_VERSION: 2.7.1
+  OSV_SCANNER_SHA256: fb7dab19a8bd9bbe5c3189f09d4b7ee1820c9553a23bac202648a56efd2f6ee8
+
+jobs:
+  pipeline:
+    name: pipeline
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out (full history, for the secret scan)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Node from .nvmrc
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      # 1. Install from lockfile
+      - name: Install from lockfile
+        run: npm ci
+
+      # 2. Lint and format check
+      - name: Lint
+        run: npm run lint
+      - name: Format check
+        run: npm run format:check
+
+      # 3. Type check
+      - name: Type check
+        run: npm run typecheck
+
+      # 4. Unit tests with coverage (the threshold is set in vitest.config.ts)
+      - name: Unit tests with coverage
+        run: npm test
+
+      # 5. Build
+      - name: Build
+        run: npm run build
+
+      # 6. Integration tests (each workspace adds its own test:integration script)
+      - name: Integration tests
+        run: npm run test:integration
+
+      # 7. Security: secret scan, static analysis, dependency audit
+      - name: Secret scan (gitleaks)
+        run: |
+          curl --fail --silent --show-error --location --output gitleaks.tar.gz \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          echo "${GITLEAKS_SHA256}  gitleaks.tar.gz" | sha256sum --check
+          mkdir -p "${RUNNER_TEMP}/bin"
+          tar -xzf gitleaks.tar.gz -C "${RUNNER_TEMP}/bin" gitleaks
+          rm gitleaks.tar.gz
+          "${RUNNER_TEMP}/bin/gitleaks" git --no-banner --redact --verbose .
+
+      - name: Static analysis (Semgrep)
+        run: |
+          pipx install "semgrep==${SEMGREP_VERSION}"
+          semgrep scan --config p/default --severity ERROR --error --metrics off
+
+      # Fails on High or Critical advisories, except time-boxed entries in
+      # audit-exceptions.json; an expired entry fails the build.
+      - name: Dependency audit (npm audit)
+        run: npm run audit
+
+      # osv-scanner has no severity threshold: it fails on any known advisory,
+      # which is stricter than the High-or-Critical rule.
+      - name: Dependency audit (osv-scanner)
+        run: |
+          mkdir -p "${RUNNER_TEMP}/bin"
+          curl --fail --silent --show-error --location --output "${RUNNER_TEMP}/bin/osv-scanner" \
+            "https://github.com/google/osv-scanner/releases/download/v${OSV_SCANNER_VERSION}/osv-scanner_linux_amd64"
+          echo "${OSV_SCANNER_SHA256}  ${RUNNER_TEMP}/bin/osv-scanner" | sha256sum --check
+          chmod +x "${RUNNER_TEMP}/bin/osv-scanner"
+          "${RUNNER_TEMP}/bin/osv-scanner" scan source --recursive .
+
+      # 8. Upload artefacts tagged with the commit SHA
+      - name: Upload artefacts
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: masareef-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            apps/*/dist/
+            packages/*/dist/
+            coverage/
+          if-no-files-found: error
+          retention-days: 14
