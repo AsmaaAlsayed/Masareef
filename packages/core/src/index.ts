@@ -13,9 +13,12 @@ export type { Language, Localized } from './language.js';
 export { fromMinor, MAX_AMOUNT, toMinor } from './money.js';
 export type { ToMinorRejection, ToMinorResult } from './money.js';
 export {
+  CATEGORY_KEYWORDS,
+  CATEGORY_VOCABULARY,
   CURRENCY_VOCABULARY,
   DATE_VOCABULARY,
   findAmounts,
+  findCategories,
   findCurrencies,
   findDates,
   findNumbers,
@@ -24,16 +27,23 @@ export {
   parseAmount,
   parseDate,
   parseMoney,
+  parseUtterance,
+  resolveCategory,
   resolveDate,
   resolveMoney,
+  UTTERANCE_VOCABULARY,
 } from './parser/index.js';
 export type {
   AmountMatch,
+  CategoryMatch,
   CurrencyMatch,
   DateExpression,
   DateMatch,
   NumberMatch,
+  ParsedCategory,
   ParsedDate,
   ParsedMoney,
+  ParsedUtterance,
   TokenSpan,
+  UtteranceOptions,
 } from './parser/index.js';
