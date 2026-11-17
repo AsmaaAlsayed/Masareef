@@ -24,6 +24,8 @@ npm ci
 | `npm run build`            | Builds every workspace that has a `build` script        |
 | `npm run test:integration` | Runs every workspace's `test:integration` script        |
 | `npm run audit`            | `npm audit --audit-level=high`                          |
+| `npm run voice:validate`   | Validates the voice test-set manifests                  |
+| `npm run voice:score`      | Writes the parser-only score on typed transcripts       |
 
 Run all of them before opening a pull request; the pipeline runs the same commands.
 
@@ -35,6 +37,9 @@ packages/    shared packages
   core/      pure TypeScript used by the web app and the API: the category and currency
              lists, digit conversion, money conversion to and from minor units, and the
              utterance parser (src/parser; its word lists are in src/parser/lexicon)
+poc/
+  voice/     voice proof of concept: the test-set manifests, their validator, and the
+             parser-only score on typed transcripts (see poc/voice/README.md)
 docs/        vision, requirements, architecture, plan and decision records
 .github/     pipeline and pull-request template
 ```
