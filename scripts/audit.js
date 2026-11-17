@@ -4,6 +4,7 @@
 // that has not passed. Usage: npm audit --json | node scripts/audit.js
 // An expired exception fails the build, so an exception cannot outlive its review date.
 import console from 'node:console';
+import { Buffer } from 'node:buffer';
 import { readFileSync } from 'node:fs';
 import process from 'node:process';
 import { URL, fileURLToPath } from 'node:url';
@@ -60,12 +61,21 @@ export function evaluate(report, exceptions, today) {
   return { failures, accepted: [...accepted], unused };
 }
 
-function main() {
+// Reads all of standard input as a stream: a synchronous read of a pipe can fail with EAGAIN
+// on Linux while npm audit is still running.
+async function readStdin() {
+  const chunks = [];
+  for await (const chunk of process.stdin) chunks.push(chunk);
+  return Buffer.concat(chunks).toString('utf8');
+}
+
+async function main() {
+  const input = await readStdin();
   let report;
   try {
-    report = JSON.parse(readFileSync(0, 'utf8'));
+    report = JSON.parse(input);
   } catch {
-    report = { error: 'no readable npm audit report on standard input' };
+    report = { error: `no readable npm audit report on standard input: ${input.slice(0, 200)}` };
   }
   const exceptions = JSON.parse(
     readFileSync(new URL('../audit-exceptions.json', import.meta.url), 'utf8'),
@@ -82,4 +92,4 @@ function main() {
   console.log('dependency audit passed (no unexcepted High or Critical advisories)');
 }
 
-if (process.argv[1] === fileURLToPath(import.meta.url)) main();
+if (process.argv[1] === fileURLToPath(import.meta.url)) await main();
