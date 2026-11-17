@@ -1,5 +1,8 @@
 export { findAmounts, parseAmount } from './amount.js';
 export type { AmountMatch, TokenSpan } from './amount.js';
+export { CATEGORY_VOCABULARY, findCategories, resolveCategory } from './category.js';
+export type { CategoryMatch, ParsedCategory } from './category.js';
+export { CATEGORY_KEYWORDS } from './lexicon/categories.js';
 export { findCurrencies, parseMoney, resolveMoney } from './currency.js';
 export type { CurrencyMatch, ParsedMoney } from './currency.js';
 export { CURRENCY_VOCABULARY } from './lexicon/currencies.js';
@@ -10,3 +13,5 @@ export { NUMBER_VOCABULARY } from './lexicon/numbers.js';
 export { normalize } from './normalize.js';
 export { findNumbers } from './numbers.js';
 export type { NumberMatch } from './numbers.js';
+export { parseUtterance, UTTERANCE_VOCABULARY } from './utterance.js';
+export type { ParsedUtterance, UtteranceOptions } from './utterance.js';
