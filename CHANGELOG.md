@@ -12,3 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Repository tooling: npm workspaces, TypeScript (strict), ESLint, Prettier and Vitest with a coverage threshold (T-001).
 - Pull-request pipeline with secret scanning, static analysis and dependency audits that fail the build (T-001, NFR-020).
 - Renovate configuration for weekly grouped updates and immediate security updates (T-001).
+- `packages/core`: the ten bilingual categories, the seven currencies with their decimal places and display symbols, Arabic-Indic and Eastern Arabic to Western digit conversion, and exact conversion between decimal strings and integer minor units (T-002, FR-014, FR-015, FR-022).
+
+### Removed
+
+- The placeholder workspace that gave the pipeline something to run before `packages/core` existed (T-002).
