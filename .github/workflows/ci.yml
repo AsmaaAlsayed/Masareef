@@ -83,8 +83,10 @@ jobs:
           pipx install "semgrep==${SEMGREP_VERSION}"
           semgrep scan --config p/default --severity ERROR --error --metrics off
 
+      # Fails on High or Critical advisories, except time-boxed entries in
+      # audit-exceptions.json; an expired entry fails the build.
       - name: Dependency audit (npm audit)
-        run: npm audit --audit-level=high
+        run: npm run audit
 
       # osv-scanner has no severity threshold: it fails on any known advisory,
       # which is stricter than the High-or-Critical rule.

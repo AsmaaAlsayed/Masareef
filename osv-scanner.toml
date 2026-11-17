@@ -1,0 +1,7 @@
+# Time-boxed exceptions for osv-scanner. Keep in step with audit-exceptions.json.
+# When ignoreUntil passes, the advisory fails the build again.
+
+[[IgnoredVulns]]
+id = "GHSA-fc5q-39xc-vjpf"
+ignoreUntil = 2026-12-17T00:00:00Z
+reason = "picomatch <=4.0.7 ReDoS, development tools only, no fixed release on 2026-11-17 (upstream micromatch/picomatch#194 unmerged). Accepted by the product owner on 2026-11-17."
