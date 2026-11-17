@@ -1,8 +1,8 @@
 // Dependency audit gate (NFR-020; dependencies standard rule 8).
-// Fails on any High or Critical advisory reported by `npm audit`, except advisories listed
-// in audit-exceptions.json with a reason and an expiry date that has not passed.
+// Reads the output of `npm audit --json` on standard input and fails on any High or Critical
+// advisory, except advisories listed in audit-exceptions.json with a reason and an expiry date
+// that has not passed. Usage: npm audit --json | node scripts/audit.js
 // An expired exception fails the build, so an exception cannot outlive its review date.
-import { spawnSync } from 'node:child_process';
 import console from 'node:console';
 import { readFileSync } from 'node:fs';
 import process from 'node:process';
@@ -61,16 +61,11 @@ export function evaluate(report, exceptions, today) {
 }
 
 function main() {
-  const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
-  const run = spawnSync(npm, ['audit', '--json'], {
-    encoding: 'utf8',
-    shell: process.platform === 'win32',
-  });
   let report;
   try {
-    report = JSON.parse(run.stdout);
+    report = JSON.parse(readFileSync(0, 'utf8'));
   } catch {
-    report = { error: run.stderr || 'unreadable npm audit output' };
+    report = { error: 'no readable npm audit report on standard input' };
   }
   const exceptions = JSON.parse(
     readFileSync(new URL('../audit-exceptions.json', import.meta.url), 'utf8'),
