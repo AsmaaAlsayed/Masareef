@@ -1,0 +1,1309 @@
+{
+  "schemaVersion": 1,
+  "language": "en",
+  "locale": "en",
+  "status": "draft",
+  "statusNote": "Sentences written by the team on 2026-11-18 from the requirements, without reference to the parser. Drafts until the native-speaker review (P-14).",
+  "today": "2026-11-16",
+  "defaultCurrency": "EGP",
+  "utterances": [
+    {
+      "id": "en-001",
+      "text": "I spent fifty pounds on lunch today",
+      "tags": [],
+      "expected": {
+        "amount": "50.00",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-002",
+      "text": "paid 200 pounds for the electricity bill",
+      "tags": ["digits"],
+      "expected": {
+        "amount": "200.00",
+        "currency": "EGP",
+        "category": "bills_utilities",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-003",
+      "text": "Uber to work cost me 85 pounds",
+      "tags": ["digits"],
+      "expected": {
+        "amount": "85.00",
+        "currency": "EGP",
+        "category": "transport",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-004",
+      "text": "bought vegetables at the market for 120 pounds yesterday",
+      "tags": ["digits", "relative_date"],
+      "expected": {
+        "amount": "120.00",
+        "currency": "EGP",
+        "category": "groceries",
+        "date": "2026-11-15"
+      }
+    },
+    {
+      "id": "en-005",
+      "text": "the doctor's visit was three hundred pounds",
+      "tags": [],
+      "expected": {
+        "amount": "300.00",
+        "currency": "EGP",
+        "category": "health",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-006",
+      "text": "grabbed a coffee for 45 pounds",
+      "tags": ["digits"],
+      "expected": {
+        "amount": "45.00",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-007",
+      "text": "paid the rent, seven thousand pounds",
+      "tags": [],
+      "expected": {
+        "amount": "7000.00",
+        "currency": "EGP",
+        "category": "housing",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-008",
+      "text": "new shoes, one thousand five hundred pounds",
+      "tags": [],
+      "expected": {
+        "amount": "1500.00",
+        "currency": "EGP",
+        "category": "shopping",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-009",
+      "text": "450 at the pharmacy",
+      "tags": ["digits"],
+      "expected": {
+        "amount": "450.00",
+        "currency": "EGP",
+        "category": "health",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-010",
+      "text": "movie tickets were a hundred and fifty pounds",
+      "tags": ["quantity"],
+      "expected": {
+        "amount": "150.00",
+        "currency": "EGP",
+        "category": "entertainment",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-011",
+      "text": "course fees two thousand pounds",
+      "tags": [],
+      "expected": {
+        "amount": "2000.00",
+        "currency": "EGP",
+        "category": "education",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-012",
+      "text": "twenty dollars for dinner",
+      "tags": ["foreign_currency"],
+      "expected": {
+        "amount": "20.00",
+        "currency": "USD",
+        "category": "food_drink",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-013",
+      "text": "took a taxi for thirty five pounds the day before yesterday",
+      "tags": ["relative_date"],
+      "expected": {
+        "amount": "35.00",
+        "currency": "EGP",
+        "category": "transport",
+        "date": "2026-11-14"
+      }
+    },
+    {
+      "id": "en-014",
+      "text": "five and a half pounds for the bus",
+      "tags": ["piastres_or_fraction"],
+      "expected": {
+        "amount": "5.50",
+        "currency": "EGP",
+        "category": "transport",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-015",
+      "text": "paid two pounds fifty piastres for the microbus",
+      "tags": ["piastres_or_fraction"],
+      "expected": {
+        "amount": "2.50",
+        "currency": "EGP",
+        "category": "transport",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-016",
+      "text": "ten pounds and a quarter for parking",
+      "tags": ["piastres_or_fraction"],
+      "expected": {
+        "amount": "10.25",
+        "currency": "EGP",
+        "category": "transport",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-017",
+      "text": "phone credit top up 100 pounds",
+      "tags": ["digits"],
+      "expected": {
+        "amount": "100.00",
+        "currency": "EGP",
+        "category": "bills_utilities",
+        "date": "2026-11-16"
+      },
+      "note": "Mobile credit is treated as a phone bill."
+    },
+    {
+      "id": "en-018",
+      "text": "internet bill 350",
+      "tags": ["digits"],
+      "expected": {
+        "amount": "350.00",
+        "currency": "EGP",
+        "category": "bills_utilities",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-019",
+      "text": "groceries from Carrefour 900 pounds",
+      "tags": ["digits"],
+      "expected": {
+        "amount": "900.00",
+        "currency": "EGP",
+        "category": "groceries",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-020",
+      "text": "Netflix subscription 199 pounds",
+      "tags": ["digits"],
+      "expected": {
+        "amount": "199.00",
+        "currency": "EGP",
+        "category": "entertainment",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-021",
+      "text": "bought a charger for 150 pounds",
+      "tags": ["digits"],
+      "expected": {
+        "amount": "150.00",
+        "currency": "EGP",
+        "category": "shopping",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-022",
+      "text": "three days ago I paid 350 pounds for books",
+      "tags": ["digits", "relative_date"],
+      "expected": {
+        "amount": "350.00",
+        "currency": "EGP",
+        "category": "education",
+        "date": "2026-11-13"
+      },
+      "note": "Books are treated as education."
+    },
+    {
+      "id": "en-023",
+      "text": "last Friday we ate out for 600 pounds",
+      "tags": ["digits", "relative_date"],
+      "expected": {
+        "amount": "600.00",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-13"
+      }
+    },
+    {
+      "id": "en-024",
+      "text": "filled up the car with petrol yesterday, 500 pounds",
+      "tags": ["digits", "relative_date"],
+      "expected": {
+        "amount": "500.00",
+        "currency": "EGP",
+        "category": "transport",
+        "date": "2026-11-15"
+      }
+    },
+    {
+      "id": "en-025",
+      "text": "paid the plumber 1200 pounds",
+      "tags": ["digits"],
+      "expected": {
+        "amount": "1200.00",
+        "currency": "EGP",
+        "category": "housing",
+        "date": "2026-11-16"
+      },
+      "note": "Home repair is treated as housing."
+    },
+    {
+      "id": "en-026",
+      "text": "t-shirt 300 pounds",
+      "tags": ["digits"],
+      "expected": {
+        "amount": "300.00",
+        "currency": "EGP",
+        "category": "shopping",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-027",
+      "text": "fruit for sixty pounds three days ago",
+      "tags": ["relative_date"],
+      "expected": {
+        "amount": "60.00",
+        "currency": "EGP",
+        "category": "groceries",
+        "date": "2026-11-13"
+      }
+    },
+    {
+      "id": "en-028",
+      "text": "a hundred euros for a handbag",
+      "tags": ["foreign_currency"],
+      "expected": {
+        "amount": "100.00",
+        "currency": "EUR",
+        "category": "shopping",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-029",
+      "text": "fifty riyals for a taxi",
+      "tags": ["foreign_currency"],
+      "expected": {
+        "amount": "50.00",
+        "currency": "SAR",
+        "category": "transport",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-030",
+      "text": "spent a hundred dirhams at the mall",
+      "tags": ["foreign_currency"],
+      "expected": {
+        "amount": "100.00",
+        "currency": "AED",
+        "category": "shopping",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-031",
+      "text": "school fees ten dinars",
+      "tags": ["foreign_currency"],
+      "expected": {
+        "amount": "10.000",
+        "currency": "KWD",
+        "category": "education",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-032",
+      "text": "bought a book for fifteen pounds sterling",
+      "tags": ["foreign_currency"],
+      "expected": {
+        "amount": "15.00",
+        "currency": "GBP",
+        "category": "education",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-033",
+      "text": "12 pounds 50 for a sandwich",
+      "tags": ["digits", "piastres_or_fraction"],
+      "expected": {
+        "amount": "12.50",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-16"
+      },
+      "note": "Colloquial 12.50."
+    },
+    {
+      "id": "en-034",
+      "text": "electricity came to 320 pounds this month",
+      "tags": ["digits"],
+      "expected": {
+        "amount": "320.00",
+        "currency": "EGP",
+        "category": "bills_utilities",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-035",
+      "text": "fish dinner 250",
+      "tags": ["digits"],
+      "expected": {
+        "amount": "250.00",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-036",
+      "text": "a kilo of meat for 450 pounds",
+      "tags": ["quantity", "digits"],
+      "expected": {
+        "amount": "450.00",
+        "currency": "EGP",
+        "category": "groceries",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-037",
+      "text": "three sandwiches for sixty pounds",
+      "tags": ["quantity"],
+      "expected": {
+        "amount": "60.00",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-038",
+      "text": "two coffees, eighty pounds",
+      "tags": ["quantity"],
+      "expected": {
+        "amount": "80.00",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-039",
+      "text": "tuk tuk ride 30 pounds",
+      "tags": ["digits"],
+      "expected": {
+        "amount": "30.00",
+        "currency": "EGP",
+        "category": "transport",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-040",
+      "text": "pizza delivery three hundred",
+      "tags": [],
+      "expected": {
+        "amount": "300.00",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-041",
+      "text": "1250 pounds for private lessons",
+      "tags": ["digits"],
+      "expected": {
+        "amount": "1250.00",
+        "currency": "EGP",
+        "category": "education",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-042",
+      "text": "water and electricity bills 500 pounds",
+      "tags": ["digits"],
+      "expected": {
+        "amount": "500.00",
+        "currency": "EGP",
+        "category": "bills_utilities",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-043",
+      "text": "parked the car for twenty pounds",
+      "tags": [],
+      "expected": {
+        "amount": "20.00",
+        "currency": "EGP",
+        "category": "transport",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-044",
+      "text": "oil change 800 pounds",
+      "tags": ["digits"],
+      "expected": {
+        "amount": "800.00",
+        "currency": "EGP",
+        "category": "transport",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-045",
+      "text": "kids' clothes two thousand five hundred",
+      "tags": [],
+      "expected": {
+        "amount": "2500.00",
+        "currency": "EGP",
+        "category": "shopping",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-046",
+      "text": "football match ticket 200 pounds",
+      "tags": ["digits"],
+      "expected": {
+        "amount": "200.00",
+        "currency": "EGP",
+        "category": "entertainment",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-047",
+      "text": "breakfast at work twenty five pounds",
+      "tags": [],
+      "expected": {
+        "amount": "25.00",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-048",
+      "text": "last night's taxi was sixty pounds",
+      "tags": ["relative_date"],
+      "expected": {
+        "amount": "60.00",
+        "currency": "EGP",
+        "category": "transport",
+        "date": "2026-11-15"
+      },
+      "note": "Last night is yesterday."
+    },
+    {
+      "id": "en-049",
+      "text": "milk and eggs ninety pounds the day before yesterday",
+      "tags": ["relative_date"],
+      "expected": {
+        "amount": "90.00",
+        "currency": "EGP",
+        "category": "groceries",
+        "date": "2026-11-14"
+      }
+    },
+    {
+      "id": "en-050",
+      "text": "two days ago I paid the landline bill, sixty five pounds",
+      "tags": ["relative_date"],
+      "expected": {
+        "amount": "65.00",
+        "currency": "EGP",
+        "category": "bills_utilities",
+        "date": "2026-11-14"
+      }
+    },
+    {
+      "id": "en-051",
+      "text": "five days ago I bought a watch for 1800",
+      "tags": ["digits", "relative_date"],
+      "expected": {
+        "amount": "1800.00",
+        "currency": "EGP",
+        "category": "shopping",
+        "date": "2026-11-11"
+      }
+    },
+    {
+      "id": "en-052",
+      "text": "a week ago I paid the tutor 500 pounds",
+      "tags": ["digits", "relative_date"],
+      "expected": {
+        "amount": "500.00",
+        "currency": "EGP",
+        "category": "education",
+        "date": "2026-11-09"
+      },
+      "note": "A week ago is taken as seven days ago."
+    },
+    {
+      "id": "en-053",
+      "text": "last Thursday amusement park 300 pounds",
+      "tags": ["digits", "relative_date"],
+      "expected": {
+        "amount": "300.00",
+        "currency": "EGP",
+        "category": "entertainment",
+        "date": "2026-11-12"
+      }
+    },
+    {
+      "id": "en-054",
+      "text": "paid rent last Saturday 6000 pounds",
+      "tags": ["digits", "relative_date"],
+      "expected": {
+        "amount": "6000.00",
+        "currency": "EGP",
+        "category": "housing",
+        "date": "2026-11-14"
+      }
+    },
+    {
+      "id": "en-055",
+      "text": "lunch last Sunday 135 pounds",
+      "tags": ["digits", "relative_date"],
+      "expected": {
+        "amount": "135.00",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-15"
+      }
+    },
+    {
+      "id": "en-056",
+      "text": "ten days ago paid the apartment deposit ten thousand pounds",
+      "tags": ["relative_date"],
+      "expected": {
+        "amount": "10000.00",
+        "currency": "EGP",
+        "category": "housing",
+        "date": "2026-11-06"
+      }
+    },
+    {
+      "id": "en-057",
+      "text": "twenty days ago university fees fifteen thousand",
+      "tags": ["relative_date"],
+      "expected": {
+        "amount": "15000.00",
+        "currency": "EGP",
+        "category": "education",
+        "date": "2026-10-27"
+      }
+    },
+    {
+      "id": "en-058",
+      "text": "this morning coffee 45",
+      "tags": ["digits"],
+      "expected": {
+        "amount": "45.00",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-059",
+      "text": "pharmacy yesterday 230 pounds",
+      "tags": ["digits", "relative_date"],
+      "expected": {
+        "amount": "230.00",
+        "currency": "EGP",
+        "category": "health",
+        "date": "2026-11-15"
+      }
+    },
+    {
+      "id": "en-060",
+      "text": "half a kilo of cheese for 85 pounds",
+      "tags": ["quantity", "digits"],
+      "expected": {
+        "amount": "85.00",
+        "currency": "EGP",
+        "category": "groceries",
+        "date": "2026-11-16"
+      },
+      "note": "Half is the quantity, not part of the amount."
+    },
+    {
+      "id": "en-061",
+      "text": "a quarter kilo of coffee beans 120",
+      "tags": ["quantity", "digits"],
+      "expected": {
+        "amount": "120.00",
+        "currency": "EGP",
+        "category": "groceries",
+        "date": "2026-11-16"
+      },
+      "note": "A quarter is the quantity, not part of the amount."
+    },
+    {
+      "id": "en-062",
+      "text": "tipped the delivery guy 20 pounds",
+      "tags": ["digits", "no_category"],
+      "expected": {
+        "amount": "20.00",
+        "currency": "EGP",
+        "category": "other",
+        "date": "2026-11-16"
+      },
+      "note": "A tip fits no category in the list."
+    },
+    {
+      "id": "en-063",
+      "text": "train ticket to Alexandria 123.50",
+      "tags": ["digits", "piastres_or_fraction"],
+      "expected": {
+        "amount": "123.50",
+        "currency": "EGP",
+        "category": "transport",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-064",
+      "text": "prescription cost 395 pounds and 25 piastres",
+      "tags": ["digits", "piastres_or_fraction"],
+      "expected": {
+        "amount": "395.25",
+        "currency": "EGP",
+        "category": "health",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-065",
+      "text": "water bill 49.25",
+      "tags": ["digits", "piastres_or_fraction"],
+      "expected": {
+        "amount": "49.25",
+        "currency": "EGP",
+        "category": "bills_utilities",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-066",
+      "text": "headphones for one and a half thousand pounds",
+      "tags": ["piastres_or_fraction"],
+      "expected": {
+        "amount": "1500.00",
+        "currency": "EGP",
+        "category": "shopping",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-067",
+      "text": "paid 37.5 for coffee",
+      "tags": ["digits", "piastres_or_fraction"],
+      "expected": {
+        "amount": "37.50",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-068",
+      "text": "spent around a hundred and fifty today",
+      "tags": ["no_category", "filler"],
+      "expected": {
+        "amount": "150.00",
+        "currency": "EGP",
+        "category": "other",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-069",
+      "text": "donated a hundred pounds",
+      "tags": ["no_category"],
+      "expected": {
+        "amount": "100.00",
+        "currency": "EGP",
+        "category": "other",
+        "date": "2026-11-16"
+      },
+      "note": "Charity fits no category in the list."
+    },
+    {
+      "id": "en-070",
+      "text": "fifty pounds",
+      "tags": ["no_category"],
+      "expected": {
+        "amount": "50.00",
+        "currency": "EGP",
+        "category": "other",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-071",
+      "text": "uh I think I paid like 300 for the dentist",
+      "tags": ["digits", "filler"],
+      "expected": {
+        "amount": "300.00",
+        "currency": "EGP",
+        "category": "health",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-072",
+      "text": "haircut 80 pounds",
+      "tags": ["digits", "no_category"],
+      "expected": {
+        "amount": "80.00",
+        "currency": "EGP",
+        "category": "other",
+        "date": "2026-11-16"
+      },
+      "note": "No category in the list fits a haircut."
+    },
+    {
+      "id": "en-073",
+      "text": "gas cylinder 150 pounds",
+      "tags": ["digits"],
+      "expected": {
+        "amount": "150.00",
+        "currency": "EGP",
+        "category": "bills_utilities",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-074",
+      "text": "Spotify premium 60 pounds",
+      "tags": ["digits"],
+      "expected": {
+        "amount": "60.00",
+        "currency": "EGP",
+        "category": "entertainment",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-075",
+      "text": "Amazon order, a hoodie for 850",
+      "tags": ["digits"],
+      "expected": {
+        "amount": "850.00",
+        "currency": "EGP",
+        "category": "shopping",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-076",
+      "text": "Talabat dinner 280 yesterday",
+      "tags": ["digits", "relative_date"],
+      "expected": {
+        "amount": "280.00",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-15"
+      }
+    },
+    {
+      "id": "en-077",
+      "text": "KFC bucket 420",
+      "tags": ["digits"],
+      "expected": {
+        "amount": "420.00",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-078",
+      "text": "Starbucks latte 140",
+      "tags": ["digits"],
+      "expected": {
+        "amount": "140.00",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-079",
+      "text": "Careem ride to the airport 400",
+      "tags": ["digits"],
+      "expected": {
+        "amount": "400.00",
+        "currency": "EGP",
+        "category": "transport",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-080",
+      "text": "bus ticket three pounds fifty",
+      "tags": ["piastres_or_fraction"],
+      "expected": {
+        "amount": "3.50",
+        "currency": "EGP",
+        "category": "transport",
+        "date": "2026-11-16"
+      },
+      "note": "Colloquial 3.50."
+    },
+    {
+      "id": "en-081",
+      "text": "bought a laptop for twenty five thousand pounds",
+      "tags": [],
+      "expected": {
+        "amount": "25000.00",
+        "currency": "EGP",
+        "category": "shopping",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-082",
+      "text": "paid the nursery fees 3000",
+      "tags": ["digits"],
+      "expected": {
+        "amount": "3000.00",
+        "currency": "EGP",
+        "category": "education",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-083",
+      "text": "three movie tickets at 200 each",
+      "tags": ["quantity", "multiple_numbers", "digits"],
+      "expected": {
+        "amount": "600.00",
+        "currency": "EGP",
+        "category": "entertainment",
+        "date": "2026-11-16"
+      },
+      "note": "Three tickets at 200 each: the expense is 600."
+    },
+    {
+      "id": "en-084",
+      "text": "2 pizzas for 400",
+      "tags": ["quantity", "digits"],
+      "expected": {
+        "amount": "400.00",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-085",
+      "text": "paid 3 months of internet, 750",
+      "tags": ["quantity", "digits"],
+      "expected": {
+        "amount": "750.00",
+        "currency": "EGP",
+        "category": "bills_utilities",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-086",
+      "text": "at 8pm had dinner for 200 pounds",
+      "tags": ["multiple_numbers", "digits"],
+      "expected": {
+        "amount": "200.00",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-16"
+      },
+      "note": "8 is the time."
+    },
+    {
+      "id": "en-087",
+      "text": "bought 3 kilos of tomatoes for 45 pounds",
+      "tags": ["quantity", "digits"],
+      "expected": {
+        "amount": "45.00",
+        "currency": "EGP",
+        "category": "groceries",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-088",
+      "text": "two kilos of oranges for fifty",
+      "tags": ["quantity"],
+      "expected": {
+        "amount": "50.00",
+        "currency": "EGP",
+        "category": "groceries",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-089",
+      "text": "dental clinic 500",
+      "tags": ["digits"],
+      "expected": {
+        "amount": "500.00",
+        "currency": "EGP",
+        "category": "health",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-090",
+      "text": "500 pounds",
+      "tags": ["digits", "no_category"],
+      "expected": {
+        "amount": "500.00",
+        "currency": "EGP",
+        "category": "other",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-091",
+      "text": "paid the building maintenance 300",
+      "tags": ["digits"],
+      "expected": {
+        "amount": "300.00",
+        "currency": "EGP",
+        "category": "housing",
+        "date": "2026-11-16"
+      },
+      "note": "Building service charge is treated as housing."
+    },
+    {
+      "id": "en-092",
+      "text": "concert last Thursday 600",
+      "tags": ["digits", "relative_date"],
+      "expected": {
+        "amount": "600.00",
+        "currency": "EGP",
+        "category": "entertainment",
+        "date": "2026-11-12"
+      }
+    },
+    {
+      "id": "en-093",
+      "text": "metro ticket 10 pounds",
+      "tags": ["digits"],
+      "expected": {
+        "amount": "10.00",
+        "currency": "EGP",
+        "category": "transport",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-094",
+      "text": "medicine for my cold 90 pounds",
+      "tags": ["digits"],
+      "expected": {
+        "amount": "90.00",
+        "currency": "EGP",
+        "category": "health",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-095",
+      "text": "bought sugar and oil for eighty five pounds fifty",
+      "tags": ["piastres_or_fraction"],
+      "expected": {
+        "amount": "85.50",
+        "currency": "EGP",
+        "category": "groceries",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-096",
+      "text": "lunch for $15",
+      "tags": ["digits", "foreign_currency"],
+      "expected": {
+        "amount": "15.00",
+        "currency": "USD",
+        "category": "food_drink",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-097",
+      "text": "paid €40 for a museum ticket",
+      "tags": ["digits", "foreign_currency"],
+      "expected": {
+        "amount": "40.00",
+        "currency": "EUR",
+        "category": "entertainment",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-098",
+      "text": "1,200 pounds for the plumber",
+      "tags": ["digits"],
+      "expected": {
+        "amount": "1200.00",
+        "currency": "EGP",
+        "category": "housing",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-099",
+      "text": "bought textbooks for six hundred and forty pounds",
+      "tags": [],
+      "expected": {
+        "amount": "640.00",
+        "currency": "EGP",
+        "category": "education",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-100",
+      "text": "paid the electricity bill on Friday, 400 pounds",
+      "tags": ["digits", "relative_date", "bare_weekday"],
+      "expected": {
+        "amount": "400.00",
+        "currency": "EGP",
+        "category": "bills_utilities",
+        "date": "2026-11-13"
+      },
+      "note": "A past expense on Friday means the most recent Friday."
+    },
+    {
+      "id": "en-101",
+      "text": "thirty days ago bought a winter coat for 2200",
+      "tags": ["digits", "relative_date"],
+      "expected": {
+        "amount": "2200.00",
+        "currency": "EGP",
+        "category": "shopping",
+        "date": "2026-10-17"
+      }
+    },
+    {
+      "id": "en-102",
+      "text": "four days ago got my eyes tested for 250 pounds",
+      "tags": ["digits", "relative_date"],
+      "expected": {
+        "amount": "250.00",
+        "currency": "EGP",
+        "category": "health",
+        "date": "2026-11-12"
+      }
+    },
+    {
+      "id": "en-103",
+      "text": "six days ago paid for a cooking class, 700",
+      "tags": ["digits", "relative_date"],
+      "expected": {
+        "amount": "700.00",
+        "currency": "EGP",
+        "category": "education",
+        "date": "2026-11-10"
+      }
+    },
+    {
+      "id": "en-104",
+      "text": "yesterday spent fifteen dollars on a taxi",
+      "tags": ["foreign_currency", "relative_date"],
+      "expected": {
+        "amount": "15.00",
+        "currency": "USD",
+        "category": "transport",
+        "date": "2026-11-15"
+      }
+    },
+    {
+      "id": "en-105",
+      "text": "twenty dirhams for a sandwich",
+      "tags": ["foreign_currency"],
+      "expected": {
+        "amount": "20.00",
+        "currency": "AED",
+        "category": "food_drink",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-106",
+      "text": "renewed my phone plan for two hundred and ten pounds",
+      "tags": [],
+      "expected": {
+        "amount": "210.00",
+        "currency": "EGP",
+        "category": "bills_utilities",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-107",
+      "text": "the gas station took six hundred pounds",
+      "tags": [],
+      "expected": {
+        "amount": "600.00",
+        "currency": "EGP",
+        "category": "transport",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-108",
+      "text": "umm, coffee and a croissant, ninety five pounds",
+      "tags": ["filler"],
+      "expected": {
+        "amount": "95.00",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-109",
+      "text": "cab home last night two hundred and twenty pounds",
+      "tags": ["relative_date"],
+      "expected": {
+        "amount": "220.00",
+        "currency": "EGP",
+        "category": "transport",
+        "date": "2026-11-15"
+      },
+      "note": "Last night is yesterday."
+    },
+    {
+      "id": "en-110",
+      "text": "koshary for thirty five pounds",
+      "tags": [],
+      "expected": {
+        "amount": "35.00",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-111",
+      "text": "foul and taameya breakfast thirty pounds",
+      "tags": [],
+      "expected": {
+        "amount": "30.00",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "en-112",
+      "text": "last Tuesday I bought groceries for 640 pounds",
+      "tags": ["digits", "relative_date"],
+      "expected": {
+        "amount": "640.00",
+        "currency": "EGP",
+        "category": "groceries",
+        "date": "2026-11-10"
+      }
+    },
+    {
+      "id": "en-113",
+      "text": "paid 30 pounds for the microbus last Wednesday",
+      "tags": ["digits", "relative_date"],
+      "expected": {
+        "amount": "30.00",
+        "currency": "EGP",
+        "category": "transport",
+        "date": "2026-11-11"
+      }
+    },
+    {
+      "id": "en-114",
+      "text": "last Monday I bought a phone case for 175 pounds",
+      "tags": ["digits", "relative_date"],
+      "expected": {
+        "amount": "175.00",
+        "currency": "EGP",
+        "category": "shopping",
+        "date": "2026-11-09"
+      },
+      "note": "The most recent Monday before today."
+    }
+  ],
+  "dropped": [
+    {
+      "text": "one fifty tip for the waiter",
+      "reason": "Amount unclear: 1.50 or 150."
+    },
+    {
+      "text": "school uniform 900",
+      "reason": "Category unclear: education or shopping."
+    },
+    {
+      "text": "bought a novel for 220",
+      "reason": "Category unclear: education or entertainment."
+    },
+    {
+      "text": "paid the cleaner 400 pounds",
+      "reason": "Category unclear: housing or other."
+    },
+    {
+      "text": "Pepsi and chips 35 pounds",
+      "reason": "Category unclear: groceries or food and drink."
+    },
+    {
+      "text": "50 pounds lunch and 20 taxi",
+      "reason": "Two expenses in one utterance (out of scope, vision A-12): no single correct amount or category."
+    }
+  ]
+}

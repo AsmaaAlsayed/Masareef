@@ -1,0 +1,1455 @@
+{
+  "schemaVersion": 1,
+  "language": "ar",
+  "locale": "ar-EG",
+  "status": "draft",
+  "statusNote": "Sentences written by the team on 2026-11-18 from the requirements, without reference to the parser. Drafts until the native-speaker review (P-14).",
+  "today": "2026-11-16",
+  "defaultCurrency": "EGP",
+  "utterances": [
+    {
+      "id": "ar-001",
+      "text": "صرفت خمسين جنيه على الغدا",
+      "tags": [],
+      "expected": {
+        "amount": "50.00",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-002",
+      "text": "دفعت ميتين جنيه فاتورة النور",
+      "tags": [],
+      "expected": {
+        "amount": "200.00",
+        "currency": "EGP",
+        "category": "bills_utilities",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-003",
+      "text": "تاكسي من البيت للشغل بخمسة وتلاتين جنيه",
+      "tags": [],
+      "expected": {
+        "amount": "35.00",
+        "currency": "EGP",
+        "category": "transport",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-004",
+      "text": "اشتريت خضار من السوق بمية وعشرين جنيه امبارح",
+      "tags": ["relative_date"],
+      "expected": {
+        "amount": "120.00",
+        "currency": "EGP",
+        "category": "groceries",
+        "date": "2026-11-15"
+      }
+    },
+    {
+      "id": "ar-005",
+      "text": "كلفني الكشف عند الدكتور تلتمية جنيه",
+      "tags": [],
+      "expected": {
+        "amount": "300.00",
+        "currency": "EGP",
+        "category": "health",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-006",
+      "text": "فطرت فول وطعمية بخمستاشر جنيه",
+      "tags": [],
+      "expected": {
+        "amount": "15.00",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-007",
+      "text": "ركبت المترو بعشرة جنيه",
+      "tags": [],
+      "expected": {
+        "amount": "10.00",
+        "currency": "EGP",
+        "category": "transport",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-008",
+      "text": "شحنت كارت فودافون بخمسين جنيه",
+      "tags": [],
+      "expected": {
+        "amount": "50.00",
+        "currency": "EGP",
+        "category": "bills_utilities",
+        "date": "2026-11-16"
+      },
+      "note": "Mobile credit is treated as a phone bill."
+    },
+    {
+      "id": "ar-009",
+      "text": "دفعت الإيجار سبعة آلاف جنيه",
+      "tags": [],
+      "expected": {
+        "amount": "7000.00",
+        "currency": "EGP",
+        "category": "housing",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-010",
+      "text": "اشتريت جزمة جديدة بألف وخمسمية جنيه",
+      "tags": [],
+      "expected": {
+        "amount": "1500.00",
+        "currency": "EGP",
+        "category": "shopping",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-011",
+      "text": "صرفت ٤٥٠ جنيه في الصيدلية",
+      "tags": ["digits"],
+      "expected": {
+        "amount": "450.00",
+        "currency": "EGP",
+        "category": "health",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-012",
+      "text": "تذكرة السينما كانت بمية وخمسين جنيه",
+      "tags": [],
+      "expected": {
+        "amount": "150.00",
+        "currency": "EGP",
+        "category": "entertainment",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-013",
+      "text": "دفعت مصاريف الكورس ألفين جنيه",
+      "tags": [],
+      "expected": {
+        "amount": "2000.00",
+        "currency": "EGP",
+        "category": "education",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-014",
+      "text": "اديت الحلاق تمانين جنيه",
+      "tags": ["no_category"],
+      "expected": {
+        "amount": "80.00",
+        "currency": "EGP",
+        "category": "other",
+        "date": "2026-11-16"
+      },
+      "note": "No category in the list fits a haircut."
+    },
+    {
+      "id": "ar-015",
+      "text": "اشتريت كيس سكر وزيت بخمسة وتمانين جنيه ونص",
+      "tags": ["piastres_or_fraction"],
+      "expected": {
+        "amount": "85.50",
+        "currency": "EGP",
+        "category": "groceries",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-016",
+      "text": "ركبت ميكروباص بسبعة جنيه ونص",
+      "tags": ["piastres_or_fraction"],
+      "expected": {
+        "amount": "7.50",
+        "currency": "EGP",
+        "category": "transport",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-017",
+      "text": "الأتوبيس بتلاتة جنيه وخمسين قرش",
+      "tags": ["piastres_or_fraction"],
+      "expected": {
+        "amount": "3.50",
+        "currency": "EGP",
+        "category": "transport",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-018",
+      "text": "شربت شاي على القهوة بخمسة جنيه ونص امبارح",
+      "tags": ["piastres_or_fraction", "relative_date"],
+      "expected": {
+        "amount": "5.50",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-15"
+      },
+      "note": "القهوة here is the café."
+    },
+    {
+      "id": "ar-019",
+      "text": "صرفت حوالي مية وخمسين جنيه النهارده",
+      "tags": ["no_category", "filler"],
+      "expected": {
+        "amount": "150.00",
+        "currency": "EGP",
+        "category": "other",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-020",
+      "text": "دفعت فاتورة الغاز تمانين جنيه وربع",
+      "tags": ["piastres_or_fraction"],
+      "expected": {
+        "amount": "80.25",
+        "currency": "EGP",
+        "category": "bills_utilities",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-021",
+      "text": "أول امبارح اشتريت دوا للكحة بتسعين جنيه",
+      "tags": ["relative_date"],
+      "expected": {
+        "amount": "90.00",
+        "currency": "EGP",
+        "category": "health",
+        "date": "2026-11-14"
+      }
+    },
+    {
+      "id": "ar-022",
+      "text": "من تلات أيام دفعت تمن الكتب تلتمية وخمسين جنيه",
+      "tags": ["relative_date"],
+      "expected": {
+        "amount": "350.00",
+        "currency": "EGP",
+        "category": "education",
+        "date": "2026-11-13"
+      }
+    },
+    {
+      "id": "ar-023",
+      "text": "يوم الجمعة اللي فات اتغدينا برة بستمية جنيه",
+      "tags": ["relative_date"],
+      "expected": {
+        "amount": "600.00",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-13"
+      }
+    },
+    {
+      "id": "ar-024",
+      "text": "البنزين امبارح كلفني خمسمية جنيه",
+      "tags": ["relative_date"],
+      "expected": {
+        "amount": "500.00",
+        "currency": "EGP",
+        "category": "transport",
+        "date": "2026-11-15"
+      }
+    },
+    {
+      "id": "ar-025",
+      "text": "٢٥٠ جنيه نت البيت",
+      "tags": ["digits"],
+      "expected": {
+        "amount": "250.00",
+        "currency": "EGP",
+        "category": "bills_utilities",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-026",
+      "text": "دفعت 1200 جنيه للسباك",
+      "tags": ["digits"],
+      "expected": {
+        "amount": "1200.00",
+        "currency": "EGP",
+        "category": "housing",
+        "date": "2026-11-16"
+      },
+      "note": "Home repair is treated as housing."
+    },
+    {
+      "id": "ar-027",
+      "text": "اشتريت تيشيرت ب 300 جنيه",
+      "tags": ["digits"],
+      "expected": {
+        "amount": "300.00",
+        "currency": "EGP",
+        "category": "shopping",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-028",
+      "text": "جبت فاكهة بستين جنيه من تلات ايام",
+      "tags": ["relative_date"],
+      "expected": {
+        "amount": "60.00",
+        "currency": "EGP",
+        "category": "groceries",
+        "date": "2026-11-13"
+      }
+    },
+    {
+      "id": "ar-029",
+      "text": "صرفت عشرين دولار على الغدا",
+      "tags": ["foreign_currency"],
+      "expected": {
+        "amount": "20.00",
+        "currency": "USD",
+        "category": "food_drink",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-030",
+      "text": "اشتريت شنطة بمية يورو",
+      "tags": ["foreign_currency"],
+      "expected": {
+        "amount": "100.00",
+        "currency": "EUR",
+        "category": "shopping",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-031",
+      "text": "دفعت خمسين ريال تاكسي",
+      "tags": ["foreign_currency"],
+      "expected": {
+        "amount": "50.00",
+        "currency": "SAR",
+        "category": "transport",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-032",
+      "text": "خلصت ميت درهم في المول",
+      "tags": ["foreign_currency"],
+      "expected": {
+        "amount": "100.00",
+        "currency": "AED",
+        "category": "shopping",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-033",
+      "text": "دفعت عشرة دينار مصاريف المدرسة",
+      "tags": ["foreign_currency"],
+      "expected": {
+        "amount": "10.000",
+        "currency": "KWD",
+        "category": "education",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-034",
+      "text": "اشتريت كتاب بخمستاشر جنيه استرليني",
+      "tags": ["foreign_currency"],
+      "expected": {
+        "amount": "15.00",
+        "currency": "GBP",
+        "category": "education",
+        "date": "2026-11-16"
+      },
+      "note": "Books are treated as education."
+    },
+    {
+      "id": "ar-035",
+      "text": "دفعت للدكتورة ستمية جنيه كشف وتحاليل",
+      "tags": [],
+      "expected": {
+        "amount": "600.00",
+        "currency": "EGP",
+        "category": "health",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-036",
+      "text": "الكهربا جت تلتمية وعشرين جنيه الشهر ده",
+      "tags": [],
+      "expected": {
+        "amount": "320.00",
+        "currency": "EGP",
+        "category": "bills_utilities",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-037",
+      "text": "اتعشيت سمك بمتين وخمسين جنيه",
+      "tags": [],
+      "expected": {
+        "amount": "250.00",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-16"
+      },
+      "note": "متين is a common spelling of ميتين."
+    },
+    {
+      "id": "ar-038",
+      "text": "جبت كيلو لحمة بأربعمية وخمسين جنيه",
+      "tags": ["quantity"],
+      "expected": {
+        "amount": "450.00",
+        "currency": "EGP",
+        "category": "groceries",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-039",
+      "text": "اشتريت تلاتة سندوتشات بستين جنيه",
+      "tags": ["quantity"],
+      "expected": {
+        "amount": "60.00",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-040",
+      "text": "اتنين قهوة بتمانين جنيه",
+      "tags": ["quantity"],
+      "expected": {
+        "amount": "80.00",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-041",
+      "text": "دفعت تلاتين جنيه أجرة التوكتوك",
+      "tags": [],
+      "expected": {
+        "amount": "30.00",
+        "currency": "EGP",
+        "category": "transport",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-042",
+      "text": "ركبت اوبر بمية وعشرة جنيه",
+      "tags": ["transliterated"],
+      "expected": {
+        "amount": "110.00",
+        "currency": "EGP",
+        "category": "transport",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-043",
+      "text": "جبت حاجات من السوبر ماركت بخمسمية وخمسة وسبعين جنيه",
+      "tags": ["transliterated"],
+      "expected": {
+        "amount": "575.00",
+        "currency": "EGP",
+        "category": "groceries",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-044",
+      "text": "طلبت ديليفري بيتزا بتلتمية جنيه",
+      "tags": ["transliterated"],
+      "expected": {
+        "amount": "300.00",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-045",
+      "text": "دفعت اشتراك نتفليكس مية وتسعة وتسعين جنيه",
+      "tags": ["transliterated"],
+      "expected": {
+        "amount": "199.00",
+        "currency": "EGP",
+        "category": "entertainment",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-046",
+      "text": "اشتريت شاحن للموبايل بمية وخمسين جنيه",
+      "tags": [],
+      "expected": {
+        "amount": "150.00",
+        "currency": "EGP",
+        "category": "shopping",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-047",
+      "text": "ألف وميتين وخمسين جنيه مصاريف الدروس الخصوصية",
+      "tags": [],
+      "expected": {
+        "amount": "1250.00",
+        "currency": "EGP",
+        "category": "education",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-048",
+      "text": "دفعت الكهربا والمية خمسمية جنيه",
+      "tags": [],
+      "expected": {
+        "amount": "500.00",
+        "currency": "EGP",
+        "category": "bills_utilities",
+        "date": "2026-11-16"
+      },
+      "note": "المية here is water, not a hundred."
+    },
+    {
+      "id": "ar-049",
+      "text": "عشا امبارح كان بأربعمية جنيه",
+      "tags": ["relative_date"],
+      "expected": {
+        "amount": "400.00",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-15"
+      }
+    },
+    {
+      "id": "ar-050",
+      "text": "ركنت العربية بعشرين جنيه",
+      "tags": [],
+      "expected": {
+        "amount": "20.00",
+        "currency": "EGP",
+        "category": "transport",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-051",
+      "text": "غيرت زيت العربية بتمنمية جنيه",
+      "tags": [],
+      "expected": {
+        "amount": "800.00",
+        "currency": "EGP",
+        "category": "transport",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-052",
+      "text": "اشتريت هدوم للعيال بألفين وخمسمية جنيه",
+      "tags": [],
+      "expected": {
+        "amount": "2500.00",
+        "currency": "EGP",
+        "category": "shopping",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-053",
+      "text": "دفعت تلات تلاف جنيه مقدم الشقة",
+      "tags": [],
+      "expected": {
+        "amount": "3000.00",
+        "currency": "EGP",
+        "category": "housing",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-054",
+      "text": "حجزت تذكرة ماتش بمتين جنيه",
+      "tags": [],
+      "expected": {
+        "amount": "200.00",
+        "currency": "EGP",
+        "category": "entertainment",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-055",
+      "text": "دفعت للسنتر تلتمية جنيه حصة",
+      "tags": [],
+      "expected": {
+        "amount": "300.00",
+        "currency": "EGP",
+        "category": "education",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-056",
+      "text": "فطار في الشغل بخمسة وعشرين جنيه",
+      "tags": [],
+      "expected": {
+        "amount": "25.00",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-057",
+      "text": "خدت تاكسي امبارح بالليل بستين جنيه",
+      "tags": ["relative_date"],
+      "expected": {
+        "amount": "60.00",
+        "currency": "EGP",
+        "category": "transport",
+        "date": "2026-11-15"
+      }
+    },
+    {
+      "id": "ar-058",
+      "text": "أول امبارح جبت لبن وبيض بتسعين جنيه",
+      "tags": ["relative_date"],
+      "expected": {
+        "amount": "90.00",
+        "currency": "EGP",
+        "category": "groceries",
+        "date": "2026-11-14"
+      }
+    },
+    {
+      "id": "ar-059",
+      "text": "من يومين دفعت فاتورة التليفون الأرضي خمسة وستين جنيه",
+      "tags": ["relative_date"],
+      "expected": {
+        "amount": "65.00",
+        "currency": "EGP",
+        "category": "bills_utilities",
+        "date": "2026-11-14"
+      }
+    },
+    {
+      "id": "ar-060",
+      "text": "من خمس ايام اشتريت ساعة بألف وتمنمية جنيه",
+      "tags": ["relative_date"],
+      "expected": {
+        "amount": "1800.00",
+        "currency": "EGP",
+        "category": "shopping",
+        "date": "2026-11-11"
+      }
+    },
+    {
+      "id": "ar-061",
+      "text": "من أسبوع دفعت للمدرس خمسمية جنيه",
+      "tags": ["relative_date"],
+      "expected": {
+        "amount": "500.00",
+        "currency": "EGP",
+        "category": "education",
+        "date": "2026-11-09"
+      },
+      "note": "A week ago is taken as seven days ago."
+    },
+    {
+      "id": "ar-062",
+      "text": "يوم الخميس اللي فات روحت الملاهي بتلتمية جنيه",
+      "tags": ["relative_date"],
+      "expected": {
+        "amount": "300.00",
+        "currency": "EGP",
+        "category": "entertainment",
+        "date": "2026-11-12"
+      }
+    },
+    {
+      "id": "ar-063",
+      "text": "السبت اللي فات دفعت الإيجار ستة آلاف جنيه",
+      "tags": ["relative_date"],
+      "expected": {
+        "amount": "6000.00",
+        "currency": "EGP",
+        "category": "housing",
+        "date": "2026-11-14"
+      }
+    },
+    {
+      "id": "ar-064",
+      "text": "يوم الحد اللي فات اتغديت كشري بخمسة وتلاتين جنيه",
+      "tags": ["relative_date"],
+      "expected": {
+        "amount": "35.00",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-15"
+      },
+      "note": "الحد is Sunday."
+    },
+    {
+      "id": "ar-065",
+      "text": "من عشر أيام دفعت تأمين الشقة عشرة آلاف جنيه",
+      "tags": ["relative_date"],
+      "expected": {
+        "amount": "10000.00",
+        "currency": "EGP",
+        "category": "housing",
+        "date": "2026-11-06"
+      }
+    },
+    {
+      "id": "ar-066",
+      "text": "من عشرين يوم دفعت مصاريف الجامعة خمستاشر ألف جنيه",
+      "tags": ["relative_date"],
+      "expected": {
+        "amount": "15000.00",
+        "currency": "EGP",
+        "category": "education",
+        "date": "2026-10-27"
+      }
+    },
+    {
+      "id": "ar-067",
+      "text": "النهارده الصبح جبت قهوة بخمسة وأربعين جنيه",
+      "tags": [],
+      "expected": {
+        "amount": "45.00",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-068",
+      "text": "الصيدلية امبارح خدت مني ميتين وتلاتين جنيه",
+      "tags": ["relative_date"],
+      "expected": {
+        "amount": "230.00",
+        "currency": "EGP",
+        "category": "health",
+        "date": "2026-11-15"
+      }
+    },
+    {
+      "id": "ar-069",
+      "text": "نص كيلو جبنة بخمسة وتمانين جنيه",
+      "tags": ["quantity"],
+      "expected": {
+        "amount": "85.00",
+        "currency": "EGP",
+        "category": "groceries",
+        "date": "2026-11-16"
+      },
+      "note": "نص is the quantity, not part of the amount."
+    },
+    {
+      "id": "ar-070",
+      "text": "ربع كيلو بن بمية وعشرين جنيه",
+      "tags": ["quantity"],
+      "expected": {
+        "amount": "120.00",
+        "currency": "EGP",
+        "category": "groceries",
+        "date": "2026-11-16"
+      },
+      "note": "ربع is the quantity, not part of the amount."
+    },
+    {
+      "id": "ar-071",
+      "text": "جنيه ونص بقشيش للعامل",
+      "tags": ["piastres_or_fraction", "no_category"],
+      "expected": {
+        "amount": "1.50",
+        "currency": "EGP",
+        "category": "other",
+        "date": "2026-11-16"
+      },
+      "note": "A tip fits no category in the list."
+    },
+    {
+      "id": "ar-072",
+      "text": "دفعت خمسة جنيه وخمسين قرش للأتوبيس",
+      "tags": ["piastres_or_fraction"],
+      "expected": {
+        "amount": "5.50",
+        "currency": "EGP",
+        "category": "transport",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-073",
+      "text": "دفعت للمكوجي اتناشر جنيه ونص",
+      "tags": ["piastres_or_fraction", "no_category"],
+      "expected": {
+        "amount": "12.50",
+        "currency": "EGP",
+        "category": "other",
+        "date": "2026-11-16"
+      },
+      "note": "Ironing fits no category in the list."
+    },
+    {
+      "id": "ar-074",
+      "text": "تذكرة القطر لإسكندرية بمية وتلاتة وعشرين جنيه ونص",
+      "tags": ["piastres_or_fraction"],
+      "expected": {
+        "amount": "123.50",
+        "currency": "EGP",
+        "category": "transport",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-075",
+      "text": "تمن الروشتة تلتمية وخمسة وتسعين جنيه وربع",
+      "tags": ["piastres_or_fraction"],
+      "expected": {
+        "amount": "395.25",
+        "currency": "EGP",
+        "category": "health",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-076",
+      "text": "الركنة بعشرة جنيه إلا ربع",
+      "tags": ["piastres_or_fraction"],
+      "expected": {
+        "amount": "9.75",
+        "currency": "EGP",
+        "category": "transport",
+        "date": "2026-11-16"
+      },
+      "note": "عشرة إلا ربع is 9.75."
+    },
+    {
+      "id": "ar-077",
+      "text": "فاتورة المية تسعة وأربعين جنيه وخمسة وعشرين قرش",
+      "tags": ["piastres_or_fraction"],
+      "expected": {
+        "amount": "49.25",
+        "currency": "EGP",
+        "category": "bills_utilities",
+        "date": "2026-11-16"
+      },
+      "note": "المية here is water."
+    },
+    {
+      "id": "ar-078",
+      "text": "اشتريت سماعة بألف ونص جنيه",
+      "tags": ["piastres_or_fraction"],
+      "expected": {
+        "amount": "1500.00",
+        "currency": "EGP",
+        "category": "shopping",
+        "date": "2026-11-16"
+      },
+      "note": "ألف ونص is 1500."
+    },
+    {
+      "id": "ar-079",
+      "text": "دفعت 37.5 جنيه في الكافيتريا",
+      "tags": ["digits", "piastres_or_fraction"],
+      "expected": {
+        "amount": "37.50",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-080",
+      "text": "خمسة جنيه وخمسين عيش فينو",
+      "tags": ["piastres_or_fraction"],
+      "expected": {
+        "amount": "5.50",
+        "currency": "EGP",
+        "category": "groceries",
+        "date": "2026-11-16"
+      },
+      "note": "Colloquial 5.50 without the word قرش."
+    },
+    {
+      "id": "ar-081",
+      "text": "اشتريت تلاتة كيلو طماطم بخمسة وأربعين جنيه",
+      "tags": ["quantity"],
+      "expected": {
+        "amount": "45.00",
+        "currency": "EGP",
+        "category": "groceries",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-082",
+      "text": "اتنين كيلو برتقان بخمسين جنيه",
+      "tags": ["quantity"],
+      "expected": {
+        "amount": "50.00",
+        "currency": "EGP",
+        "category": "groceries",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-083",
+      "text": "جبت 2 بيتزا ب 400 جنيه",
+      "tags": ["quantity", "digits"],
+      "expected": {
+        "amount": "400.00",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-084",
+      "text": "دفعت 3 شهور نت ب 750 جنيه",
+      "tags": ["quantity", "digits"],
+      "expected": {
+        "amount": "750.00",
+        "currency": "EGP",
+        "category": "bills_utilities",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-085",
+      "text": "تلات تذاكر سينما كل واحدة بميتين جنيه",
+      "tags": ["quantity", "multiple_numbers"],
+      "expected": {
+        "amount": "600.00",
+        "currency": "EGP",
+        "category": "entertainment",
+        "date": "2026-11-16"
+      },
+      "note": "Three tickets at 200 each: the expense is 600."
+    },
+    {
+      "id": "ar-086",
+      "text": "في الساعة تمانية بالليل اتعشيت بمتين جنيه",
+      "tags": ["multiple_numbers"],
+      "expected": {
+        "amount": "200.00",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-16"
+      },
+      "note": "تمانية is the time."
+    },
+    {
+      "id": "ar-087",
+      "text": "دفعت خمسمية جنيه لعيادة الأسنان",
+      "tags": [],
+      "expected": {
+        "amount": "500.00",
+        "currency": "EGP",
+        "category": "health",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-088",
+      "text": "دفعت ٥٠٠ جنيه",
+      "tags": ["digits", "no_category"],
+      "expected": {
+        "amount": "500.00",
+        "currency": "EGP",
+        "category": "other",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-089",
+      "text": "تبرعت بمية جنيه",
+      "tags": ["no_category"],
+      "expected": {
+        "amount": "100.00",
+        "currency": "EGP",
+        "category": "other",
+        "date": "2026-11-16"
+      },
+      "note": "Charity fits no category in the list."
+    },
+    {
+      "id": "ar-090",
+      "text": "خمسين جنيه",
+      "tags": ["no_category"],
+      "expected": {
+        "amount": "50.00",
+        "currency": "EGP",
+        "category": "other",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-091",
+      "text": "اممم دفعت يعني حوالي تلتمية جنيه للدكتور",
+      "tags": ["filler"],
+      "expected": {
+        "amount": "300.00",
+        "currency": "EGP",
+        "category": "health",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-092",
+      "text": "والله صرفت النهاردة ميتين جنيه على الأكل",
+      "tags": ["filler"],
+      "expected": {
+        "amount": "200.00",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-093",
+      "text": "ثلاثمائة جنيه فاتورة الكهرباء",
+      "tags": ["standard_arabic"],
+      "expected": {
+        "amount": "300.00",
+        "currency": "EGP",
+        "category": "bills_utilities",
+        "date": "2026-11-16"
+      },
+      "note": "Standard Arabic spelling, as a recogniser may write it."
+    },
+    {
+      "id": "ar-094",
+      "text": "اشتريت خضروات بمائة وخمسين جنيها",
+      "tags": ["standard_arabic"],
+      "expected": {
+        "amount": "150.00",
+        "currency": "EGP",
+        "category": "groceries",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-095",
+      "text": "أمس دفعت ثلاثين جنيها للتاكسي",
+      "tags": ["standard_arabic", "relative_date"],
+      "expected": {
+        "amount": "30.00",
+        "currency": "EGP",
+        "category": "transport",
+        "date": "2026-11-15"
+      }
+    },
+    {
+      "id": "ar-096",
+      "text": "قبل ثلاثة أيام اشتريت دواء بمائتي جنيه",
+      "tags": ["standard_arabic", "relative_date"],
+      "expected": {
+        "amount": "200.00",
+        "currency": "EGP",
+        "category": "health",
+        "date": "2026-11-13"
+      }
+    },
+    {
+      "id": "ar-097",
+      "text": "اشتريت حاجات من Carrefour بتسعمية جنيه",
+      "tags": ["mixed"],
+      "expected": {
+        "amount": "900.00",
+        "currency": "EGP",
+        "category": "groceries",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-098",
+      "text": "ركبت Uber للمطار بأربعمية جنيه",
+      "tags": ["mixed"],
+      "expected": {
+        "amount": "400.00",
+        "currency": "EGP",
+        "category": "transport",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-099",
+      "text": "طلبت أكل من Talabat بمتين وتمانين جنيه",
+      "tags": ["mixed"],
+      "expected": {
+        "amount": "280.00",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-100",
+      "text": "شربت coffee في الكافيه بخمسة وستين جنيه",
+      "tags": ["mixed"],
+      "expected": {
+        "amount": "65.00",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-101",
+      "text": "دفعت الـ subscription بتاع Netflix مية وتسعين جنيه",
+      "tags": ["mixed"],
+      "expected": {
+        "amount": "190.00",
+        "currency": "EGP",
+        "category": "entertainment",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-102",
+      "text": "اشتريت charger للـ laptop بستمية جنيه",
+      "tags": ["mixed"],
+      "expected": {
+        "amount": "600.00",
+        "currency": "EGP",
+        "category": "shopping",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-103",
+      "text": "دفعت الـ internet bill أربعمية وخمسين جنيه",
+      "tags": ["mixed"],
+      "expected": {
+        "amount": "450.00",
+        "currency": "EGP",
+        "category": "bills_utilities",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-104",
+      "text": "Careem امبارح بخمسة وسبعين جنيه",
+      "tags": ["mixed", "relative_date"],
+      "expected": {
+        "amount": "75.00",
+        "currency": "EGP",
+        "category": "transport",
+        "date": "2026-11-15"
+      }
+    },
+    {
+      "id": "ar-105",
+      "text": "دفعت الـ course fees تلات تلاف جنيه",
+      "tags": ["mixed"],
+      "expected": {
+        "amount": "3000.00",
+        "currency": "EGP",
+        "category": "education",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-106",
+      "text": "جبت dinner من McDonald's بتلتمية وعشرين جنيه",
+      "tags": ["mixed"],
+      "expected": {
+        "amount": "320.00",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-107",
+      "text": "صرفت في الـ mall حوالي ألفين جنيه",
+      "tags": ["mixed", "filler"],
+      "expected": {
+        "amount": "2000.00",
+        "currency": "EGP",
+        "category": "shopping",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-108",
+      "text": "اشتريت vitamins من الصيدلية بمتين وخمسين جنيه",
+      "tags": ["mixed"],
+      "expected": {
+        "amount": "250.00",
+        "currency": "EGP",
+        "category": "health",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-109",
+      "text": "دفعت الـ rent بتاع الشقة خمستلاف جنيه",
+      "tags": ["mixed"],
+      "expected": {
+        "amount": "5000.00",
+        "currency": "EGP",
+        "category": "housing",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-110",
+      "text": "حجزت تذكرتين cinema بتلتمية جنيه",
+      "tags": ["mixed", "quantity"],
+      "expected": {
+        "amount": "300.00",
+        "currency": "EGP",
+        "category": "entertainment",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-111",
+      "text": "شحنت رصيد Vodafone بمية جنيه",
+      "tags": ["mixed"],
+      "expected": {
+        "amount": "100.00",
+        "currency": "EGP",
+        "category": "bills_utilities",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-112",
+      "text": "أول امبارح جبت groceries من Spinneys بألف ومية جنيه",
+      "tags": ["mixed", "relative_date"],
+      "expected": {
+        "amount": "1100.00",
+        "currency": "EGP",
+        "category": "groceries",
+        "date": "2026-11-14"
+      }
+    },
+    {
+      "id": "ar-113",
+      "text": "اتغديت burger بمية وخمسة وتمانين جنيه ونص",
+      "tags": ["mixed", "piastres_or_fraction"],
+      "expected": {
+        "amount": "185.50",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-114",
+      "text": "دفعت الـ gas bill خمسة وتمانين جنيه وربع",
+      "tags": ["mixed", "piastres_or_fraction"],
+      "expected": {
+        "amount": "85.25",
+        "currency": "EGP",
+        "category": "bills_utilities",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-115",
+      "text": "دفعت 20 dollars للـ online course",
+      "tags": ["mixed", "foreign_currency", "digits"],
+      "expected": {
+        "amount": "20.00",
+        "currency": "USD",
+        "category": "education",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-116",
+      "text": "ركبت taxi من تلات أيام بخمسين جنيه",
+      "tags": ["mixed", "relative_date"],
+      "expected": {
+        "amount": "50.00",
+        "currency": "EGP",
+        "category": "transport",
+        "date": "2026-11-13"
+      }
+    },
+    {
+      "id": "ar-117",
+      "text": "اشتريت hoodie من Amazon بتمنمية وخمسين جنيه",
+      "tags": ["mixed"],
+      "expected": {
+        "amount": "850.00",
+        "currency": "EGP",
+        "category": "shopping",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-118",
+      "text": "الـ check up عند الدكتور كلفني خمسمية جنيه",
+      "tags": ["mixed"],
+      "expected": {
+        "amount": "500.00",
+        "currency": "EGP",
+        "category": "health",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-119",
+      "text": "دفعت parking بعشرين جنيه",
+      "tags": ["mixed"],
+      "expected": {
+        "amount": "20.00",
+        "currency": "EGP",
+        "category": "transport",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-120",
+      "text": "حضرت concert يوم الخميس اللي فات بستمية جنيه",
+      "tags": ["mixed", "relative_date"],
+      "expected": {
+        "amount": "600.00",
+        "currency": "EGP",
+        "category": "entertainment",
+        "date": "2026-11-12"
+      }
+    },
+    {
+      "id": "ar-121",
+      "text": "يعني صرفت تقريبا 150 جنيه على breakfast",
+      "tags": ["mixed", "digits", "filler"],
+      "expected": {
+        "amount": "150.00",
+        "currency": "EGP",
+        "category": "food_drink",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-122",
+      "text": "اشتريت notebook وأقلام للمدرسة بخمسة وتسعين جنيه",
+      "tags": ["mixed"],
+      "expected": {
+        "amount": "95.00",
+        "currency": "EGP",
+        "category": "education",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-123",
+      "text": "دفعت الـ maintenance بتاع العمارة تلتمية جنيه",
+      "tags": ["mixed"],
+      "expected": {
+        "amount": "300.00",
+        "currency": "EGP",
+        "category": "housing",
+        "date": "2026-11-16"
+      },
+      "note": "Building service charge is treated as housing."
+    },
+    {
+      "id": "ar-124",
+      "text": "ركبت المترو وبعدين Uber والاتنين بمية جنيه",
+      "tags": ["mixed", "multiple_numbers"],
+      "expected": {
+        "amount": "100.00",
+        "currency": "EGP",
+        "category": "transport",
+        "date": "2026-11-16"
+      },
+      "note": "الاتنين means both rides, total 100."
+    },
+    {
+      "id": "ar-125",
+      "text": "الـ delivery جاب حاجات البقالة بأربعمية جنيه",
+      "tags": ["mixed"],
+      "expected": {
+        "amount": "400.00",
+        "currency": "EGP",
+        "category": "groceries",
+        "date": "2026-11-16"
+      }
+    },
+    {
+      "id": "ar-126",
+      "text": "دفعت fifty pounds للتاكسي",
+      "tags": ["mixed"],
+      "expected": {
+        "amount": "50.00",
+        "currency": "EGP",
+        "category": "transport",
+        "date": "2026-11-16"
+      },
+      "note": "English amount inside Arabic speech."
+    }
+  ],
+  "dropped": [
+    {
+      "text": "جبت عيش وفول بعشرين جنيه الصبح",
+      "reason": "Category unclear: groceries (bread and beans for home) or food and drink (breakfast)."
+    },
+    {
+      "text": "اديت البواب مية جنيه",
+      "reason": "Category unclear: a payment to the doorman could be housing or other."
+    },
+    {
+      "text": "صرفت تلاتين ألف جنيه على الفرح",
+      "reason": "Category unclear: a wedding could be entertainment or other."
+    },
+    {
+      "text": "دفعت اشتراك الجيم سبعمية جنيه",
+      "reason": "Category unclear: a gym could be health or entertainment."
+    },
+    {
+      "text": "اشتريت مية معدنية بعشرة جنيه ونص",
+      "reason": "Category unclear: bottled water could be groceries or food and drink."
+    },
+    {
+      "text": "اشتريت هدية لصاحبي بأربعمية جنيه",
+      "reason": "Category unclear: a gift could be shopping or other."
+    },
+    {
+      "text": "دفعت للكهربائي تلتمية جنيه عشان يصلح النور في الشقة",
+      "reason": "Category unclear: an electrician at home could be housing or bills and utilities."
+    },
+    {
+      "text": "دفعت خمسين للأكل وعشرين للتاكسي",
+      "reason": "Two expenses in one utterance (out of scope, vision A-12): no single correct amount or category."
+    }
+  ]
+}
