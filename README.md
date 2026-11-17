@@ -33,7 +33,8 @@ Run all of them before opening a pull request; the pipeline runs the same comman
 apps/        applications (web, android, api), added by later tasks
 packages/    shared packages
   core/      pure TypeScript used by the web app and the API: the category and currency
-             lists, digit conversion, and money conversion to and from minor units
+             lists, digit conversion, money conversion to and from minor units, and the
+             utterance parser (src/parser; its word lists are in src/parser/lexicon)
 docs/        vision, requirements, architecture, plan and decision records
 .github/     pipeline and pull-request template
 ```
