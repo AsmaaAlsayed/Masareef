@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Pull-request pipeline with secret scanning, static analysis and dependency audits that fail the build (T-001, NFR-020).
 - Renovate configuration for weekly grouped updates and immediate security updates (T-001).
 - `packages/core`: the ten bilingual categories, the seven currencies with their decimal places and display symbols, Arabic-Indic and Eastern Arabic to Western digit conversion, and exact conversion between decimal strings and integer minor units (T-002, FR-014, FR-015, FR-022).
+- Utterance parser, first part: transcript normalisation and the number grammar for Egyptian and Standard Arabic and English number words, digits in either script, halves, quarters and piastres, giving exact amounts (T-003, FR-025, NFR-002).
 
 ### Removed
 
