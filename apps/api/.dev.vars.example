@@ -1,0 +1,5 @@
+# Copy to .dev.vars for `npm run dev --workspace @masareef/api`. Placeholders only.
+# The D1 binding DB comes from wrangler.jsonc and is a local database.
+
+# Identifies the running build in logs; the commit SHA once deployed.
+RELEASE=local-development

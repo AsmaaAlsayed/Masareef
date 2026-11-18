@@ -1,0 +1,23 @@
+{
+  "name": "@masareef/api",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Masareef API: a Hono application on Cloudflare Workers with a D1 database",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "db:generate": "drizzle-kit generate",
+    "test:integration": "vitest run --coverage"
+  },
+  "dependencies": {
+    "drizzle-orm": "0.45.4",
+    "hono": "4.13.19"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-plugin": "1.8.5",
+    "@cloudflare/workers-types": "5.20261118.1",
+    "@vitest/coverage-istanbul": "4.1.12",
+    "drizzle-kit": "0.31.11",
+    "wrangler": "4.165.0"
+  }
+}

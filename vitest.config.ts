@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitest/config';
+import { configDefaults, defineConfig } from 'vitest/config';
 
 export default defineConfig({
   resolve: {
@@ -13,10 +13,13 @@ export default defineConfig({
       'poc/*/src/**/*.test.ts',
       'scripts/**/*.test.js',
     ],
+    // apps/api runs in the Workers runtime with its own configuration, coverage provider and
+    // 80% threshold: `npm run test:integration` (see apps/api/vitest.config.ts).
+    exclude: [...configDefaults.exclude, 'apps/api/**'],
     coverage: {
       provider: 'v8',
       include: ['packages/*/src/**/*.ts', 'apps/*/src/**/*.{ts,tsx}', 'poc/*/src/**/*.ts'],
-      exclude: ['**/*.test.{ts,tsx}', '**/*.d.ts'],
+      exclude: ['**/*.test.{ts,tsx}', '**/*.d.ts', 'apps/api/**'],
       reporter: ['text', 'json-summary', 'lcov'],
       reportsDirectory: 'coverage',
       thresholds: {
