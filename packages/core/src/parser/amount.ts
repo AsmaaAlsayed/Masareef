@@ -3,9 +3,11 @@ import {
   CONJUNCTION_WORDS,
   FRACTION_WORDS,
   INDEFINITE_ARTICLE,
+  COMMON_PIASTRE_COUNTS,
   LESS_WORD,
   PIASTRE_WORDS,
   SCALE_WORDS,
+  SINGULAR_POUND_WORDS,
 } from './lexicon/numbers.js';
 import { CURRENCY_VOCABULARY, UNIT_WORDS } from './lexicon/currencies.js';
 import { DATE_AND_NUMBER_VOCABULARY, findDates } from './dates.js';
@@ -16,13 +18,15 @@ import { readNumber, type NumberSpan } from './numbers.js';
  * An amount found in a token list. `amount` is exact decimal text in major units ("50",
  * "5.5", "0.75") as `toMinor` reads it; it is never rounded or clamped, because limits and
  * precision are checked by the form on Save (FR-025 criterion 8). `impliedCurrency` is EGP
- * when the amount was said in piastres. `end` is exclusive.
+ * when the amount was said in piastres. `needsConfirmation` is true when the amount rests on
+ * an inference the user should check. `end` is exclusive.
  */
 export interface AmountMatch {
   readonly amount: string;
   readonly start: number;
   readonly end: number;
   readonly impliedCurrency?: 'EGP';
+  readonly needsConfirmation?: true;
 }
 
 /** A range of tokens, such as a date expression, that no amount may use; `end` is exclusive. */
@@ -35,6 +39,7 @@ interface Piece {
   readonly value: Decimal;
   readonly end: number;
   readonly piastres: boolean;
+  readonly needsConfirmation?: true;
 }
 
 /** The vocabulary the convenience functions normalise with, so token positions agree. */
@@ -97,16 +102,59 @@ function readPiastres(tokens: readonly string[], index: number): Piece | undefin
 }
 
 /**
- * What may follow a currency word: a fraction ("دولار ونص"), and after pounds only, piastres
- * with or without a conjunction.
+ * Piastres with no word for them, right after a pound word ("خمسة جنيه وخمسين", "three pounds
+ * fifty", PQ-07): a whole number from 1 to 99, with at most "و"/"and" before it.
+ *
+ * The same words can start a second expense ("خمسين جنيه وعشرين تاكسي"), so what comes next
+ * decides. Nothing more in the utterance: piastres. Another number or currency word: never.
+ * Other words: piastres only for 25, 50 and 75, the amounts people say this way, and flagged
+ * for the user to confirm; any other number stays a separate amount (FR-025 criterion 7).
  */
-function readUnitTail(tokens: readonly string[], index: number, pound: boolean): Piece | undefined {
+function readBarePiastres(
+  tokens: readonly string[],
+  index: number,
+  conjunctionRequired: boolean,
+): Piece | undefined {
+  const at = afterConjunction(tokens, index, conjunctionRequired);
+  const number = at === undefined ? undefined : readNumber(tokens, at);
+  if (number === undefined || number.value.places !== 0) {
+    return undefined;
+  }
+  const { units } = number.value;
+  if (units < 1n || units > 99n) {
+    return undefined;
+  }
+  const piece: Piece = { value: hundredths(number.value), end: number.end, piastres: false };
+  const next = tokens[number.end];
+  if (next === undefined) {
+    return piece;
+  }
+  const startsAnotherAmount =
+    readNumber(tokens, number.end) !== undefined || lookup(UNIT_WORDS, next) !== undefined;
+  return !startsAnotherAmount && COMMON_PIASTRE_COUNTS.has(units)
+    ? { ...piece, needsConfirmation: true }
+    : undefined;
+}
+
+/**
+ * What may follow a currency word: a fraction ("دولار ونص"), and after pounds only, piastres
+ * with or without their word. `barePiastres` says whether piastres with no word may follow.
+ */
+function readUnitTail(
+  tokens: readonly string[],
+  index: number,
+  pound: boolean,
+  barePiastres: 'any' | 'after-conjunction' | 'none' = 'any',
+): Piece | undefined {
   const fraction = readAnyFraction(tokens, index);
   if (fraction !== undefined || !pound) {
     return fraction;
   }
   const at = afterConjunction(tokens, index, false) ?? index;
-  return readPiastres(tokens, at);
+  const piastres = readPiastres(tokens, at);
+  return piastres !== undefined || barePiastres === 'none'
+    ? piastres
+    : readBarePiastres(tokens, index, barePiastres === 'after-conjunction');
 }
 
 /** Joins a tail to its head. A tail that would take the amount to zero or below is ignored. */
@@ -115,9 +163,11 @@ function withTail(head: Piece, tail: Piece | undefined): Piece {
     return head;
   }
   const value = add(head.value, tail.value);
-  return value.units <= 0n
-    ? head
-    : { value, end: tail.end, piastres: head.piastres || tail.piastres };
+  if (value.units <= 0n) {
+    return head;
+  }
+  const joined: Piece = { value, end: tail.end, piastres: head.piastres || tail.piastres };
+  return tail.needsConfirmation ? { ...joined, needsConfirmation: true } : joined;
 }
 
 /** A fraction after a number: of its thousand ("ألف ونص"), or of one, then maybe a scale word. */
@@ -175,7 +225,9 @@ function readUnitWordAmount(tokens: readonly string[], start: number): Piece | u
     return undefined;
   }
   const head: Piece = { value: decimal(unit.count), end: start + 1, piastres: false };
-  const tail = readUnitTail(tokens, head.end, unit.pound);
+  // "pounds 50" and "pounds and 20" name the currency; they do not say one pound.
+  const barePiastres = SINGULAR_POUND_WORDS.has(tokens[start] ?? '') ? 'after-conjunction' : 'none';
+  const tail = readUnitTail(tokens, head.end, unit.pound, barePiastres);
   // A lone "جنيه", "pounds" or "دولار" is not an amount; the dual "جنيهين" is.
   return tail === undefined && unit.count === 1 ? undefined : withTail(head, tail);
 }
@@ -211,9 +263,12 @@ function findAmountsBetween(tokens: readonly string[], from: number, to: number)
     }
     const amount = toDecimalString(found.value);
     const span = { start: from + start, end: from + found.end };
-    amounts.push(
-      found.piastres ? { amount, ...span, impliedCurrency: 'EGP' } : { amount, ...span },
-    );
+    amounts.push({
+      amount,
+      ...span,
+      ...(found.piastres ? { impliedCurrency: 'EGP' as const } : {}),
+      ...(found.needsConfirmation ? { needsConfirmation: true as const } : {}),
+    });
     start = found.end;
   }
   return amounts;

@@ -398,3 +398,28 @@ describe('parseAmount keeps its T-003 meaning with the new unit words', () => {
     expect(parseAmount('dollars')).toBeUndefined();
   });
 });
+
+describe('pounds then a bare number (T-007a, PQ-07, PQ-09)', () => {
+  it('piastres_at_the_end_of_the_utterance_are_not_flagged', () => {
+    expect(money('خمسة جنيه وخمسين')).toEqual(clean('5.5', 'EGP'));
+    expect(money('three pounds fifty', 'USD')).toEqual(clean('3.5', 'EGP'));
+  });
+
+  it('piastres_with_words_after_them_are_flagged', () => {
+    expect(money('خمسة جنيه وخمسين عيش فينو')).toEqual({
+      amount: '5.5',
+      currency: 'EGP',
+      attention: { amount: true, currency: false },
+    });
+  });
+
+  it('a_second_expense_stays_two_amounts_the_first_used_and_flagged', () => {
+    for (const text of ['خمسين جنيه وعشرين تاكسي', '50 pounds 20 taxi']) {
+      expect(money(text), text).toEqual({
+        amount: '50',
+        currency: 'EGP',
+        attention: { amount: true, currency: false },
+      });
+    }
+  });
+});

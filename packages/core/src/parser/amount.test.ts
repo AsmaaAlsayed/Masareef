@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { findAmounts, fromMinor, normalize, parseAmount, toMinor } from '../index.js';
+import { AMOUNT_VOCABULARY } from './amount.js';
 
 /**
  * The amount as the review screen would show it in EGP ("50.00"), computed through the T-002
@@ -258,5 +259,72 @@ describe('fractions of the number or of its thousands (T-007a, PQ-07)', () => {
     // The pound word comes between: the fraction is of a pound, as FR-025 c2 reads it.
     expect(egp('ألف جنيه ونص')).toBe('1000.50');
     expect(egp('مية ونص')).toBe('100.50');
+  });
+});
+
+describe('pounds then a bare number: colloquial piastres (T-007a, PQ-07)', () => {
+  it('a_number_from_1_to_99_ending_the_utterance_is_piastres', () => {
+    expect(egp('خمسة جنيه وخمسين')).toBe('5.50');
+    expect(egp('three pounds fifty')).toBe('3.50');
+    expect(egp('12 pounds 50')).toBe('12.50');
+    expect(egp('eighty five pounds fifty')).toBe('85.50');
+    expect(egp('خمسة جنيه وخمسة وسبعين')).toBe('5.75');
+    expect(egp('five pounds and five')).toBe('5.05');
+    expect(egp('5 pounds 99')).toBe('5.99');
+    expect(parseAmount('three pounds fifty')?.needsConfirmation).toBeUndefined();
+  });
+
+  it('after_a_pound_word_with_no_number_it_needs_and', () => {
+    expect(egp('جنيه وخمسين')).toBe('1.50');
+    expect(egp('جنيهين وخمسين')).toBe('2.50');
+    expect(egp('pound and fifty')).toBe('1.50');
+    // "pounds 50" names the currency first; it is fifty pounds, not 1.50.
+    expect(egp('pounds 50')).toBe('50.00');
+    expect(egp('جنيه 50')).toBe('50.00');
+    expect(egp('pounds and 20')).toBe('20.00');
+  });
+
+  it('a_date_after_the_number_counts_as_the_end_of_the_utterance', () => {
+    expect(egp('خمسة جنيه وعشرين امبارح')).toBe('5.20');
+  });
+
+  it('out_of_range_or_fractional_numbers_are_separate_amounts', () => {
+    const amounts = (text: string) =>
+      findAmounts(normalize(text, AMOUNT_VOCABULARY)).map(({ amount }) => amount);
+    expect(amounts('5 pounds 100')).toEqual(['5', '100']);
+    expect(amounts('5 pounds 0')).toEqual(['5', '0']);
+    expect(amounts('5 pounds 2.5')).toEqual(['5', '2.5']);
+    expect(amounts('5 pounds 50 20')).toEqual(['5', '50', '20']);
+    expect(amounts('خمسين جنيه وعشرين جنيه')).toEqual(['50', '20']);
+    expect(amounts('50 pounds 20 dollars')).toEqual(['50', '20']);
+    // Only pounds have piastres.
+    expect(amounts('five dollars fifty')).toEqual(['5', '50']);
+  });
+
+  it('with_words_after_it_only_25_50_or_75_are_piastres_and_the_amount_is_flagged', () => {
+    for (const [text, amount] of [
+      ['خمسة جنيه وخمسين عيش فينو', '5.5'],
+      ['12 pounds 50 for a sandwich', '12.5'],
+      ['three pounds seventy five for tea', '3.75'],
+      ['ten pounds 25 taxi', '10.25'],
+    ] as const) {
+      const [match, ...rest] = findAmounts(normalize(text, AMOUNT_VOCABULARY));
+      expect(match?.amount, text).toBe(amount);
+      expect(match?.needsConfirmation, text).toBe(true);
+      expect(rest, text).toEqual([]);
+    }
+  });
+
+  it('any_other_number_with_words_after_it_suggests_a_second_expense', () => {
+    for (const text of [
+      'خمسين جنيه وعشرين تاكسي',
+      '50 pounds 20 taxi',
+      '50 pounds and 20 for taxi',
+    ]) {
+      expect(
+        findAmounts(normalize(text, AMOUNT_VOCABULARY)).map(({ amount }) => amount),
+        text,
+      ).toEqual(['50', '20']);
+    }
   });
 });

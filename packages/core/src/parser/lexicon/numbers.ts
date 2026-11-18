@@ -245,6 +245,15 @@ export const POUND_WORDS: Readonly<Record<string, number>> = Object.freeze({
   pounds: 1,
 });
 
+/** Pound words that say one pound on their own; a plural such as "pounds" does not. */
+export const SINGULAR_POUND_WORDS: ReadonlySet<string> = new Set(['جنيه', 'جنيهين', 'pound']);
+
+/**
+ * Piastres people say with no word for them ("خمسة جنيه وخمسين"). When more words follow, only
+ * these are read as piastres; any other number more likely starts a second expense.
+ */
+export const COMMON_PIASTRE_COUNTS: ReadonlySet<bigint> = new Set([25n, 50n, 75n]);
+
 /** Words for the piastre, a hundredth of an Egyptian pound. Piastres imply EGP (FR-025 c3). */
 export const PIASTRE_WORDS: Readonly<Record<string, number>> = Object.freeze({
   قرش: 1,

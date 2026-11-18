@@ -91,7 +91,8 @@ function single(codes: ReadonlySet<CurrencyCode | undefined>): CurrencyCode | un
  * `findAmounts` and `findCurrencies` on the same tokens.
  *
  * Amount: the first amount with a currency word bound to it; otherwise the first amount.
- * Flagged when there is no amount or more than one (FR-025 criteria 6 and 7).
+ * Flagged when there is no amount or more than one (FR-025 criteria 6 and 7), or when the
+ * chosen amount rests on an inference (`needsConfirmation`).
  *
  * Currency: the currency word bound to the chosen amount, unflagged (FR-028 criteria 2 and
  * 3). A word for a currency outside the list, or two words that disagree, give the default,
@@ -110,24 +111,25 @@ export function resolveMoney(
   if (!isCurrencyCode(defaultCurrency)) {
     throw new RangeError(`defaultCurrency must be a supported currency code`);
   }
-  const amountAttention = amounts.length !== 1;
   const bound = amounts
     .map((amount) => ({ amount, codes: currenciesOf(amount, currencies) }))
     .find(({ codes }) => codes.size > 0);
+  const amountAttention = (chosen: AmountMatch | undefined) =>
+    amounts.length !== 1 || chosen?.needsConfirmation === true;
   if (bound !== undefined) {
     const code = single(bound.codes);
     return {
       amount: bound.amount.amount,
       currency: code ?? defaultCurrency,
-      attention: { amount: amountAttention, currency: code === undefined },
+      attention: { amount: amountAttention(bound.amount), currency: code === undefined },
     };
   }
   const elsewhere = new Set(currencies.map(({ currency }) => currency));
+  const [first] = amounts;
   const result = {
     currency: single(elsewhere) ?? defaultCurrency,
-    attention: { amount: amountAttention, currency: elsewhere.size > 0 },
+    attention: { amount: amountAttention(first), currency: elsewhere.size > 0 },
   };
-  const [first] = amounts;
   return first === undefined ? result : { amount: first.amount, ...result };
 }
 
