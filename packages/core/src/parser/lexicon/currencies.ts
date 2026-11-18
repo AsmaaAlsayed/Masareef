@@ -10,9 +10,11 @@
  * - "ريال"/"riyal"/"rial" with no qualifier is SAR (FR-028 criterion 3), although Qatar, Oman
  *   and Yemen also use riyals and older Egyptian speech uses "ريال" for 20 piastres.
  * - "دينار"/"dinar" with no qualifier is KWD (criterion 3), although several countries use it.
- * - "bucks", "quid", "باوند" and currency symbols are not listed: "bucks" is informal US usage
- *   that the requirements do not name, "باوند" is also a unit of weight, and the recogniser
- *   writes words, not symbols.
+ * - "bucks", "quid" and "باوند" are not listed: "bucks" is informal US usage that the
+ *   requirements do not name, and "باوند" is also a unit of weight.
+ * - "£" alone is EGP, flagged. FR-028 makes unqualified pounds EGP, and a recogniser may write
+ *   "£" for a spoken "pounds", but the sign is also sterling's, so the user is asked to check.
+ *   "E£" is EGP without a flag.
  * - Cents, fils and halalas are not amounts here; only piastres are (FR-025 criterion 3).
  */
 import type { CurrencyCode } from '../../currencies.js';
@@ -184,11 +186,26 @@ const CODE_WORDS: Readonly<Record<string, CurrencyCode>> = Object.freeze({
   kwd: 'KWD',
 });
 
-/** A currency phrase: its tokens and the currency it names, or null when outside the list. */
+/**
+ * A currency phrase: its tokens and the currency it names, or null when outside the list.
+ * `symbol` marks a sign, which may come before the number; `ambiguous` marks one that could
+ * mean another currency, so the result is flagged.
+ */
 export interface CurrencyPhrase {
   readonly words: readonly string[];
   readonly currency: CurrencyCode | null;
+  readonly symbol?: true;
+  readonly ambiguous?: true;
 }
+
+/** Currency signs as `normalize` leaves them; "\u20C1" stands for both riyal signs. */
+const SYMBOL_PHRASES: readonly CurrencyPhrase[] = [
+  { words: ['$'], currency: 'USD', symbol: true },
+  { words: ['€'], currency: 'EUR', symbol: true },
+  { words: ['e£'], currency: 'EGP', symbol: true },
+  { words: ['£'], currency: 'EGP', symbol: true, ambiguous: true },
+  { words: ['\u20C1'], currency: 'SAR', symbol: true },
+];
 
 /** Every currency phrase, built from the lists above. Matching takes the longest first. */
 export const CURRENCY_PHRASES: readonly CurrencyPhrase[] = Object.freeze([
@@ -207,6 +224,7 @@ export const CURRENCY_PHRASES: readonly CurrencyPhrase[] = Object.freeze([
   ),
   ...UNLISTED_WORDS.map((word) => ({ words: [word], currency: null })),
   ...UNLISTED_PHRASES.map((words) => ({ words, currency: null })),
+  ...SYMBOL_PHRASES,
 ]);
 
 /**

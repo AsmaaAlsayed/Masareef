@@ -20,10 +20,14 @@ const LETTER_FORM_PATTERN = new RegExp(`[${Object.keys(LETTER_FORMS).join('')}]`
 // digits ("1,250,000"); any other comma is punctuation and separates two numbers ("5,5").
 const THOUSANDS_SEPARATOR = /(?<=[0-9]),(?=[0-9]{3}(?![0-9]))/g;
 
-// Digit runs with an optional decimal fraction, Latin words, Arabic words. Everything else
-// (punctuation, symbols, spaces) separates tokens and is dropped.
+// NFKC would spell the old riyal sign out as letters; it is read as the current sign instead.
+const OLD_RIYAL_SIGN = /\uFDFC/g;
+const RIYAL_SIGN = '\u20C1';
+
+// Currency symbols, digit runs with an optional decimal fraction, Latin words, Arabic words.
+// Everything else (punctuation, other symbols, spaces) separates tokens and is dropped.
 const TOKEN =
-  /[0-9]+(?:\.[0-9]+)?|(?:(?=\p{Script=Latin})\p{L})+|(?:(?=\p{Script=Arabic})\p{L})+/gu;
+  /e£|[$€£\u20C1]|[0-9]+(?:\.[0-9]+)?|(?:(?=\p{Script=Latin})\p{L})+|(?:(?=\p{Script=Arabic})\p{L})+/gu;
 
 const ARTICLE = 'ال';
 // Particles written attached to the next word: and, with/for, so, to, like.
@@ -86,8 +90,9 @@ function splitParticles(
 /**
  * Normalises a transcript and splits it into tokens (ADR 0003 step 1): Unicode NFKC;
  * diacritics and tatweel removed; Arabic-Indic and Eastern Arabic digits made Western; alef,
- * ya and ta marbuta forms unified; Latin lower-cased; punctuation stripped; digits split from
- * letters and Arabic from Latin; attached particles split off; the definite article dropped.
+ * ya and ta marbuta forms unified; Latin lower-cased; punctuation stripped; currency symbols
+ * kept as tokens; digits split from letters and Arabic from Latin; attached particles split off;
+ * the definite article dropped.
  *
  * `vocabulary` lists the words the caller recognises; particles are split only from those.
  * It defaults to the number vocabulary; later lexicons pass a union that includes it.
@@ -96,7 +101,9 @@ export function normalize(
   text: string,
   vocabulary: ReadonlySet<string> = NUMBER_VOCABULARY,
 ): string[] {
-  const cleaned = toWesternDigits(text.normalize('NFKC').replace(DIACRITICS_AND_TATWEEL, ''))
+  const cleaned = toWesternDigits(
+    text.replace(OLD_RIYAL_SIGN, RIYAL_SIGN).normalize('NFKC').replace(DIACRITICS_AND_TATWEEL, ''),
+  )
     .replace(LETTER_FORM_PATTERN, (letter) => LETTER_FORMS[letter] ?? letter)
     .toLowerCase()
     .replace(/٫/g, '.')

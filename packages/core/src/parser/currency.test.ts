@@ -558,3 +558,65 @@ describe('water after a bill or another utility is not a hundred (T-007a, PQ-10)
     expect(money('تاكسي ومية')).toEqual(clean('100', DEFAULT));
   });
 });
+
+describe('currency symbols (T-007a, FR-028)', () => {
+  it('a_symbol_before_or_after_the_number_names_its_currency', () => {
+    const cases: [string, string, CurrencyCode][] = [
+      ['lunch for $15', '15', 'USD'],
+      ['15$ lunch', '15', 'USD'],
+      ['$ 15', '15', 'USD'],
+      ['＄15', '15', 'USD'],
+      ['paid €40 for a ticket', '40', 'EUR'],
+      ['40€', '40', 'EUR'],
+      ['$1,200.50', '1200.5', 'USD'],
+      ['E£50', '50', 'EGP'],
+      ['e£ 50', '50', 'EGP'],
+      ['﷼50', '50', 'SAR'],
+      ['50 ﷼', '50', 'SAR'],
+      ['⃁50', '50', 'SAR'],
+    ];
+    for (const [text, amount, code] of cases) {
+      expect(money(text, 'KWD'), text).toEqual(clean(amount, code));
+    }
+  });
+
+  it('the_pound_sign_alone_is_EGP_like_the_word_pounds_but_flagged', () => {
+    for (const text of ['£50', '50£', '£ 50', '￡50']) {
+      for (const defaultCurrency of ['USD', 'GBP'] as const) {
+        expect(money(text, defaultCurrency), text).toEqual({
+          amount: '50',
+          currency: 'EGP',
+          attention: { amount: false, currency: true },
+        });
+      }
+    }
+  });
+
+  it('a_word_after_the_number_wins_with_the_symbol_when_they_agree_and_flags_when_not', () => {
+    expect(money('$20 dollars', 'EGP')).toEqual(clean('20', 'USD'));
+    expect(money('$20 euros', 'EGP')).toEqual({
+      amount: '20',
+      currency: 'EGP',
+      attention: { amount: false, currency: true },
+    });
+  });
+
+  it('a_symbol_with_no_number_next_to_it_is_used_but_flagged', () => {
+    expect(money('$ for lunch 20', 'EGP')).toEqual({
+      amount: '20',
+      currency: 'USD',
+      attention: { amount: false, currency: true },
+    });
+  });
+
+  it('a_currency_word_before_the_number_is_still_not_bound_to_it', () => {
+    expect(money('dollars 20', 'EGP').attention.currency).toBe(true);
+  });
+
+  it('findCurrencies_marks_symbols', () => {
+    expect(findCurrencies(normalize('£5 $6'))).toEqual([
+      { start: 0, end: 1, currency: 'EGP', symbol: true, ambiguous: true },
+      { start: 2, end: 3, currency: 'USD', symbol: true },
+    ]);
+  });
+});

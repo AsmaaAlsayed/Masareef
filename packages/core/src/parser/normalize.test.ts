@@ -75,6 +75,18 @@ describe('normalize (ADR 0003 step 1)', () => {
     expect(normalize('الـ')).toEqual([]);
   });
 
+  it('keeps_currency_symbols_as_tokens_of_their_own', () => {
+    expect(normalize('$15')).toEqual(['$', '15']);
+    expect(normalize('40€.')).toEqual(['40', '€']);
+    expect(normalize('E£50 £5')).toEqual(['e£', '50', '£', '5']);
+    expect(normalize('the£5')).toEqual(['the', '£', '5']);
+  });
+
+  it('reads_both_riyal_signs_as_one_symbol', () => {
+    expect(normalize('﷼50')).toEqual(['\u20C1', '50']);
+    expect(normalize('\u20C150')).toEqual(['\u20C1', '50']);
+  });
+
   it('accepts_a_vocabulary_so_later_lexicons_can_protect_and_split_their_words', () => {
     const vocabulary = new Set(['تاكسي']);
     expect(normalize('والتاكسي', vocabulary)).toEqual(['و', 'تاكسي']);
