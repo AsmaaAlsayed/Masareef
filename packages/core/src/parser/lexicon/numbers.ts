@@ -266,8 +266,8 @@ export const PIASTRE_WORDS: Readonly<Record<string, number>> = Object.freeze({
 });
 
 /**
- * Units and periods that a number counts, so that number is a quantity and not the price
- * ("two kilos of oranges for fifty", "3 months of internet, 750").
+ * Units a number counts, so that number is a quantity and not the price ("two kilos of oranges
+ * for fifty").
  */
 export const QUANTITY_UNIT_WORDS: ReadonlySet<string> = new Set([
   'kilo',
@@ -288,14 +288,6 @@ export const QUANTITY_UNIT_WORDS: ReadonlySet<string> = new Set([
   'bottle',
   'bottles',
   'dozen',
-  'day',
-  'days',
-  'week',
-  'weeks',
-  'month',
-  'months',
-  'year',
-  'years',
   'كيلو',
   'كيلوهات',
   'جرام',
@@ -315,6 +307,21 @@ export const QUANTITY_UNIT_WORDS: ReadonlySet<string> = new Set([
   'قزازه',
   'ازايز',
   'دسته',
+]);
+
+/**
+ * Periods a number counts ("3 months of internet, 750"). Only numbers below
+ * `MAX_COUNTED_PERIODS` count them: "تلتمية الشهر ده" is an amount said with "this month".
+ */
+export const QUANTITY_PERIOD_WORDS: ReadonlySet<string> = new Set([
+  'day',
+  'days',
+  'week',
+  'weeks',
+  'month',
+  'months',
+  'year',
+  'years',
   'يوم',
   'ايام',
   'اسبوع',
@@ -326,6 +333,8 @@ export const QUANTITY_UNIT_WORDS: ReadonlySet<string> = new Set([
   'سنين',
   'سنوات',
 ]);
+
+export const MAX_COUNTED_PERIODS = 99n;
 
 /** A word that introduces a count ("عدد 3"). */
 export const COUNT_INTRODUCER = 'عدد';
@@ -369,6 +378,7 @@ export const NUMBER_VOCABULARY: ReadonlySet<string> = new Set([
   ...Object.keys(POUND_WORDS),
   ...Object.keys(PIASTRE_WORDS),
   ...QUANTITY_UNIT_WORDS,
+  ...QUANTITY_PERIOD_WORDS,
   COUNT_INTRODUCER,
   EACH_ONE_ARABIC,
 ]);

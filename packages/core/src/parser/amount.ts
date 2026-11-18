@@ -18,9 +18,11 @@ import {
   EACH_WORD,
   EACH_WORDS_AFTER_PRICE,
   LESS_WORD,
+  MAX_COUNTED_PERIODS,
   ONE_WORDS,
   PIASTRE_WORDS,
   PRICE_MARKERS,
+  QUANTITY_PERIOD_WORDS,
   QUANTITY_UNIT_WORDS,
   SCALE_WORDS,
   SINGULAR_POUND_WORDS,
@@ -60,6 +62,8 @@ interface Piece {
   readonly end: number;
   readonly piastres: boolean;
   readonly needsConfirmation?: true;
+  /** Piastres said with no word for them. */
+  readonly barePiastres?: true;
 }
 
 /** The vocabulary the convenience functions normalise with, so token positions agree. */
@@ -128,7 +132,8 @@ function readPiastres(tokens: readonly string[], index: number): Piece | undefin
  * The same words can start a second expense ("خمسين جنيه وعشرين تاكسي"), so what comes next
  * decides. Nothing more in the utterance: piastres. Another number or currency word: never.
  * Other words: piastres only for 25, 50 and 75, the amounts people say this way, and flagged
- * for the user to confirm; any other number stays a separate amount (FR-025 criterion 7).
+ * for the user to confirm; any other number stays a separate amount (FR-025 criterion 7). After
+ * 100 pounds or more the reading is flagged too (`withTail`): "خمسمية جنيه وخمسين" may mean 550.
  */
 function readBarePiastres(
   tokens: readonly string[],
@@ -144,7 +149,12 @@ function readBarePiastres(
   if (units < 1n || units > 99n) {
     return undefined;
   }
-  const piece: Piece = { value: hundredths(number.value), end: number.end, piastres: false };
+  const piece: Piece = {
+    value: hundredths(number.value),
+    end: number.end,
+    piastres: false,
+    barePiastres: true,
+  };
   const next = tokens[number.end];
   if (next === undefined) {
     return piece;
@@ -187,7 +197,11 @@ function withTail(head: Piece, tail: Piece | undefined): Piece {
     return head;
   }
   const joined: Piece = { value, end: tail.end, piastres: head.piastres || tail.piastres };
-  return tail.needsConfirmation ? { ...joined, needsConfirmation: true } : joined;
+  const hundredPounds = 100n * 10n ** BigInt(head.value.places);
+  const unsure =
+    tail.needsConfirmation === true ||
+    (tail.barePiastres === true && head.value.units >= hundredPounds);
+  return unsure ? { ...joined, needsConfirmation: true } : joined;
 }
 
 /** A fraction after a number: of its thousand ("ألف ونص"), or of one, then maybe a scale word. */
@@ -423,13 +437,37 @@ function isCountBeforePrice(
   );
 }
 
-function markCounts(tokens: readonly string[], amounts: readonly AmountMatch[]): AmountMatch[] {
+/** True when the word after `amount` is a unit or period that the number counts. */
+function isFollowedByCountedUnit(
+  tokens: readonly string[],
+  amount: AmountMatch,
+  spans: readonly TokenSpan[],
+): boolean {
+  const after = tokens[amount.end];
+  if (
+    after === undefined ||
+    spans.some(({ start, end }) => amount.end >= start && amount.end < end)
+  ) {
+    return false;
+  }
+  return (
+    QUANTITY_UNIT_WORDS.has(after) ||
+    (QUANTITY_PERIOD_WORDS.has(after) &&
+      /^[0-9]+$/.test(amount.amount) &&
+      BigInt(amount.amount) <= MAX_COUNTED_PERIODS)
+  );
+}
+
+function markCounts(
+  tokens: readonly string[],
+  amounts: readonly AmountMatch[],
+  spans: readonly TokenSpan[],
+): AmountMatch[] {
   return amounts.map((amount, index) => {
-    const after = tokens[amount.end];
     const counts =
       amount.needsConfirmation !== true &&
       !hasUnitWord(tokens, amount) &&
-      ((after !== undefined && QUANTITY_UNIT_WORDS.has(after)) ||
+      (isFollowedByCountedUnit(tokens, amount, spans) ||
         tokens[amount.start - 1] === COUNT_INTRODUCER ||
         isCountBeforePrice(tokens, amount, amounts[index + 1]));
     return counts ? { ...amount, isCount: true as const } : amount;
@@ -459,7 +497,7 @@ export function findAmounts(
     from = Math.max(from, span.end);
   }
   amounts.push(...findAmountsBetween(tokens, from, tokens.length));
-  return markCounts(tokens, applyUnitPrice(tokens, amounts));
+  return markCounts(tokens, applyUnitPrice(tokens, amounts), spans);
 }
 
 /**

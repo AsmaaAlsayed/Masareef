@@ -620,3 +620,28 @@ describe('currency symbols (T-007a, FR-028)', () => {
     ]);
   });
 });
+
+describe('inferred amounts stay checkable (T-007a)', () => {
+  it('a_period_word_is_a_quantity_only_after_a_small_number_outside_a_date', () => {
+    expect(money('الكهربا تلتمية الشهر ده')).toEqual(clean('300', DEFAULT));
+    expect(money('electricity 320 month')).toEqual(clean('320', DEFAULT));
+    expect(money('خمسين يوم الجمعة اللي فات')).toEqual(clean('50', DEFAULT));
+    expect(money('3 months')).toEqual(flagged('3'));
+    expect(money('paid 12 months 900')).toEqual(flagged('900'));
+  });
+
+  it('a_measure_is_a_quantity_at_any_size', () => {
+    expect(money('150 kilos for 900')).toEqual(flagged('900'));
+  });
+
+  it('bare_piastres_after_100_pounds_or_more_are_flagged', () => {
+    for (const [text, amount] of [
+      ['خمسمية جنيه وخمسين', '500.5'],
+      ['ألف جنيه وخمسين', '1000.5'],
+      ['100 pounds 20', '100.2'],
+    ] as const) {
+      expect(money(text), text).toEqual(flagged(amount, 'EGP'));
+    }
+    expect(money('99 pounds 20')).toEqual(clean('99.2', 'EGP'));
+  });
+});
