@@ -152,3 +152,52 @@ describe('number grammar: conflicting and partial numbers', () => {
     expect(findNumbers(tokens)).toEqual([{ value: '25', start: 1, end: 4 }]);
   });
 });
+
+describe('number grammar: forms found by the typed-transcript score (T-007a)', () => {
+  it('the_construct_form_ميت_is_a_hundred', () => {
+    expect(numbers('ميت')).toEqual(['100']);
+    expect(numbers('بميت')).toEqual(['100']);
+    expect(numbers('ميت ألف')).toEqual(['100000']);
+    expect(numbers('ميت وخمسين')).toEqual(['150']);
+  });
+
+  it('hundreds_written_with_the_construct_form', () => {
+    expect(numbers('تلتميت')).toEqual(['300']);
+    expect(numbers('خمسميت')).toEqual(['500']);
+    expect(numbers('تسعميت')).toEqual(['900']);
+  });
+
+  it('standard_arabic_construct_duals', () => {
+    expect(numbers('مائتي')).toEqual(['200']);
+    expect(numbers('مئتي')).toEqual(['200']);
+    expect(numbers('بمائتي')).toEqual(['200']);
+    expect(numbers('ألفي')).toEqual(['2000']);
+    expect(numbers('مليوني')).toEqual(['2000000']);
+  });
+
+  it('thousands_fused_to_their_count', () => {
+    const cases: [string, string][] = [
+      ['تلاتلاف', '3000'],
+      ['تلتلاف', '3000'],
+      ['اربعتلاف', '4000'],
+      ['خمستلاف', '5000'],
+      ['خمستالاف', '5000'],
+      ['ستلاف', '6000'],
+      ['سبعتلاف', '7000'],
+      ['تمنتلاف', '8000'],
+      ['تمانتلاف', '8000'],
+      ['تسعتلاف', '9000'],
+      ['عشرتلاف', '10000'],
+    ];
+    for (const [word, value] of cases) {
+      expect(numbers(word), word).toEqual([value]);
+    }
+  });
+
+  it('a_fused_thousand_continues_like_any_thousand_and_takes_no_count_before_it', () => {
+    expect(numbers('خمستلاف وخمسمية')).toEqual(['5500']);
+    expect(numbers('بخمستلاف')).toEqual(['5000']);
+    expect(numbers('اتنين خمستلاف')).toEqual(['2', '5000']);
+    expect(numbers('٣ خمستلاف')).toEqual(['3', '5000']);
+  });
+});

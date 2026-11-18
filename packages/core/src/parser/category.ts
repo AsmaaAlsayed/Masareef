@@ -1,6 +1,6 @@
 import type { CategoryCode } from '../categories.js';
 import { CURRENCY_VOCABULARY } from './lexicon/currencies.js';
-import { CATEGORY_KEYWORDS } from './lexicon/categories.js';
+import { CATEGORY_KEYWORDS, EXACT_ONLY_KEYWORDS, WORDS_NOT_SPLIT } from './lexicon/categories.js';
 import { DATE_VOCABULARY } from './lexicon/dates.js';
 import { NUMBER_VOCABULARY } from './lexicon/numbers.js';
 
@@ -42,9 +42,10 @@ for (const keyword of KEYWORDS) {
 
 const letterCount = (word: string) => (/^\p{L}+$/u.test(word) ? [...word].length : 0);
 
-/** Single-word keywords long enough to be matched fuzzily. */
+/** Single-word keywords long enough to be matched fuzzily, except those kept exact. */
 const FUZZY_KEYWORDS = KEYWORDS.filter(
-  ({ words }) => words.length === 1 && letterCount(words[0] ?? '') >= FUZZY_MIN_LETTERS,
+  ({ words: [word = '', ...rest] }) =>
+    rest.length === 0 && letterCount(word) >= FUZZY_MIN_LETTERS && !EXACT_ONLY_KEYWORDS.has(word),
 );
 
 /** Number, date and currency words are never read as a misspelt category word. */
@@ -56,11 +57,12 @@ const OTHER_STAGE_WORDS: ReadonlySet<string> = new Set([
 
 /**
  * Every word of every category keyword: the vocabulary `normalize` protects and splits
- * particles from ("للتاكسي" -> "ل" + "تاكسي").
+ * particles from ("للتاكسي" -> "ل" + "تاكسي"), and the words it must not split.
  */
-export const CATEGORY_VOCABULARY: ReadonlySet<string> = new Set(
-  KEYWORDS.flatMap(({ words }) => words),
-);
+export const CATEGORY_VOCABULARY: ReadonlySet<string> = new Set([
+  ...KEYWORDS.flatMap(({ words }) => words),
+  ...WORDS_NOT_SPLIT,
+]);
 
 /** True when `a` and `b` differ by at most one insertion, deletion or substitution. */
 function withinOneEdit(a: string, b: string): boolean {
@@ -99,7 +101,7 @@ function fuzzyAt(token: string): Keyword | undefined {
  * overlaps, longest keyword first ("سوبر ماركت" as one match). A token of five or more
  * letters that matches no keyword exactly also matches a keyword of five or more letters at
  * edit distance one, to absorb the recogniser's spelling variation; number, date and currency
- * words are never matched that way. Tokens must come from `normalize` with a vocabulary that
+ * words are never matched that way, and keywords listed as exact-only are never matched so. Tokens must come from `normalize` with a vocabulary that
  * includes `CATEGORY_VOCABULARY`.
  */
 export function findCategories(tokens: readonly string[]): CategoryMatch[] {

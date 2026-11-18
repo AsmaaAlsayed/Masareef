@@ -12,6 +12,7 @@ import {
   resolveCategory,
   UTTERANCE_VOCABULARY,
 } from '../index.js';
+import { EXACT_ONLY_KEYWORDS } from './lexicon/categories.js';
 
 const categoryOf = (text: string) => {
   const tokens = normalize(text, UTTERANCE_VOCABULARY);
@@ -147,5 +148,119 @@ describe('fuzzy matching (ADR 0003 step 6)', () => {
   it('does not fuzzy-match tokens with digits', () => {
     expect(categoryOf('lunch5')).toEqual({ category: 'food_drink', attention: false });
     expect(findCategories(['taxi1'])).toEqual([]);
+  });
+});
+
+describe('keyword families added from the typed-transcript score (T-007a)', () => {
+  const families: [string, string, readonly string[]][] = [
+    [
+      'eating verbs',
+      'food_drink',
+      ['اتغديت برة', 'اتغدينا', 'اتعشيت', 'اتعشينا', 'فطرنا', 'أكلت', 'we ate out', 'dined out'],
+    ],
+    [
+      'prepared food and drinks',
+      'food_drink',
+      ['شاورما', 'كفتة', 'حواوشي', 'سندوتشات', 'koshary', 'shawarma', 'latte', 'cheese sandwich'],
+    ],
+    ['food places', 'food_drink', ['الكافيتريا', 'ستاربكس', 'Starbucks', 'pizza hut', 'canteen']],
+    ['raw food', 'groceries', ['لحمة', 'جبنة', 'رز', 'مكرونة', 'meat', 'cheese', 'rice', 'pasta']],
+    ['vegetables and fruit', 'groceries', ['طماطم', 'برتقان', 'موز', 'tomatoes', 'oranges']],
+    ['coffee to brew', 'groceries', ['بن', 'coffee beans', 'ground coffee']],
+    ['grocery shops', 'groceries', ['الجزار', 'Spinneys', 'butcher', 'سبينيس']],
+    ['parking', 'transport', ['ركنت', 'الركنة', 'السايس', 'parked', 'car park', 'garage']],
+    [
+      'car upkeep',
+      'transport',
+      ['غيرت زيت العربية', 'غسيل العربية', 'oil change', 'car wash', 'mechanic', 'gas station'],
+    ],
+    ['rides', 'transport', ['cab', 'tuk tuk', 'تذكرة القطر', 'طيران', 'flight']],
+    [
+      'phone and credit',
+      'bills_utilities',
+      ['فودافون', 'باقة', 'phone credit', 'top up', 'phone plan', 'landline', 'vodafone'],
+    ],
+    ['internet', 'bills_utilities', ['نت البيت', 'النت', 'بالنت', 'broadband']],
+    ['home services', 'bills_utilities', ['انبوبة', 'زبالة', 'gas cylinder']],
+    [
+      'clothing',
+      'shopping',
+      ['تيشيرت', 'بنطلون', 'جاكت', 'محفظة', 't-shirt', 'jeans', 'coat', 'handbag'],
+    ],
+    [
+      'electronics',
+      'shopping',
+      ['شاحن', 'لابتوب', 'سماعة', 'charger', 'laptop', 'headphones', 'phone case'],
+    ],
+    ['a watch, when bought', 'shopping', ['اشتريت ساعة', 'جبت ساعة', 'ساعة يد', 'a new watch']],
+    ['health', 'health', ['الروشتة', 'فيتامينات', 'prescription', 'eye test', 'eyes tested']],
+    ['outings', 'entertainment', ['الملاهي', 'متحف', 'amusement park', 'museum', 'football']],
+    ['education', 'education', ['المدرس', 'حضانة', 'textbooks', 'nursery', 'cooking class']],
+  ];
+  for (const [family, code, sentences] of families) {
+    it(`${family}_are_${code}`, () => {
+      for (const sentence of sentences) {
+        expect(categoryOf(sentence), sentence).toEqual({ category: code, attention: false });
+      }
+    });
+  }
+
+  it('the_longest_phrase_decides_between_families', () => {
+    expect(categoryOf('coffee beans').category).toBe('groceries');
+    expect(categoryOf('coffee').category).toBe('food_drink');
+    expect(categoryOf('phone case').category).toBe('shopping');
+    expect(categoryOf('phone plan').category).toBe('bills_utilities');
+    expect(categoryOf('gas station').category).toBe('transport');
+    expect(categoryOf('gas cylinder').category).toBe('bills_utilities');
+    expect(categoryOf('metro market').category).toBe('groceries');
+    expect(categoryOf('metro').category).toBe('transport');
+  });
+
+  it('ambiguous_words_stay_out_on_their_own', () => {
+    for (const text of [
+      'phone',
+      'موبايل',
+      'car',
+      'العربية',
+      'oil',
+      'زيت',
+      'ساعة',
+      'في الساعة تمانية',
+      'قطر',
+      'water',
+      'المية',
+      'ticket',
+      'تذكرة',
+      'delivery',
+      'subscription',
+      'gym',
+      'fish',
+      'سمك',
+      'chicken',
+      'فراخ',
+      'tipped the delivery guy',
+    ]) {
+      expect(categoryOf(text), text).toEqual({ category: 'other', attention: true });
+    }
+  });
+
+  it('words_that_look_like_a_particle_before_نت_stay_whole', () => {
+    expect(normalize('كنت', UTTERANCE_VOCABULARY)).toEqual(['كنت']);
+    expect(normalize('بنت', UTTERANCE_VOCABULARY)).toEqual(['بنت']);
+    expect(categoryOf('كنت مع بنت')).toEqual({ category: 'other', attention: true });
+  });
+
+  it('new_keywords_match_exactly_only_so_common_words_near_them_do_not_match', () => {
+    for (const word of ['later', 'charged', 'wants', 'means', 'costs', 'better', 'light']) {
+      expect(categoryOf(word), word).toEqual({ category: 'other', attention: true });
+    }
+    expect(categoryOf('العمارة')).toEqual({ category: 'other', attention: true });
+    for (const word of EXACT_ONLY_KEYWORDS) {
+      expect(Object.values(CATEGORY_KEYWORDS).flat(), word).toContain(word);
+    }
+  });
+
+  it('keywords_from_before_keep_their_fuzzy_match', () => {
+    expect(categoryOf('restaurent')).toEqual({ category: 'food_drink', attention: false });
   });
 });

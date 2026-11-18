@@ -154,7 +154,13 @@ describe('scoreManifest on a three-sentence fixture with one known miss', () => 
 
 describe('scoreManifest with the real parser (parseUtterance from @masareef/core)', () => {
   it('scores the fixture and finds the known miss', () => {
-    const score = scoreManifest(fixture, parseUtterance);
+    // T-007a taught the parser the fixture's miss; "five fifty" for 5.50 is still unsupported.
+    const [first, second] = fixture.utterances as [Utterance, Utterance, Utterance];
+    const stillMissed = utterance('ar-003', 'five fifty', ['no_category'], '5.50');
+    const score = scoreManifest(
+      { ...fixture, utterances: [first, second, stillMissed] },
+      parseUtterance,
+    );
     expect(score.overall.total).toBe(3);
     expect(score.overall.allFields).toBe(2);
     expect(score.misses.map((miss) => miss.id)).toEqual(['ar-003']);
@@ -167,6 +173,12 @@ describe('renderReport', () => {
 
   it('is labelled parser only, not end-to-end speech accuracy', () => {
     expect(report).toContain('Parser only, typed transcripts — not end-to-end speech accuracy');
+  });
+
+  it('says the score is a development score, tuned on the sentences it measures', () => {
+    expect(report).toContain('**Development score.**');
+    expect(report).toContain('tuned on these same sentences');
+    expect(report).toContain('the real-speaker test set (P-14)');
   });
 
   it('states each accuracy with counts and a percentage', () => {

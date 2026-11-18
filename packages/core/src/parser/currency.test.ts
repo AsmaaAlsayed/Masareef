@@ -398,3 +398,250 @@ describe('parseAmount keeps its T-003 meaning with the new unit words', () => {
     expect(parseAmount('dollars')).toBeUndefined();
   });
 });
+
+describe('pounds then a bare number (T-007a, PQ-07, PQ-09)', () => {
+  it('piastres_at_the_end_of_the_utterance_are_not_flagged', () => {
+    expect(money('خمسة جنيه وخمسين')).toEqual(clean('5.5', 'EGP'));
+    expect(money('three pounds fifty', 'USD')).toEqual(clean('3.5', 'EGP'));
+  });
+
+  it('piastres_with_words_after_them_are_flagged', () => {
+    expect(money('خمسة جنيه وخمسين عيش فينو')).toEqual({
+      amount: '5.5',
+      currency: 'EGP',
+      attention: { amount: true, currency: false },
+    });
+  });
+
+  it('a_second_expense_stays_two_amounts_the_first_used_and_flagged', () => {
+    for (const text of ['خمسين جنيه وعشرين تاكسي', '50 pounds 20 taxi']) {
+      expect(money(text), text).toEqual({
+        amount: '50',
+        currency: 'EGP',
+        attention: { amount: true, currency: false },
+      });
+    }
+  });
+});
+
+const flagged = (amount: string, currency: CurrencyCode = DEFAULT) => ({
+  amount,
+  currency,
+  attention: { amount: true, currency: false },
+});
+
+describe('a quantity is not the price (T-007a)', () => {
+  it('a_number_before_a_unit_loses_to_the_remaining_number', () => {
+    expect(money('paid 3 months of internet, 750')).toEqual(flagged('750'));
+    expect(money('two kilos of oranges for fifty')).toEqual(flagged('50'));
+    expect(money('اتنين كيلو برتقان بخمسين')).toEqual(flagged('50'));
+    expect(money('3 شهور نت 750')).toEqual(flagged('750'));
+    expect(money('2 pieces 90')).toEqual(flagged('90'));
+    expect(money('تلات علب بستين')).toEqual(flagged('60'));
+  });
+
+  it('a_number_after_عدد_is_a_count', () => {
+    expect(money('عدد 3 قهوة 90')).toEqual(flagged('90'));
+  });
+
+  it('a_counted_noun_then_a_price_after_for_at_or_ب', () => {
+    expect(money('2 pizzas for 400')).toEqual(flagged('400'));
+    expect(money('three coffees at 60')).toEqual(flagged('60'));
+    expect(money('2 بيتزا ب 400')).toEqual(flagged('400'));
+    expect(money('تلات سندوتشات بستين')).toEqual(flagged('60'));
+  });
+
+  it('two_expenses_joined_by_and_keep_the_first_amount', () => {
+    expect(money('lunch 50 and taxi for 20')).toEqual(flagged('50'));
+    expect(money('50 lunch and taxi for 20')).toEqual(flagged('50'));
+    expect(money('خمسين غدا و تاكسي بعشرين')).toEqual(flagged('50'));
+  });
+
+  it('a_number_right_before_the_marker_is_the_amount_not_a_count', () => {
+    expect(money('50 for lunch at 7')).toEqual(flagged('50'));
+    expect(money('2 for 400')).toEqual(flagged('2'));
+  });
+
+  it('a_fractional_number_is_not_a_count_of_things', () => {
+    expect(money('2.5 lunch for 400')).toEqual(flagged('2.5'));
+  });
+
+  it('a_quantity_that_is_the_only_number_is_kept_but_flagged', () => {
+    expect(money('2 kilos of oranges')).toEqual(flagged('2'));
+  });
+
+  it('the_number_next_to_a_currency_word_still_wins (PQ-09)', () => {
+    expect(money('50 pounds lunch for 20')).toEqual(flagged('50', 'EGP'));
+    expect(money('3 kilos for 45 pounds')).toEqual(flagged('45', 'EGP'));
+  });
+});
+
+describe('count times unit price, only with an explicit signal (T-007a)', () => {
+  it('each_and_per_after_the_price', () => {
+    expect(money('three movie tickets at 200 each')).toEqual(flagged('600'));
+    expect(money('3 tickets 200 apiece')).toEqual(flagged('600'));
+    expect(money('3 months at 250 per month')).toEqual(flagged('750'));
+    expect(money('2 kilos at 40.50 per kilo')).toEqual(flagged('81'));
+  });
+
+  it('each_before_the_price', () => {
+    expect(money('three tickets each 200')).toEqual(flagged('600'));
+    expect(money('three tickets each for 200')).toEqual(flagged('600'));
+    expect(money('three tickets each at 200')).toEqual(flagged('600'));
+  });
+
+  it('كل_واحد_or_واحدة_on_either_side_of_the_price', () => {
+    expect(money('تلات تذاكر كل واحدة بميتين جنيه')).toEqual(flagged('600', 'EGP'));
+    expect(money('تلات تذاكر كل واحده ميتين')).toEqual(flagged('600'));
+    expect(money('خمس قمصان كل واحد ب 150 جنيه')).toEqual(flagged('750', 'EGP'));
+    expect(money('تلات تذاكر بميتين كل واحدة')).toEqual(flagged('600'));
+    expect(money('تلات تذاكر بميتين جنيه لكل واحدة')).toEqual(flagged('600', 'EGP'));
+  });
+
+  it('the_count_may_come_after_the_price', () => {
+    expect(money('200 each for three tickets')).toEqual(flagged('600'));
+    expect(money('three tickets, 200 for each')).toEqual(flagged('600'));
+  });
+
+  it('keeps_the_price_currency_and_is_exact', () => {
+    expect(money('3 tickets at 12.25 dollars each', 'EGP')).toEqual(flagged('36.75', 'USD'));
+    expect(money('3 tickets at 0.1 each')).toEqual(flagged('0.3'));
+    expect(money('2 pens 75 piastres each', 'USD')).toEqual(flagged('1.5', 'EGP'));
+  });
+
+  it('no_count_means_no_multiplication_and_no_flag', () => {
+    expect(money('200 each')).toEqual(clean('200', DEFAULT));
+    expect(money('rent 5000 per month')).toEqual(clean('5000', DEFAULT));
+    expect(money('كل واحدة بميتين')).toEqual(clean('200', DEFAULT));
+  });
+
+  it('a_count_must_be_a_whole_number_of_two_or_more_with_no_currency', () => {
+    expect(money('one ticket at 200 each')).toEqual(flagged('200'));
+    expect(money('2.5 tickets at 200 each')).toEqual(flagged('2.5'));
+    expect(money('50 pounds lunch 20 each')).toEqual(flagged('50', 'EGP'));
+  });
+
+  it('without_a_signal_nothing_is_multiplied', () => {
+    expect(money('three movie tickets at 200')).toEqual(flagged('200'));
+  });
+});
+
+describe('water after a bill or another utility is not a hundred (T-007a, PQ-10)', () => {
+  it('the_number_after_it_is_the_amount', () => {
+    expect(money('فاتورة المية تسعة وأربعين جنيه وخمسة وعشرين قرش')).toEqual(clean('49.25', 'EGP'));
+    expect(money('فاتورة المية خمسين')).toEqual(clean('50', DEFAULT));
+    expect(money('فاتورة المية بميتين جنيه')).toEqual(clean('200', 'EGP'));
+    expect(money('فواتير المية تلتمية')).toEqual(clean('300', DEFAULT));
+  });
+
+  it('after_another_utility_and_و', () => {
+    expect(money('دفعت الكهربا والمية خمسمية جنيه')).toEqual(clean('500', 'EGP'));
+    expect(money('الغاز والمية ميتين')).toEqual(clean('200', DEFAULT));
+  });
+
+  it('alone_it_gives_no_amount_rather_than_a_false_hundred', () => {
+    expect(money('فاتورة المية')).toEqual({
+      currency: DEFAULT,
+      attention: { amount: true, currency: false },
+    });
+  });
+
+  it('with_a_currency_word_or_a_compound_it_is_still_a_number', () => {
+    expect(money('فاتورة مية جنيه')).toEqual(clean('100', 'EGP'));
+    expect(money('فاتورة مية وخمسين جنيه')).toEqual(clean('150', 'EGP'));
+    expect(money('فاتورة مية وخمسين')).toEqual(clean('150', DEFAULT));
+    expect(money('فاتورة مية ألف')).toEqual(clean('100000', DEFAULT));
+  });
+
+  it('elsewhere_مية_is_a_hundred', () => {
+    expect(money('صرفت مية')).toEqual(clean('100', DEFAULT));
+    expect(money('تاكسي ومية')).toEqual(clean('100', DEFAULT));
+  });
+});
+
+describe('currency symbols (T-007a, FR-028)', () => {
+  it('a_symbol_before_or_after_the_number_names_its_currency', () => {
+    const cases: [string, string, CurrencyCode][] = [
+      ['lunch for $15', '15', 'USD'],
+      ['15$ lunch', '15', 'USD'],
+      ['$ 15', '15', 'USD'],
+      ['＄15', '15', 'USD'],
+      ['paid €40 for a ticket', '40', 'EUR'],
+      ['40€', '40', 'EUR'],
+      ['$1,200.50', '1200.5', 'USD'],
+      ['E£50', '50', 'EGP'],
+      ['e£ 50', '50', 'EGP'],
+      ['﷼50', '50', 'SAR'],
+      ['50 ﷼', '50', 'SAR'],
+      ['⃁50', '50', 'SAR'],
+    ];
+    for (const [text, amount, code] of cases) {
+      expect(money(text, 'KWD'), text).toEqual(clean(amount, code));
+    }
+  });
+
+  it('the_pound_sign_alone_is_EGP_like_the_word_pounds_but_flagged', () => {
+    for (const text of ['£50', '50£', '£ 50', '￡50']) {
+      for (const defaultCurrency of ['USD', 'GBP'] as const) {
+        expect(money(text, defaultCurrency), text).toEqual({
+          amount: '50',
+          currency: 'EGP',
+          attention: { amount: false, currency: true },
+        });
+      }
+    }
+  });
+
+  it('a_word_after_the_number_wins_with_the_symbol_when_they_agree_and_flags_when_not', () => {
+    expect(money('$20 dollars', 'EGP')).toEqual(clean('20', 'USD'));
+    expect(money('$20 euros', 'EGP')).toEqual({
+      amount: '20',
+      currency: 'EGP',
+      attention: { amount: false, currency: true },
+    });
+  });
+
+  it('a_symbol_with_no_number_next_to_it_is_used_but_flagged', () => {
+    expect(money('$ for lunch 20', 'EGP')).toEqual({
+      amount: '20',
+      currency: 'USD',
+      attention: { amount: false, currency: true },
+    });
+  });
+
+  it('a_currency_word_before_the_number_is_still_not_bound_to_it', () => {
+    expect(money('dollars 20', 'EGP').attention.currency).toBe(true);
+  });
+
+  it('findCurrencies_marks_symbols', () => {
+    expect(findCurrencies(normalize('£5 $6'))).toEqual([
+      { start: 0, end: 1, currency: 'EGP', symbol: true, ambiguous: true },
+      { start: 2, end: 3, currency: 'USD', symbol: true },
+    ]);
+  });
+});
+
+describe('inferred amounts stay checkable (T-007a)', () => {
+  it('a_period_word_is_a_quantity_only_after_a_small_number_outside_a_date', () => {
+    expect(money('الكهربا تلتمية الشهر ده')).toEqual(clean('300', DEFAULT));
+    expect(money('electricity 320 month')).toEqual(clean('320', DEFAULT));
+    expect(money('خمسين يوم الجمعة اللي فات')).toEqual(clean('50', DEFAULT));
+    expect(money('3 months')).toEqual(flagged('3'));
+    expect(money('paid 12 months 900')).toEqual(flagged('900'));
+  });
+
+  it('a_measure_is_a_quantity_at_any_size', () => {
+    expect(money('150 kilos for 900')).toEqual(flagged('900'));
+  });
+
+  it('bare_piastres_after_100_pounds_or_more_are_flagged', () => {
+    for (const [text, amount] of [
+      ['خمسمية جنيه وخمسين', '500.5'],
+      ['ألف جنيه وخمسين', '1000.5'],
+      ['100 pounds 20', '100.2'],
+    ] as const) {
+      expect(money(text), text).toEqual(flagged(amount, 'EGP'));
+    }
+    expect(money('99 pounds 20')).toEqual(clean('99.2', 'EGP'));
+  });
+});

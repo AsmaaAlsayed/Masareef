@@ -31,6 +31,12 @@ export function multiply(a: Decimal, factor: bigint): Decimal {
   return { units: a.units * factor, places: a.places };
 }
 
+/** The exact product of two decimals. */
+export const times = (a: Decimal, b: Decimal): Decimal => ({
+  units: a.units * b.units,
+  places: a.places + b.places,
+});
+
 /** Divides by 100, which is exact in decimal: piastres to pounds. */
 export const hundredths = (a: Decimal): Decimal => ({ units: a.units, places: a.places + 2 });
 
