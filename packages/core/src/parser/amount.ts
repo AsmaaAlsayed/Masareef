@@ -1,13 +1,31 @@
-import { add, decimal, hundredths, multiply, toDecimalString, type Decimal } from './decimal.js';
+import {
+  add,
+  decimal,
+  hundredths,
+  multiply,
+  parseDecimal,
+  times,
+  toDecimalString,
+  type Decimal,
+} from './decimal.js';
 import {
   CONJUNCTION_WORDS,
   FRACTION_WORDS,
   INDEFINITE_ARTICLE,
   COMMON_PIASTRE_COUNTS,
+  COUNT_INTRODUCER,
+  EACH_ONE_ARABIC,
+  EACH_WORD,
+  EACH_WORDS_AFTER_PRICE,
   LESS_WORD,
+  ONE_WORDS,
   PIASTRE_WORDS,
+  PRICE_MARKERS,
+  QUANTITY_UNIT_WORDS,
   SCALE_WORDS,
   SINGULAR_POUND_WORDS,
+  WATER_CONTEXT_WORDS,
+  WATER_WORD,
 } from './lexicon/numbers.js';
 import { CURRENCY_VOCABULARY, UNIT_WORDS } from './lexicon/currencies.js';
 import { DATE_AND_NUMBER_VOCABULARY, findDates } from './dates.js';
@@ -19,7 +37,8 @@ import { readNumber, type NumberSpan } from './numbers.js';
  * "5.5", "0.75") as `toMinor` reads it; it is never rounded or clamped, because limits and
  * precision are checked by the form on Save (FR-025 criterion 8). `impliedCurrency` is EGP
  * when the amount was said in piastres. `needsConfirmation` is true when the amount rests on
- * an inference the user should check. `end` is exclusive.
+ * an inference the user should check. `isCount` is true when the number counts things ("2" in
+ * "2 pizzas for 400") and so gives way to any other amount. `end` is exclusive.
  */
 export interface AmountMatch {
   readonly amount: string;
@@ -27,6 +46,7 @@ export interface AmountMatch {
   readonly end: number;
   readonly impliedCurrency?: 'EGP';
   readonly needsConfirmation?: true;
+  readonly isCount?: true;
 }
 
 /** A range of tokens, such as a date expression, that no amount may use; `end` is exclusive. */
@@ -274,6 +294,148 @@ function findAmountsBetween(tokens: readonly string[], from: number, to: number)
   return amounts;
 }
 
+const isOneWord = (token: string | undefined) => token !== undefined && ONE_WORDS.has(token);
+
+/** True when "كل واحد"/"كل واحدة" starts at `index`. */
+const isEachOneAt = (tokens: readonly string[], index: number) =>
+  tokens[index] === EACH_ONE_ARABIC && isOneWord(tokens[index + 1]);
+
+/** "كل واحدة" is not the number one, so no amount may use it. */
+function eachOneSpans(tokens: readonly string[]): TokenSpan[] {
+  return tokens.flatMap((_, start) =>
+    isEachOneAt(tokens, start) ? [{ start, end: start + 2 }] : [],
+  );
+}
+
+/**
+ * "ميه" right after a bill or utility word, with or without "و", is water ("فاتورة المية",
+ * "الكهربا والمية", PQ-10). It stays the number 100 when a currency word or a thousand follows
+ * it, or "و" and more of a number ("فاتورة مية جنيه", "فاتورة مية وخمسين"), because the article
+ * that would tell the two apart is gone after `normalize`.
+ */
+function waterSpans(tokens: readonly string[]): TokenSpan[] {
+  return tokens.flatMap((token, start) => {
+    if (token !== WATER_WORD) {
+      return [];
+    }
+    const before = tokens[start - 1];
+    const context =
+      before !== undefined && CONJUNCTION_WORDS.has(before) ? tokens[start - 2] : before;
+    if (context === undefined || !WATER_CONTEXT_WORDS.has(context)) {
+      return [];
+    }
+    const next = tokens[start + 1];
+    const staysNumber =
+      lookup(UNIT_WORDS, next) !== undefined ||
+      lookup(SCALE_WORDS, next) !== undefined ||
+      (next !== undefined &&
+        CONJUNCTION_WORDS.has(next) &&
+        readNumber(tokens, start + 2) !== undefined);
+    return staysNumber ? [] : [{ start, end: start + 1 }];
+  });
+}
+
+/** True when the words around `price` say it is the price of one. */
+function isUnitPrice(tokens: readonly string[], price: AmountMatch): boolean {
+  // After the price, skipping "for" or "ل" ("200 for each", "لكل واحدة").
+  const next = tokens[price.end];
+  const from = next === 'for' || next === 'ل' ? price.end + 1 : price.end;
+  const after = tokens[from];
+  if ((after !== undefined && EACH_WORDS_AFTER_PRICE.has(after)) || isEachOneAt(tokens, from)) {
+    return true;
+  }
+  // Before the price, skipping "for", "at" or "ب".
+  const previous = tokens[price.start - 1];
+  const at =
+    previous !== undefined && PRICE_MARKERS.has(previous) ? price.start - 2 : price.start - 1;
+  return tokens[at] === EACH_WORD || (isOneWord(tokens[at]) && tokens[at - 1] === EACH_ONE_ARABIC);
+}
+
+/** True when the amount's own tokens include a currency or piastre word. */
+const hasUnitWord = (tokens: readonly string[], { start, end }: AmountMatch) =>
+  tokens
+    .slice(start, end)
+    .some(
+      (token) =>
+        lookup(UNIT_WORDS, token) !== undefined || lookup(PIASTRE_WORDS, token) !== undefined,
+    );
+
+/** True for a whole number with no currency word. */
+function isPlainWholeNumber(tokens: readonly string[], amount: AmountMatch): boolean {
+  return /^[0-9]+$/.test(amount.amount) && !hasUnitWord(tokens, amount);
+}
+
+/**
+ * Count times unit price ("three tickets at 200 each", "تلات تذاكر كل واحدة بميتين"). Only an
+ * explicit "each", "per" or "كل واحد" multiplies, and only by a whole number of two or more
+ * said next to the price. The product is exact and flagged, so the user confirms it.
+ */
+function applyUnitPrice(tokens: readonly string[], amounts: readonly AmountMatch[]): AmountMatch[] {
+  const index = amounts.findIndex((amount) => isUnitPrice(tokens, amount));
+  const price = amounts[index];
+  if (price === undefined) {
+    return [...amounts];
+  }
+  const countIndex = [index - 1, index + 1].find((at) => {
+    const candidate = amounts[at];
+    return (
+      candidate !== undefined &&
+      isPlainWholeNumber(tokens, candidate) &&
+      BigInt(candidate.amount) >= 2n
+    );
+  });
+  const count = countIndex === undefined ? undefined : amounts[countIndex];
+  if (countIndex === undefined || count === undefined) {
+    return [...amounts];
+  }
+  const merged: AmountMatch = {
+    ...price,
+    amount: toDecimalString(times(parseDecimal(price.amount), parseDecimal(count.amount))),
+    start: Math.min(price.start, count.start),
+    end: Math.max(price.end, count.end),
+    needsConfirmation: true,
+  };
+  const first = Math.min(index, countIndex);
+  return [...amounts.slice(0, first), merged, ...amounts.slice(first + 2)];
+}
+
+/**
+ * True when `amount` counts things and `next` is the price: it is followed by a word, whole,
+ * and the next amount comes after "for", "at" or "ب" with no "و"/"and" between, which would
+ * mean a second expense ("lunch 50 and taxi for 20").
+ */
+function isCountBeforePrice(
+  tokens: readonly string[],
+  amount: AmountMatch,
+  next: AmountMatch | undefined,
+): boolean {
+  if (next === undefined || !isPlainWholeNumber(tokens, amount)) {
+    return false;
+  }
+  const marker = tokens[next.start - 1];
+  const between = tokens.slice(amount.end, next.start - 1);
+  return (
+    marker !== undefined &&
+    PRICE_MARKERS.has(marker) &&
+    between[0] !== undefined &&
+    !PRICE_MARKERS.has(between[0]) &&
+    !between.some((token) => CONJUNCTION_WORDS.has(token))
+  );
+}
+
+function markCounts(tokens: readonly string[], amounts: readonly AmountMatch[]): AmountMatch[] {
+  return amounts.map((amount, index) => {
+    const after = tokens[amount.end];
+    const counts =
+      amount.needsConfirmation !== true &&
+      !hasUnitWord(tokens, amount) &&
+      ((after !== undefined && QUANTITY_UNIT_WORDS.has(after)) ||
+        tokens[amount.start - 1] === COUNT_INTRODUCER ||
+        isCountBeforePrice(tokens, amount, amounts[index + 1]));
+    return counts ? { ...amount, isCount: true as const } : amount;
+  });
+}
+
 /**
  * Finds every amount in normalised tokens, left to right: numbers with their currency words,
  * halves, quarters and piastres combined exactly ("اتنين جنيه وخمسين قرش" is 2.5). An amount's
@@ -282,19 +444,22 @@ function findAmountsBetween(tokens: readonly string[], from: number, to: number)
  *
  * No amount uses a token inside an `excluded` span: pass the date expressions from
  * `findDates` so that "تلات" in "من تلات أيام" cannot become the amount (FR-027, ADR 0003).
+ * Water ("فاتورة المية") and "كل واحدة" are never amounts. A count and its unit price become one
+ * amount, and numbers that only count things are marked `isCount`.
  */
 export function findAmounts(
   tokens: readonly string[],
   excluded: readonly TokenSpan[] = [],
 ): AmountMatch[] {
   const amounts: AmountMatch[] = [];
+  const spans = [...excluded, ...eachOneSpans(tokens), ...waterSpans(tokens)];
   let from = 0;
-  for (const span of [...excluded].sort((a, b) => a.start - b.start)) {
+  for (const span of spans.sort((a, b) => a.start - b.start)) {
     amounts.push(...findAmountsBetween(tokens, from, span.start));
     from = Math.max(from, span.end);
   }
   amounts.push(...findAmountsBetween(tokens, from, tokens.length));
-  return amounts;
+  return markCounts(tokens, applyUnitPrice(tokens, amounts));
 }
 
 /**

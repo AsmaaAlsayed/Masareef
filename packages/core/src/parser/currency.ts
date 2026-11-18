@@ -90,9 +90,10 @@ function single(codes: ReadonlySet<CurrencyCode | undefined>): CurrencyCode | un
  * Chooses the amount and its currency (ADR 0003 steps 4 and 5) from the matches of
  * `findAmounts` and `findCurrencies` on the same tokens.
  *
- * Amount: the first amount with a currency word bound to it; otherwise the first amount.
- * Flagged when there is no amount or more than one (FR-025 criteria 6 and 7), or when the
- * chosen amount rests on an inference (`needsConfirmation`).
+ * Amount: numbers that only count things give way to any other amount. Of the rest, the first
+ * with a currency word bound to it; otherwise the first. Flagged when there is no amount or
+ * more than one (FR-025 criteria 6 and 7), and when the chosen amount rests on an inference
+ * (`needsConfirmation`) or is itself a count.
  *
  * Currency: the currency word bound to the chosen amount, unflagged (FR-028 criteria 2 and
  * 3). A word for a currency outside the list, or two words that disagree, give the default,
@@ -111,11 +112,13 @@ export function resolveMoney(
   if (!isCurrencyCode(defaultCurrency)) {
     throw new RangeError(`defaultCurrency must be a supported currency code`);
   }
-  const bound = amounts
+  const notCounts = amounts.filter(({ isCount }) => isCount !== true);
+  const candidates = notCounts.length > 0 ? notCounts : amounts;
+  const bound = candidates
     .map((amount) => ({ amount, codes: currenciesOf(amount, currencies) }))
     .find(({ codes }) => codes.size > 0);
   const amountAttention = (chosen: AmountMatch | undefined) =>
-    amounts.length !== 1 || chosen?.needsConfirmation === true;
+    amounts.length !== 1 || chosen?.needsConfirmation === true || chosen?.isCount === true;
   if (bound !== undefined) {
     const code = single(bound.codes);
     return {
@@ -125,7 +128,7 @@ export function resolveMoney(
     };
   }
   const elsewhere = new Set(currencies.map(({ currency }) => currency));
-  const [first] = amounts;
+  const [first] = candidates;
   const result = {
     currency: single(elsewhere) ?? defaultCurrency,
     attention: { amount: amountAttention(first), currency: elsewhere.size > 0 },

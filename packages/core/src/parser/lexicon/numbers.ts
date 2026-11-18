@@ -265,6 +265,97 @@ export const PIASTRE_WORDS: Readonly<Record<string, number>> = Object.freeze({
   piasters: 1,
 });
 
+/**
+ * Units and periods that a number counts, so that number is a quantity and not the price
+ * ("two kilos of oranges for fifty", "3 months of internet, 750").
+ */
+export const QUANTITY_UNIT_WORDS: ReadonlySet<string> = new Set([
+  'kilo',
+  'kilos',
+  'kg',
+  'gram',
+  'grams',
+  'liter',
+  'liters',
+  'litre',
+  'litres',
+  'piece',
+  'pieces',
+  'box',
+  'boxes',
+  'pack',
+  'packs',
+  'bottle',
+  'bottles',
+  'dozen',
+  'day',
+  'days',
+  'week',
+  'weeks',
+  'month',
+  'months',
+  'year',
+  'years',
+  'كيلو',
+  'كيلوهات',
+  'جرام',
+  'لتر',
+  'لترات',
+  'حته',
+  'حتت',
+  'قطعه',
+  'قطع',
+  'علبه',
+  'علب',
+  'كيس',
+  'اكياس',
+  'كرتونه',
+  'كراتين',
+  'ازازه',
+  'قزازه',
+  'ازايز',
+  'دسته',
+  'يوم',
+  'ايام',
+  'اسبوع',
+  'اسابيع',
+  'شهر',
+  'شهور',
+  'اشهر',
+  'سنه',
+  'سنين',
+  'سنوات',
+]);
+
+/** A word that introduces a count ("عدد 3"). */
+export const COUNT_INTRODUCER = 'عدد';
+
+/** Words that introduce a price: "for 400", "at 200", "ب 750", "بخمسين". */
+export const PRICE_MARKERS: ReadonlySet<string> = new Set(['for', 'at', 'ب']);
+
+/** After a price, these say it is the price of one: "200 each", "250 per month". */
+export const EACH_WORDS_AFTER_PRICE: ReadonlySet<string> = new Set(['each', 'apiece', 'per']);
+
+/** "each" before a price: "each 200", "each for 200". */
+export const EACH_WORD = 'each';
+
+/** "كل واحد"/"كل واحدة": each one, on either side of the price. */
+export const EACH_ONE_ARABIC = 'كل';
+export const ONE_WORDS: ReadonlySet<string> = new Set(['واحد', 'واحده']);
+
+/** Water is spelled like the number 100. */
+export const WATER_WORD = 'ميه';
+
+/** After these, with or without "و", "ميه" is water ("فاتورة المية", "الكهربا والمية"). */
+export const WATER_CONTEXT_WORDS: ReadonlySet<string> = new Set([
+  'فاتوره',
+  'فواتير',
+  'كهربا',
+  'كهرباء',
+  'غاز',
+  'نور',
+]);
+
 /** Every word above: the default vocabulary that `normalize` protects and splits particles from. */
 export const NUMBER_VOCABULARY: ReadonlySet<string> = new Set([
   ...Object.keys(VALUE_WORDS),
@@ -277,4 +368,7 @@ export const NUMBER_VOCABULARY: ReadonlySet<string> = new Set([
   ...Object.keys(FRACTION_WORDS),
   ...Object.keys(POUND_WORDS),
   ...Object.keys(PIASTRE_WORDS),
+  ...QUANTITY_UNIT_WORDS,
+  COUNT_INTRODUCER,
+  EACH_ONE_ARABIC,
 ]);
