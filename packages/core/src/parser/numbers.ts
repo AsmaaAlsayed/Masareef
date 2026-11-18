@@ -17,11 +17,15 @@ export interface NumberMatch {
   readonly end: number;
 }
 
-/** Internal form of a match, with the exact value. */
+/**
+ * Internal form of a match, with the exact value. `trailingScale` is set when the number ends
+ * on a thousand or million word ("ألف", "تلات تلاف"): a fraction said next is a fraction of it.
+ */
 export interface NumberSpan {
   readonly value: Decimal;
   readonly start: number;
   readonly end: number;
+  readonly trailingScale?: number;
 }
 
 const DIGITS = /^[0-9]+(?:\.[0-9]+)?$/;
@@ -30,7 +34,7 @@ const DIGITS = /^[0-9]+(?:\.[0-9]+)?$/;
 type Word =
   | { kind: 'value'; value: number; length: number }
   | { kind: 'hundred'; length: number }
-  | { kind: 'scale'; scale: number; count: 0 | 1 | 2; length: number };
+  | { kind: 'scale'; scale: number; count: number; length: number };
 
 const isOwn = (record: object, key: string) => Object.hasOwn(record, key);
 
@@ -141,11 +145,11 @@ function step(state: State, word: Word, joined: boolean): State | undefined {
           return undefined;
         }
         group = current > 0 ? current : 1;
-      } else if (word.count === 2) {
+      } else if (word.count >= 2) {
         if (current > 0) {
           return undefined;
         }
-        group = 2;
+        group = word.count;
       } else {
         if (current === 0 || joined) {
           return undefined;
@@ -173,8 +177,13 @@ function readDigits(tokens: readonly string[], start: number): NumberSpan | unde
   if (next?.kind === 'hundred') {
     return { value: multiply(value, 100n), start, end: start + 2 };
   }
-  if (next?.kind === 'scale' && next.count !== 2) {
-    return { value: multiply(value, BigInt(next.scale)), start, end: start + 2 };
+  if (next?.kind === 'scale' && next.count <= 1) {
+    return {
+      value: multiply(value, BigInt(next.scale)),
+      start,
+      end: start + 2,
+      trailingScale: next.scale,
+    };
   }
   return { value, start, end: start + 1 };
 }
@@ -202,7 +211,10 @@ export function readNumber(tokens: readonly string[], start: number): NumberSpan
   if (!state.started) {
     return undefined;
   }
-  return { value: decimal(state.total + BigInt(state.current)), start, end: index };
+  const value = decimal(state.total + BigInt(state.current));
+  return state.current === 0 && state.lastScale !== Infinity
+    ? { value, start, end: index, trailingScale: state.lastScale }
+    : { value, start, end: index };
 }
 
 /** Every number in the token list, left to right, without overlaps. */

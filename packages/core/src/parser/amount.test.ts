@@ -212,3 +212,51 @@ describe('findAmounts', () => {
     expect(findAmounts([])).toEqual([]);
   });
 });
+
+describe('fractions of the number or of its thousands (T-007a, PQ-07)', () => {
+  it('إلا_ربع_takes_a_quarter_off', () => {
+    expect(egp('عشرة إلا ربع')).toBe('9.75');
+    expect(egp('عشرة الا ربع')).toBe('9.75');
+    expect(egp('عشرة جنيه إلا ربع')).toBe('9.75');
+    expect(egp('عشرة إلا ربع جنيه')).toBe('9.75');
+    expect(egp('خمسة جنيه إلا نص')).toBe('4.50');
+    expect(egp('جنيه إلا ربع')).toBe('0.75');
+  });
+
+  it('إلا_with_nothing_to_take_from_or_no_fraction_changes_nothing', () => {
+    expect(parseAmount('صفر إلا ربع')?.amount).toBe('0');
+    expect(parseAmount('صفر جنيه إلا ربع')?.amount).toBe('0');
+    expect(egp('عشرة إلا')).toBe('10.00');
+    expect(parseAmount('عشرة إلا خمسة')?.amount).toBe('10');
+  });
+
+  it('a_fraction_after_a_bare_thousand_is_a_fraction_of_the_thousand', () => {
+    expect(egp('ألف ونص')).toBe('1500.00');
+    expect(egp('ألف ونص جنيه')).toBe('1500.00');
+    expect(egp('ألف وربع')).toBe('1250.00');
+    expect(egp('ألف إلا ربع')).toBe('750.00');
+    expect(egp('ألفين ونص')).toBe('2500.00');
+    expect(egp('تلات تلاف ونص')).toBe('3500.00');
+    expect(egp('خمستلاف ونص')).toBe('5500.00');
+    expect(egp('٣ آلاف ونص')).toBe('3500.00');
+    expect(parseAmount('مليون ونص')?.amount).toBe('1500000');
+    expect(egp('a thousand and a half pounds')).toBe('1500.00');
+  });
+
+  it('a_fraction_before_a_scale_word_multiplies', () => {
+    expect(egp('one and a half thousand pounds')).toBe('1500.00');
+    expect(egp('two and a half thousand')).toBe('2500.00');
+    expect(egp('two and a quarter thousand')).toBe('2250.00');
+    expect(egp('خمسة ونص ألف جنيه')).toBe('5500.00');
+    expect(parseAmount('اتنين ونص مليون')?.amount).toBe('2500000');
+  });
+
+  it('the_fraction_of_a_pound_is_unchanged', () => {
+    expect(egp('خمسة جنيه ونص')).toBe('5.50');
+    expect(egp('خمسة ونص')).toBe('5.50');
+    expect(egp('ألف وخمسمية جنيه ونص')).toBe('1500.50');
+    // The pound word comes between: the fraction is of a pound, as FR-025 c2 reads it.
+    expect(egp('ألف جنيه ونص')).toBe('1000.50');
+    expect(egp('مية ونص')).toBe('100.50');
+  });
+});

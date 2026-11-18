@@ -87,6 +87,9 @@ export const VALUE_WORDS: Readonly<Record<string, number>> = Object.freeze({
   مائتين: 200,
   مئتان: 200,
   مائتان: 200,
+  // The Standard Arabic construct form, before a noun ("مائتي جنيه").
+  مئتي: 200,
+  مائتي: 200,
   // English.
   zero: 0,
   one: 1,
@@ -129,34 +132,68 @@ const HUNDRED_STEMS: Readonly<Record<number, readonly string[]>> = {
   9: ['تسع'],
 };
 
+/** Arabic spellings of "hundred"; "ميت" is the form used before a noun ("ميت جنيه"). */
+const ARABIC_HUNDREDS = ['ميه', 'ميت', 'مائه', 'مئه'];
+
 /** The word for one hundred. After a unit with no "and" it multiplies ("خمس مية", "five hundred"). */
-export const HUNDRED_WORDS: ReadonlySet<string> = new Set(['ميه', 'مائه', 'مئه', 'hundred']);
+export const HUNDRED_WORDS: ReadonlySet<string> = new Set([...ARABIC_HUNDREDS, 'hundred']);
 
 export const COMPOUND_HUNDRED_WORDS: Readonly<Record<string, number>> = Object.freeze(
   Object.fromEntries(
     Object.entries(HUNDRED_STEMS).flatMap(([unit, stems]) =>
       stems.flatMap((stem) =>
-        ['ميه', 'مائه', 'مئه'].map((hundred) => [stem + hundred, Number(unit) * 100]),
+        ARABIC_HUNDREDS.map((hundred) => [stem + hundred, Number(unit) * 100]),
       ),
     ),
   ),
 );
 
+/** Egyptian thousands said as one word, a count fused to "تلاف" ("خمستلاف" is 5000). */
+const FUSED_THOUSANDS: Readonly<Record<string, number>> = {
+  تلاتلاف: 3,
+  تلتلاف: 3,
+  تلاتتلاف: 3,
+  تلتتلاف: 3,
+  اربعتلاف: 4,
+  اربعتالاف: 4,
+  خمستلاف: 5,
+  خمستالاف: 5,
+  ستلاف: 6,
+  ستتلاف: 6,
+  ستالاف: 6,
+  سبعتلاف: 7,
+  سبعتالاف: 7,
+  تمنتلاف: 8,
+  تمنتالاف: 8,
+  تمانتلاف: 8,
+  تمانتالاف: 8,
+  تسعتلاف: 9,
+  تسعتالاف: 9,
+  عشرتلاف: 10,
+  عشرتالاف: 10,
+};
+
 /**
  * Thousand and million. `count` is the multiplier the word carries itself: 1 for "ألف" (which
- * may also multiply the number before it), 2 for the dual "ألفين", and 0 for plurals such as
- * "آلاف" that need a number before them ("تلات تلاف").
+ * may also multiply the number before it), 2 or more for words that already say how many (the
+ * dual "ألفين", the fused "خمستلاف"), and 0 for plurals such as "آلاف" that need a number before
+ * them ("تلات تلاف").
  */
-export const SCALE_WORDS: Readonly<Record<string, { scale: number; count: 0 | 1 | 2 }>> =
+export const SCALE_WORDS: Readonly<Record<string, { scale: number; count: number }>> =
   Object.freeze({
+    ...Object.fromEntries(
+      Object.entries(FUSED_THOUSANDS).map(([word, count]) => [word, { scale: 1000, count }]),
+    ),
     الف: { scale: 1000, count: 1 },
     الفين: { scale: 1000, count: 2 },
     الفان: { scale: 1000, count: 2 },
+    الفي: { scale: 1000, count: 2 },
     الاف: { scale: 1000, count: 0 },
     تلاف: { scale: 1000, count: 0 },
     مليون: { scale: 1_000_000, count: 1 },
     مليونين: { scale: 1_000_000, count: 2 },
     مليونان: { scale: 1_000_000, count: 2 },
+    مليوني: { scale: 1_000_000, count: 2 },
     ملايين: { scale: 1_000_000, count: 0 },
     thousand: { scale: 1000, count: 1 },
     million: { scale: 1_000_000, count: 1 },
@@ -182,6 +219,9 @@ export const CONJUNCTION_WORDS: ReadonlySet<string> = new Set(['و', 'and']);
 
 /** English "a" stands for one before hundred, thousand, million, half and quarter. */
 export const INDEFINITE_ARTICLE = 'a';
+
+/** "إلا": the fraction after it is taken off ("عشرة إلا ربع" is 9.75). */
+export const LESS_WORD = 'الا';
 
 /** Fractions of a pound, in hundredths. */
 export const FRACTION_WORDS: Readonly<Record<string, number>> = Object.freeze({

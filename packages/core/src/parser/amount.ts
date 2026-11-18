@@ -1,14 +1,16 @@
-import { add, decimal, hundredths, toDecimalString, type Decimal } from './decimal.js';
+import { add, decimal, hundredths, multiply, toDecimalString, type Decimal } from './decimal.js';
 import {
   CONJUNCTION_WORDS,
   FRACTION_WORDS,
   INDEFINITE_ARTICLE,
+  LESS_WORD,
   PIASTRE_WORDS,
+  SCALE_WORDS,
 } from './lexicon/numbers.js';
 import { CURRENCY_VOCABULARY, UNIT_WORDS } from './lexicon/currencies.js';
 import { DATE_AND_NUMBER_VOCABULARY, findDates } from './dates.js';
 import { normalize } from './normalize.js';
-import { readNumber } from './numbers.js';
+import { readNumber, type NumberSpan } from './numbers.js';
 
 /**
  * An amount found in a token list. `amount` is exact decimal text in major units ("50",
@@ -69,6 +71,18 @@ function readFraction(tokens: readonly string[], index: number): Piece | undefin
   return { value: decimal(hundredthsOfUnit, 2), end: at + 1, piastres: false };
 }
 
+/** "إلا ربع": a fraction taken off, so its value is negative. */
+function readLessFraction(tokens: readonly string[], index: number): Piece | undefined {
+  const hundredthsOfUnit =
+    tokens[index] === LESS_WORD ? lookup(FRACTION_WORDS, tokens[index + 1]) : undefined;
+  return hundredthsOfUnit === undefined
+    ? undefined
+    : { value: decimal(-hundredthsOfUnit, 2), end: index + 2, piastres: false };
+}
+
+const readAnyFraction = (tokens: readonly string[], index: number) =>
+  readFraction(tokens, index) ?? readLessFraction(tokens, index);
+
 /** "وخمسين قرش", "and fifty piastres", "50 piastres", "قرشين": a number of piastres. */
 function readPiastres(tokens: readonly string[], index: number): Piece | undefined {
   const dual = lookup(PIASTRE_WORDS, tokens[index]);
@@ -87,7 +101,7 @@ function readPiastres(tokens: readonly string[], index: number): Piece | undefin
  * with or without a conjunction.
  */
 function readUnitTail(tokens: readonly string[], index: number, pound: boolean): Piece | undefined {
-  const fraction = readFraction(tokens, index);
+  const fraction = readAnyFraction(tokens, index);
   if (fraction !== undefined || !pound) {
     return fraction;
   }
@@ -95,14 +109,38 @@ function readUnitTail(tokens: readonly string[], index: number, pound: boolean):
   return readPiastres(tokens, at);
 }
 
-const withTail = (head: Piece, tail: Piece | undefined): Piece =>
-  tail === undefined
+/** Joins a tail to its head. A tail that would take the amount to zero or below is ignored. */
+function withTail(head: Piece, tail: Piece | undefined): Piece {
+  if (tail === undefined) {
+    return head;
+  }
+  const value = add(head.value, tail.value);
+  return value.units <= 0n
     ? head
-    : {
-        value: add(head.value, tail.value),
-        end: tail.end,
-        piastres: head.piastres || tail.piastres,
-      };
+    : { value, end: tail.end, piastres: head.piastres || tail.piastres };
+}
+
+/** A fraction after a number: of its thousand ("ألف ونص"), or of one, then maybe a scale word. */
+function readNumberFraction(
+  tokens: readonly string[],
+  number: NumberSpan,
+  head: Piece,
+): Piece | undefined {
+  const fraction = readAnyFraction(tokens, head.end);
+  if (fraction === undefined) {
+    return undefined;
+  }
+  const { trailingScale } = number;
+  if (trailingScale !== undefined) {
+    return withTail(head, { ...fraction, value: multiply(fraction.value, BigInt(trailingScale)) });
+  }
+  const joined = withTail(head, fraction);
+  // "one and a half thousand", "خمسة ونص ألف".
+  const scale = lookup(SCALE_WORDS, tokens[joined.end]);
+  return scale !== undefined && scale.count <= 1 && joined.end === fraction.end
+    ? { ...joined, value: multiply(joined.value, BigInt(scale.scale)), end: joined.end + 1 }
+    : joined;
+}
 
 /** A number, then optionally a currency word, a fraction or piastres. */
 function readNumberAmount(tokens: readonly string[], start: number): Piece | undefined {
@@ -121,10 +159,9 @@ function readNumberAmount(tokens: readonly string[], start: number): Piece | und
     const units = { ...head, end: head.end + 1 };
     return withTail(units, readUnitTail(tokens, units.end, unit.pound));
   }
-  const fraction = readFraction(tokens, head.end);
-  if (fraction !== undefined) {
+  const joined = readNumberFraction(tokens, number, head);
+  if (joined !== undefined) {
     // "five and a half pounds", "خمسة ونص".
-    const joined = withTail(head, fraction);
     const unitAfter = lookup(UNIT_WORDS, tokens[joined.end]) !== undefined;
     return unitAfter ? { ...joined, end: joined.end + 1 } : joined;
   }
