@@ -1,7 +1,18 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "noEmit": true
+    "noEmit": true,
+    "resolveJsonModule": true,
+    // Type-check workspaces against each other's sources, so the check does not need a build first.
+    "paths": {
+      "@masareef/core": ["./packages/core/src/index.ts"]
+    }
   },
-  "include": ["apps/*/src/**/*", "packages/*/src/**/*", "vitest.config.ts"]
+  "include": [
+    "apps/*/src/**/*",
+    "packages/*/src/**/*",
+    "poc/*/src/**/*",
+    "poc/*/manifests/*.json",
+    "vitest.config.ts"
+  ]
 }

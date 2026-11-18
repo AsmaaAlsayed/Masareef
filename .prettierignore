@@ -4,6 +4,7 @@ dist/
 build/
 coverage/
 package-lock.json
+poc/voice/reports/
 
 # Owned by the planner and the tester, and signed off as written: never reformatted
 docs/
