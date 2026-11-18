@@ -1,9 +1,1 @@
-[
-  {
-    "id": "GHSA-fc5q-39xc-vjpf",
-    "package": "picomatch",
-    "severity": "high",
-    "reason": "ReDoS in picomatch <=4.0.7 (CVE-2026-112366). Reached only through development tools (Vitest, Vite, tinyglobby), with glob patterns written by this project, never with user input. No fixed release exists on 2026-11-17; the upstream fix is micromatch/picomatch#194, unmerged. Accepted by the product owner on 2026-11-17 as a time-boxed exception.",
-    "expires": "2026-12-17"
-  }
-]
+[]

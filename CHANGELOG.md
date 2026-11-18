@@ -33,4 +33,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Removed
 
+- The time-boxed audit exception for picomatch GHSA-fc5q-39xc-vjpf: GitHub withdrew the advisory on 2026-11-18.
 - The placeholder workspace that gave the pipeline something to run before `packages/core` existed (T-002).
