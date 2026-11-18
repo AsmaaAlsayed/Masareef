@@ -45,3 +45,5 @@ The expected values are what the speaker means, decided from the requirements an
 The root `npm test` also validates both committed manifests.
 
 `reports/typed-transcripts.md` is the **parser-only** score on typed transcripts. It is not end-to-end speech accuracy. End-to-end accuracy is measured in T-010, and ADR 0003 requires the two to be reported separately. Regenerate and commit the report whenever the parser or a manifest changes.
+
+Since T-007a it is also a **development score**: the parser's rules and keywords were tuned on these same sentences, so the numbers are optimistic. The independent measure is the real-speaker test set (P-14). Fix causes, never single sentences, and do not edit a manifest to fit the parser.
