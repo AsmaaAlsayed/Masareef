@@ -1,0 +1,15 @@
+// Local development and tests only. The deployed configuration, with real resource
+// identifiers, is infra/wrangler.jsonc (T-019). Nothing here identifies a Cloudflare account.
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "masareef-api-local",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-16",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "masareef-local",
+      "migrations_dir": "migrations",
+    },
+  ],
+}

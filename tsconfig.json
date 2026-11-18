@@ -14,5 +14,7 @@
     "poc/*/src/**/*",
     "poc/*/manifests/*.json",
     "vitest.config.ts"
-  ]
+  ],
+  // The API has its own project: it is typed against the Workers runtime, not Node.
+  "exclude": ["apps/api/**/*"]
 }
