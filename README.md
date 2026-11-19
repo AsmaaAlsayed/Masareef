@@ -54,6 +54,8 @@ npm run dev --workspace @masareef/api
 
 This runs the Worker locally with a local D1 database and needs no Cloudflare account. Try `http://localhost:8787/api/v1/health/ready`. Code goes `routes/` to `services/` to `repositories/`; anything specific to Cloudflare stays in `src/platform.ts`. After a schema change, `npm run db:generate --workspace @masareef/api` writes the migration to `apps/api/migrations`.
 
+Every route needs a session unless it is listed in `apps/api/src/public-routes.ts`. Until sign-in exists (T-022) no request can have a session, so only the listed health endpoints answer. A new route therefore needs either a session or a deliberate entry in that list. The order of the security layers is explained in `apps/api/src/app.ts`.
+
 ## Pipeline
 
 [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on every pull request and on `main`: install from the lockfile, lint and format check, type check, unit tests with coverage, build, integration tests, security (gitleaks, Semgrep, `npm audit`, osv-scanner), then upload of the build output named after the commit SHA. Any failing stage stops the run.
