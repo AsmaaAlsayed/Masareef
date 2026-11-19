@@ -77,7 +77,11 @@ function get(path: string, init?: RequestInit): Promise<Response> {
 /** The real application and the real adapter, over the given bindings. */
 function appWith(bindings: WorkerBindings, clock?: ManualClock) {
   const overrides = clock ? { startDeadline: (ms: number) => clock.startDeadline(ms) } : {};
-  const app = createApp((current) => createWorkersPlatform(current, overrides));
+  // Signed in, so that test routes are reachable behind the default-deny layer (T-015).
+  const app = createApp(
+    (current) => createWorkersPlatform(current, overrides),
+    () => Promise.resolve({ userId: 'test-user' }),
+  );
   app.get(THROWS, () => {
     throw new Error(`internal detail for ${EMAIL}`);
   });
@@ -234,16 +238,34 @@ describe('errors', () => {
     expect(logLines().join('\n')).not.toContain(EMAIL);
   });
 
+  // Default deny (T-015): without a session an unknown route is 401, so that an anonymous caller
+  // cannot tell which routes exist. A signed-in caller still gets the 404.
   it('unknown_api_route_returns_problem_json', async () => {
-    const response = await get(`/api/v1/users/${EMAIL}?note=lunch`);
-    await expectProblem(response, 404, 'not_found');
-    expect(firstLogEntry()).toMatchObject({ route: 'unmatched', status: 404, level: 'info' });
+    const path = `/api/v1/users/${EMAIL}?note=lunch`;
+    await expectProblem(await get(path), 401, 'unauthenticated');
+    await expectProblem(await appWith({ DB: env.DB, RELEASE: 'r1' }).fetch(path), 404, 'not_found');
+    expect(logLines()).toHaveLength(2);
+    expect(JSON.parse(logLines()[1] ?? '{}')).toMatchObject({
+      route: 'unmatched',
+      status: 404,
+      level: 'info',
+    });
     expect(logLines().join('\n')).not.toContain(EMAIL);
     expect(logLines().join('\n')).not.toContain('lunch');
   });
 
   it('wrong_method_on_a_known_path_returns_problem_json', async () => {
-    await expectProblem(await get(LIVE, { method: 'POST' }), 404, 'not_found');
+    await expectProblem(await get(LIVE, { method: 'POST' }), 401, 'unauthenticated');
+    const { app } = appWith({ DB: env.DB, RELEASE: 'r1' });
+    const signedIn = await app.fetch(new Request(`${ORIGIN}${LIVE}`, { method: 'POST' }), {
+      DB: env.DB,
+      RELEASE: 'r1',
+    });
+    await expectProblem(signedIn, 404, 'not_found');
+  });
+
+  it('a_path_outside_the_api_returns_problem_json', async () => {
+    await expectProblem(await get('/not-api'), 404, 'not_found');
   });
 
   it('missing_variable_refuses_the_request_and_logs_the_name_only', async () => {
