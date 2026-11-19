@@ -1,14 +1,10 @@
 import type { Context, MiddlewareHandler } from 'hono';
 import { routePath } from 'hono/route';
 import { loadConfig } from '../config.js';
-import { unexpectedError } from '../http.js';
+import { isApiPath, unexpectedError } from '../http.js';
 import type { AppEnv } from '../http.js';
 import { ANDROID_CLIENT, createLogger } from '../logger.js';
 import type { Platform, WorkerBindings } from '../platform.js';
-
-function isApiPath(path: string): boolean {
-  return path === '/api' || path.startsWith('/api/');
-}
 
 /** The registered template, never the raw path, which could hold personal data. */
 function routeTemplate(c: Context<AppEnv>): string {
