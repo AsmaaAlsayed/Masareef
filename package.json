@@ -18,7 +18,8 @@
     "format:check": "prettier --check .",
     "openapi:generate": "npm run openapi:generate --workspace @masareef/api && npm run generate --workspace @masareef/api-types",
     "openapi:check": "npm run openapi:check --workspace @masareef/api && npm run check --workspace @masareef/api-types",
-    "typecheck": "tsc --project tsconfig.json --noEmit && tsc --project apps/api/tsconfig.json --noEmit",
+    "i18n:check": "npm run i18n:check --workspace @masareef/core",
+    "typecheck": "tsc --project tsconfig.json --noEmit && tsc --project apps/api/tsconfig.json --noEmit && tsc --project apps/web/tsconfig.json --noEmit",
     "test": "vitest run --coverage",
     "test:integration": "npm run test:integration --workspaces --if-present",
     "build": "npm run build --workspaces --if-present",
@@ -27,6 +28,7 @@
     "voice:score": "npm run build && npm run score --workspace @masareef/poc-voice"
   },
   "devDependencies": {
+    "@eslint/css": "2.0.1",
     "@eslint/js": "10.0.1",
     "@vitest/coverage-v8": "4.1.12",
     "eslint": "10.15.0",
