@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    // Browser code: no Node globals. vite/client declares the CSS and asset imports.
+    "types": ["vite/client"],
+    "customConditions": ["masareef-source"]
+  },
+  "include": ["src/**/*", "vite.config.ts"]
+}

@@ -16,6 +16,7 @@
     "poc/*/manifests/*.json",
     "vitest.config.ts"
   ],
-  // The API has its own project: it is typed against the Workers runtime, not Node.
-  "exclude": ["apps/api/**/*"]
+  // The API has its own project: it is typed against the Workers runtime, not Node. The web app has
+  // its own too: it is typed against the browser, with JSX.
+  "exclude": ["apps/api/**/*", "apps/web/**/*"]
 }
