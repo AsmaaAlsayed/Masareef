@@ -6,6 +6,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { App } from './App.js';
 import { createWebApp, deviceLanguageStore } from './bootstrap.js';
 import { appRoutes } from './routes.js';
+import { memoryStorage } from './testing/storage.js';
 
 const CONFIG = { googleClientId: null, termsVersion: '0', privacyVersion: '0', release: 'abc1234' };
 const REQUEST_ID = '0f8fad5b-d9cb-469f-a165-70867728950e';
@@ -40,11 +41,12 @@ const failing: Fetch = () =>
 const offline: Fetch = () => Promise.reject(new TypeError('Failed to fetch'));
 const never: Fetch = () => new Promise(() => undefined);
 
+/** A first visit: an empty device storage of this test's own and the browser language. */
 function open(language: 'en' | 'ar', fetch: Fetch, path = '/'): void {
-  window.localStorage.clear();
+  const device = memoryStorage();
   const app = createWebApp({
     languages: [language],
-    store: deviceLanguageStore(),
+    store: deviceLanguageStore(() => device),
     api: createApiClient({ fetch }),
     document,
   });

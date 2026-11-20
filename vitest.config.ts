@@ -19,10 +19,13 @@ export default defineConfig({
     // apps/api runs in the Workers runtime with its own configuration, coverage provider and
     // 80% threshold: `npm run test:integration` (see apps/api/vitest.config.ts).
     exclude: [...configDefaults.exclude, 'apps/api/**'],
+    // Makes the global localStorage and sessionStorage fail in every test on every Node version
+    // (Node 25+ has its own, unusable without a flag); tests inject their own Storage.
+    setupFiles: ['apps/web/src/testing/no-global-storage.ts'],
     coverage: {
       provider: 'v8',
       include: ['packages/*/src/**/*.ts', 'apps/*/src/**/*.{ts,tsx}', 'poc/*/src/**/*.ts'],
-      exclude: ['**/*.test.{ts,tsx}', '**/*.d.ts', 'apps/api/**'],
+      exclude: ['**/*.test.{ts,tsx}', '**/*.d.ts', 'apps/api/**', 'apps/*/src/testing/**'],
       reporter: ['text', 'json-summary', 'lcov'],
       reportsDirectory: 'coverage',
       thresholds: {

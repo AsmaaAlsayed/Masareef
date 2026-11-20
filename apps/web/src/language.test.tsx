@@ -5,9 +5,10 @@ import { createMemoryRouter } from 'react-router';
 import type { RouteObject } from 'react-router';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { App } from './App.js';
-import { createWebApp, deviceLanguageStore } from './bootstrap.js';
+import { createWebApp, deviceLanguageStore, LANGUAGE_STORAGE_KEY } from './bootstrap.js';
 import type { LanguageStore } from './bootstrap.js';
 import { appRoutes, Layout } from './routes.js';
+import { failingStorage, memoryStorage, withGlobalLocalStorage } from './testing/storage.js';
 
 const CONFIG = {
   googleClientId: null,
@@ -23,18 +24,10 @@ const api = createApiClient({
     ),
 });
 
-/** A device store over a fake Storage holding one value. */
-function storeWith(initial?: string): LanguageStore {
-  let value = initial ?? null;
-  return deviceLanguageStore(
-    () =>
-      ({
-        getItem: () => value,
-        setItem: (_key: string, next: string) => {
-          value = next;
-        },
-      }) as unknown as Storage,
-  );
+/** A device store over this test's own storage, optionally with a stored language. */
+function storeWith(initial?: string, storage = memoryStorage()): LanguageStore {
+  if (initial !== undefined) storage.setItem(LANGUAGE_STORAGE_KEY, initial);
+  return deviceLanguageStore(() => storage);
 }
 
 /** Opens the app as a visit would: the browser's language list and the device store. */
@@ -51,7 +44,6 @@ function switchControl(): HTMLElement {
 beforeEach(() => {
   document.documentElement.removeAttribute('lang');
   document.documentElement.removeAttribute('dir');
-  window.localStorage.clear();
 });
 
 afterEach(() => {
@@ -159,13 +151,20 @@ describe('language control (FR-021 criterion 3)', () => {
 
 describe('remembered on the device (FR-021 criterion 5)', () => {
   it('language_choice_survives_reload_when_signed_out', async () => {
-    open(['en-US'], deviceLanguageStore());
+    const device = memoryStorage();
+    open(
+      ['en-US'],
+      deviceLanguageStore(() => device),
+    );
     fireEvent.click(await screen.findByRole('button', { name: 'العربية' }));
     cleanup();
     document.documentElement.removeAttribute('dir');
 
     // A reload: a new app, the same browser language, the same device storage.
-    open(['en-US'], deviceLanguageStore());
+    open(
+      ['en-US'],
+      deviceLanguageStore(() => device),
+    );
     expect(await screen.findByRole('heading', { level: 1, name: 'مصاريف' })).toBeDefined();
     expect(document.documentElement.dir).toBe('rtl');
   });
@@ -181,16 +180,19 @@ describe('remembered on the device (FR-021 criterion 5)', () => {
   });
 
   it('only_the_language_is_stored', async () => {
-    open(['en-US'], deviceLanguageStore());
+    const device = memoryStorage();
+    open(['en-US'], storeWith(undefined, device));
     fireEvent.click(await screen.findByRole('button', { name: 'العربية' }));
-    expect(Object.keys(window.localStorage)).toEqual(['masareef.language']);
-    expect(window.localStorage.getItem('masareef.language')).toBe('ar');
+    expect(device.length).toBe(1);
+    expect(device.key(0)).toBe('masareef.language');
+    expect(device.getItem('masareef.language')).toBe('ar');
   });
 
   it('nothing_is_stored_until_the_user_chooses', async () => {
-    open(['ar-EG'], deviceLanguageStore());
+    const device = memoryStorage();
+    open(['ar-EG'], storeWith(undefined, device));
     await screen.findByRole('heading', { level: 1 });
-    expect(window.localStorage.length).toBe(0);
+    expect(device.length).toBe(0);
   });
 
   it('blocked_storage_still_switches_and_starts_from_the_browser', async () => {
@@ -203,18 +205,41 @@ describe('remembered on the device (FR-021 criterion 5)', () => {
     expect(document.documentElement.lang).toBe('en');
   });
 
-  it('storage_that_throws_on_write_still_switches', async () => {
-    const full = deviceLanguageStore(
-      () =>
-        ({
-          getItem: () => null,
-          setItem: () => {
-            throw new DOMException('full', 'QuotaExceededError');
-          },
-        }) as unknown as Storage,
-    );
-    open(['en-US'], full);
-    fireEvent.click(await screen.findByRole('button', { name: 'العربية' }));
-    expect(document.documentElement.lang).toBe('ar');
+  it('storage_whose_calls_fail_still_switches', async () => {
+    for (const name of ['SecurityError', 'QuotaExceededError'] as const) {
+      open(
+        ['en-US'],
+        deviceLanguageStore(() => failingStorage(name)),
+      );
+      fireEvent.click(await screen.findByRole('button', { name: 'العربية' }));
+      expect(document.documentElement.lang, name).toBe('ar');
+      cleanup();
+    }
+  });
+});
+
+describe('the default device store (production path)', () => {
+  it('uses_window_localStorage', async () => {
+    const device = memoryStorage();
+    await withGlobalLocalStorage(device, async () => {
+      open(['en-US'], deviceLanguageStore());
+      fireEvent.click(await screen.findByRole('button', { name: 'العربية' }));
+      cleanup();
+      open(['en-US'], deviceLanguageStore());
+      expect(await screen.findByRole('heading', { level: 1, name: 'مصاريف' })).toBeDefined();
+    });
+    expect(device.getItem(LANGUAGE_STORAGE_KEY)).toBe('ar');
+  });
+
+  it('survives_window_localStorage_itself_throwing', async () => {
+    // Reaching window.localStorage throws in the unit tests (testing/no-global-storage.ts), as it
+    // can in a browser with blocked site data: the app starts from the browser and still switches.
+    const store = deviceLanguageStore();
+    expect(store.read()).toBeUndefined();
+    expect(() => store.write('ar')).not.toThrow();
+    open(['ar-EG'], store);
+    expect(await screen.findByRole('heading', { level: 1, name: 'مصاريف' })).toBeDefined();
+    fireEvent.click(screen.getByRole('button', { name: 'English' }));
+    expect(document.documentElement.lang).toBe('en');
   });
 });
