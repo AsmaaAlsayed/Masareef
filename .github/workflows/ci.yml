@@ -50,6 +50,10 @@ jobs:
         run: npm run lint
       - name: Format check
         run: npm run format:check
+      # Regenerates apps/api/openapi.json and packages/api-types/src/schema.ts in memory and
+      # fails when either differs from the committed file (architecture, "Pull-request pipeline").
+      - name: OpenAPI drift check
+        run: npm run openapi:check
 
       # 3. Type check
       - name: Type check
