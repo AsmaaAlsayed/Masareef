@@ -54,6 +54,10 @@ jobs:
       # fails when either differs from the committed file (architecture, "Pull-request pipeline").
       - name: OpenAPI drift check
         run: npm run openapi:check
+      # Fails when an interface text is missing or empty in English or Arabic, or uses
+      # Arabic-Indic digits (NFR-009, FR-022). Lint also refuses literal text in components.
+      - name: Translation key check
+        run: npm run i18n:check
 
       # 3. Type check
       - name: Type check
