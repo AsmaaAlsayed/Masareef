@@ -4,7 +4,10 @@ export default defineConfig({
   resolve: {
     // Tests run before the build (see .github/workflows/ci.yml), so workspaces that import
     // @masareef/core are tested against its sources rather than its build output.
-    alias: { '@masareef/core': '/packages/core/src/index.ts' },
+    alias: {
+      '@masareef/core': '/packages/core/src/index.ts',
+      '@masareef/api-types': '/packages/api-types/src/index.ts',
+    },
   },
   test: {
     include: [
