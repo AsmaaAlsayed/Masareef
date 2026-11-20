@@ -7,7 +7,12 @@ export default defineConfig({
   plugins: [
     cloudflareTest({
       wrangler: { configPath: './wrangler.jsonc' },
-      miniflare: { bindings: { RELEASE: 'test-release' } },
+      miniflare: {
+        bindings: { RELEASE: 'test-release' },
+        // A small stand-in for apps/web/dist, so these tests do not depend on the web build.
+        // The other asset settings (binding, run_worker_first, fallback) come from wrangler.jsonc.
+        assets: { directory: './test-assets' },
+      },
     }),
   ],
   test: {

@@ -1,5 +1,5 @@
 import type { Context, MiddlewareHandler } from 'hono';
-import { isApiPath, refuse } from '../http.js';
+import { isApiPath, isPageRequest, refuse } from '../http.js';
 import type { AppEnv } from '../http.js';
 import { PUBLIC_ROUTES } from '../public-routes.js';
 import type { Authenticator } from '../session.js';
@@ -15,13 +15,16 @@ function isPublicRoute(c: Context<AppEnv>): boolean {
 }
 
 /**
- * Default deny (FR-019 criterion 2). A request continues only if it is on the public list or, under
- * `/api`, proves a session. Nothing is served outside `/api` yet, so those paths end here too.
+ * Default deny (FR-019 criterion 2). A request continues only if it is on the public list, is a GET
+ * or HEAD for the web build outside `/api` (its pages are public: sign-in must load without a
+ * session, T-017), or, under `/api`, proves a session. Any other method outside `/api` ends here.
  */
 export function accessControl(authenticate: Authenticator): MiddlewareHandler<AppEnv> {
   return async (c, next) => {
     if (isPublicRoute(c)) return next();
-    if (!isApiPath(c.req.path)) return refuse(c, 404, 'not_found');
+    if (!isApiPath(c.req.path)) {
+      return isPageRequest(c.req.method, c.req.path) ? next() : refuse(c, 404, 'not_found');
+    }
 
     const session = await authenticate(c.req.raw, c.get('platform'));
     if (session === null) {

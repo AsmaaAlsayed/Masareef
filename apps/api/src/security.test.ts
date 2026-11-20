@@ -221,7 +221,9 @@ describe('security headers', () => {
       ['204 refused preflight', 204, await production(LIVE, preflight('https://evil.example'))],
       ['401 undeclared', 401, await production('/api/v1/unknown')],
       ['404 signed in', 404, await user.fetch('/api/v1/unknown')],
-      ['404 outside api', 404, await production('/not-api')],
+      ['200 page', 200, await production('/not-api')],
+      ['200 HEAD page', 200, await production('/not-api', { method: 'HEAD' })],
+      ['404 outside api', 404, await production('/not-api', { method: 'POST' })],
       ['413', 413, await user.fetch(ECHO, { method: 'POST', body: bytes(LIMIT + 1) })],
       ['500 error', 500, await user.fetch(THROWS)],
       ['500 thrown value', 500, await user.fetch(THROWS_VALUE)],
@@ -635,6 +637,10 @@ describe('default deny', () => {
     '/api/v1/health/live/extra',
     '/api/v1/health/livex',
     '/api/v1/health/../me',
+    // An encoded slash after `api` was a 404 outside the API until T-017; it must never reach the
+    // web build, so it is now treated as an API path.
+    '/api%2Fv1/health/live',
+    '/api%2fv1/health/live',
   ]) {
     it(`path_trick_is_denied ${path}`, async () => {
       const response = await production(path);
@@ -651,12 +657,16 @@ describe('default deny', () => {
     expect(routeRuns.count).toBe(0);
   });
 
+  // Since T-017 a GET or HEAD outside /api is a public page of the web build (assets.test.ts).
+  // Every other method there is still denied, before any body is read.
   it('paths_outside_api_are_problem_json_404', async () => {
-    for (const path of ['/', '/not-api', '/apiary', '/api%2Fv1/health/live']) {
-      const response = await production(path);
-      await expectProblem(response, 404, 'not_found');
-      expect(response.headers.get('Cache-Control')).toBeNull();
-      expect(response.headers.get('Vary')).toBeNull();
+    for (const method of ['POST', 'PUT', 'PATCH', 'DELETE']) {
+      for (const path of ['/', '/not-api', '/apiary']) {
+        const response = await production(path, { method });
+        await expectProblem(response, 404, 'not_found');
+        expect(response.headers.get('Cache-Control')).toBeNull();
+        expect(response.headers.get('Vary')).toBeNull();
+      }
     }
   });
 });

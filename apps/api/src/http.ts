@@ -20,6 +20,8 @@ export interface AppEnv {
     release: string | undefined;
     failure: RequestFailure | undefined;
     session: Session | undefined;
+    /** Set when the response came from the web build, for the log line. */
+    servedStatic: boolean | undefined;
   };
 }
 
@@ -52,11 +54,17 @@ export interface FieldError {
 }
 
 /**
- * Takes the decoded path the router sees. Variants in case or with repeated slashes count as API
- * paths too: they match no route, but they get the API's refusal rather than a different answer.
+ * Takes the decoded path the router sees. Variants in case, with repeated slashes or with an encoded
+ * slash after `api` count as API paths too: they match no route, but they get the API's refusal
+ * rather than a different answer, and are never handed to the web build (T-017).
  */
 export function isApiPath(path: string): boolean {
-  return /^\/+api(?:\/|$)/i.test(path);
+  return /^\/+api(?:\/|%2f|$)/i.test(path);
+}
+
+/** Outside `/api`, only these methods reach the web build; anything else is a 404. */
+export function isPageRequest(method: string, path: string): boolean {
+  return (method === 'GET' || method === 'HEAD') && !isApiPath(path);
 }
 
 /**

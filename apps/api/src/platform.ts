@@ -9,6 +9,8 @@ export interface WorkerBindings {
   DB?: D1Database;
   RELEASE?: string;
   GOOGLE_CLIENT_ID?: string;
+  /** The web build (Workers Static Assets). Absent in tests that exercise the API alone. */
+  ASSETS?: Fetcher;
 }
 
 export interface Deadline {
@@ -24,6 +26,11 @@ export interface Platform {
   newRequestId(): string;
   startDeadline(milliseconds: number): Deadline;
   readonly writeLog: (line: string) => void;
+  /**
+   * Answers a page or file request from the web build, falling back to index.html for client-side
+   * routes. `undefined` when no web build is attached. The response's headers can be changed.
+   */
+  readonly serveStatic: ((request: Request) => Promise<Response>) | undefined;
 }
 
 function startTimerDeadline(milliseconds: number): Deadline {
@@ -32,6 +39,17 @@ function startTimerDeadline(milliseconds: number): Deadline {
     timer = setTimeout(resolve, milliseconds);
   });
   return { expired, cancel: () => clearTimeout(timer) };
+}
+
+/**
+ * The binding applies `not_found_handling` from wrangler.jsonc. Its response is copied, because the
+ * security headers are added afterwards and a fetched response's headers may be immutable.
+ */
+function serveFrom(assets: Fetcher): (request: Request) => Promise<Response> {
+  return async (request) => {
+    const response = await assets.fetch(request);
+    return new Response(response.body, response);
+  };
 }
 
 export function createWorkersPlatform(
@@ -52,5 +70,6 @@ export function createWorkersPlatform(
     newRequestId: () => crypto.randomUUID(),
     startDeadline: overrides.startDeadline ?? startTimerDeadline,
     writeLog: (line) => console.log(line),
+    serveStatic: bindings.ASSETS ? serveFrom(bindings.ASSETS) : undefined,
   };
 }

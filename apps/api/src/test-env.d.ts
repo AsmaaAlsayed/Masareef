@@ -8,6 +8,7 @@ declare global {
     interface Env extends WorkerBindings {
       DB: D1Database;
       RELEASE: string;
+      ASSETS: Fetcher;
     }
   }
 }
