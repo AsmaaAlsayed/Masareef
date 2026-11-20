@@ -15,39 +15,55 @@ npm ci
 
 ## Everyday commands
 
-| Command                    | What it does                                                                                     |
-| -------------------------- | ------------------------------------------------------------------------------------------------ |
-| `npm run lint`             | ESLint with type-aware rules; warnings fail                                                      |
-| `npm run format:check`     | Prettier check (`npm run format` rewrites files)                                                 |
-| `npm run openapi:check`    | Fails when `apps/api/openapi.json` or the generated client types differ from the routes          |
-| `npm run openapi:generate` | Rewrites `apps/api/openapi.json` and `packages/api-types/src/schema.ts` from the routes          |
-| `npm run typecheck`        | TypeScript in strict mode, no output                                                             |
-| `npm test`                 | Unit tests with coverage; fails under 80% line coverage                                          |
-| `npm run build`            | Builds every workspace that has a `build` script                                                 |
-| `npm run test:integration` | API tests in the Workers runtime with a local D1 database, with coverage (fails under 80% lines) |
-| `npm run audit`            | `npm audit --audit-level=high`                                                                   |
-| `npm run voice:validate`   | Validates the voice test-set manifests                                                           |
-| `npm run voice:score`      | Writes the parser-only score on typed transcripts                                                |
+| Command                    | What it does                                                                                      |
+| -------------------------- | ------------------------------------------------------------------------------------------------- |
+| `npm run lint`             | ESLint with type-aware rules; warnings fail                                                       |
+| `npm run format:check`     | Prettier check (`npm run format` rewrites files)                                                  |
+| `npm run openapi:check`    | Fails when `apps/api/openapi.json` or the generated client types differ from the routes           |
+| `npm run i18n:check`       | Fails when an interface text is missing or empty in English or Arabic, or has Arabic-Indic digits |
+| `npm run openapi:generate` | Rewrites `apps/api/openapi.json` and `packages/api-types/src/schema.ts` from the routes           |
+| `npm run typecheck`        | TypeScript in strict mode, no output                                                              |
+| `npm test`                 | Unit tests with coverage; fails under 80% line coverage                                           |
+| `npm run build`            | Builds every workspace that has a `build` script                                                  |
+| `npm run test:integration` | API tests in the Workers runtime with a local D1 database, with coverage (fails under 80% lines)  |
+| `npm run audit`            | `npm audit --audit-level=high`                                                                    |
+| `npm run voice:validate`   | Validates the voice test-set manifests                                                            |
+| `npm run voice:score`      | Writes the parser-only score on typed transcripts                                                 |
 
 Run all of them before opening a pull request; the pipeline runs the same commands.
 
 ## Layout
 
 ```
-apps/        applications; web and android are added by later tasks
-  api/       the API: a Hono application on Cloudflare Workers with a D1 database
+apps/        applications; android is added by a later task
+  api/       the API: a Hono application on Cloudflare Workers with a D1 database; it also
+             serves the web build
+  web/       the web app: a React single-page app built with Vite, in English and Arabic
 packages/    shared packages
   api-types/ types generated from apps/api/openapi.json (src/schema.ts, committed) and a
              small typed fetch client for the API
   core/      pure TypeScript used by the web app and the API: the category and currency
-             lists, digit conversion, money conversion to and from minor units, and the
-             utterance parser (src/parser; its word lists are in src/parser/lexicon)
+             lists, digit conversion, money conversion to and from minor units, the
+             interface texts in both languages (src/i18n) and the utterance parser
+             (src/parser; its word lists are in src/parser/lexicon)
 poc/
   voice/     voice proof of concept: the test-set manifests, their validator, and the
              parser-only score on typed transcripts (see poc/voice/README.md)
 docs/        vision, requirements, architecture, plan and decision records
 .github/     pipeline and pull-request template
 ```
+
+## Web app
+
+```sh
+npm run build --workspace @masareef/web    # apps/web/dist, which the Worker serves
+cp apps/api/.dev.vars.example apps/api/.dev.vars
+npm run dev --workspace @masareef/api      # http://localhost:8787: the web app and the API
+```
+
+The Worker runs first for every request (`run_worker_first` in `apps/api/wrangler.jsonc`), so pages and files carry the same security headers and Content-Security-Policy as the API. A GET or HEAD outside `/api` is handed to the static-assets binding, which answers client-side routes such as `/expenses/new` with `index.html`; any `/api` path, known or not, goes through the API's access control and is never answered with `index.html`. For fast reloads while editing, run `npm run dev --workspace @masareef/web` (Vite on port 5173, `/api` proxied to port 8787); the Vite server does not send the production headers.
+
+All interface text is in `packages/core/src/i18n` (`en.ts` is the key list; `ar.ts` must match it) and is shown with `t()` from react-i18next. Lint refuses literal text in components and in user-visible attributes, physical CSS properties (`margin-left`, `text-align: left`) in style sheets and inline styles, and `dangerouslySetInnerHTML`. The first visit uses the browser's preferred languages (any `ar` variant gives Arabic, anything else English); the language control in the header switches in place and stores the choice under `masareef.language` in the device's local storage, the only thing the web app stores. System fonts only.
 
 ## API
 
