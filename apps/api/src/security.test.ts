@@ -540,10 +540,11 @@ describe('order of checks', () => {
 });
 
 describe('default deny', () => {
-  it('public_routes_are_exactly_the_two_health_endpoints', () => {
+  it('public_routes_are_exactly_the_health_endpoints_and_config', () => {
     expect(PUBLIC_ROUTES).toEqual([
       { method: 'GET', path: LIVE },
       { method: 'GET', path: READY },
+      { method: 'GET', path: '/api/v1/config' },
     ]);
   });
 

@@ -1,4 +1,4 @@
-import { REQUIRED_VARIABLES } from './config.js';
+import { CONFIGURATION_VARIABLES } from './config.js';
 
 /**
  * The fields a log line may hold (architecture, "Observability"; NFR-023). Each has a rule for its
@@ -22,7 +22,7 @@ export interface LogFields {
 export const ANDROID_CLIENT = /^android\/\d{1,5}(?:\.\d{1,5}){0,3}$/;
 
 const METHODS = new Set(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']);
-const VARIABLE_NAMES = new Set<string>(REQUIRED_VARIABLES);
+const VARIABLE_NAMES = new Set<string>(CONFIGURATION_VARIABLES);
 const STACK_FRAME =
   /^at (?:(?:async |new )*[^\s@()]+(?: \[as [^\s@()]+\])? \([^\s@()]+:\d+:\d+\)|(?:async )?[^\s@()]+:\d+:\d+)$/;
 

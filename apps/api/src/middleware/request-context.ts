@@ -60,6 +60,8 @@ export function requestContext(
 
 /** Runs on every request, so a Worker with incomplete configuration serves nothing. */
 export const requireConfiguration: MiddlewareHandler<AppEnv> = async (c, next) => {
-  c.set('release', loadConfig(c.get('platform').configuration).release);
+  const config = loadConfig(c.get('platform').configuration);
+  c.set('config', config);
+  c.set('release', config.release);
   await next();
 };

@@ -1,5 +1,6 @@
 import type { Context } from 'hono';
 import { ConfigurationError } from './config.js';
+import type { Config } from './config.js';
 import type { Platform, WorkerBindings } from './platform.js';
 import type { Session } from './session.js';
 
@@ -15,13 +16,15 @@ export interface AppEnv {
   Variables: {
     platform: Platform;
     requestId: string;
+    config: Config;
     release: string | undefined;
     failure: RequestFailure | undefined;
     session: Session | undefined;
   };
 }
 
-const TITLES = {
+export const PROBLEM_TITLES = {
+  400: 'Bad Request',
   401: 'Unauthorized',
   404: 'Not Found',
   413: 'Content Too Large',
@@ -29,8 +32,24 @@ const TITLES = {
   503: 'Service Unavailable',
 } as const;
 
-export type ProblemStatus = keyof typeof TITLES;
-export type ProblemCode = 'unauthenticated' | 'not_found' | 'too_large' | 'internal' | 'not_ready';
+export type ProblemStatus = keyof typeof PROBLEM_TITLES;
+
+/** The stable codes the clients translate (architecture, "Interfaces"). Later tasks add theirs. */
+export const PROBLEM_CODES = [
+  'validation_failed',
+  'unauthenticated',
+  'not_found',
+  'too_large',
+  'internal',
+  'not_ready',
+] as const;
+export type ProblemCode = (typeof PROBLEM_CODES)[number];
+
+/** One rejected input value: where it was and why, never the value itself. */
+export interface FieldError {
+  readonly field: string;
+  readonly code: string;
+}
 
 /**
  * Takes the decoded path the router sees. Variants in case or with repeated slashes count as API
@@ -40,16 +59,25 @@ export function isApiPath(path: string): boolean {
   return /^\/+api(?:\/|$)/i.test(path);
 }
 
-/** An RFC 9457 response. `code` is the stable value the clients translate. */
-export function problem(c: Context<AppEnv>, status: ProblemStatus, code: ProblemCode): Response {
+/**
+ * An RFC 9457 response. `code` is the stable value the clients translate. Typed like `c.json`, so a
+ * route can return it for a problem response its OpenAPI definition declares.
+ */
+export function problem<S extends ProblemStatus>(
+  c: Context<AppEnv>,
+  status: S,
+  code: ProblemCode,
+  errors?: readonly FieldError[],
+) {
   const body = {
     type: 'about:blank',
-    title: TITLES[status],
+    title: PROBLEM_TITLES[status],
     status,
     code,
     request_id: c.get('requestId'),
+    ...(errors === undefined ? {} : { errors: errors.map(({ field, code }) => ({ field, code })) }),
   };
-  return c.body(JSON.stringify(body), status, { 'Content-Type': 'application/problem+json' });
+  return c.json(body, status, { 'Content-Type': 'application/problem+json' });
 }
 
 /** An expected refusal: the code also goes on the request's log line. */
