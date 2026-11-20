@@ -36,6 +36,12 @@
   "overrides": {
     "@esbuild-kit/core-utils": {
       "esbuild": "0.25.12"
+    },
+    "openapi-typescript": {
+      "typescript": "$typescript"
+    },
+    "@cloudflare/vitest-plugin": {
+      "zod": "4.6.7"
     }
   }
 }
