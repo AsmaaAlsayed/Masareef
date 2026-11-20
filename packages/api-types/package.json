@@ -1,0 +1,23 @@
+{
+  "name": "@masareef/api-types",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Types generated from apps/api/openapi.json and a small typed client for the Masareef API",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc --project tsconfig.build.json",
+    "generate": "node scripts/generate.js",
+    "check": "node scripts/generate.js --check"
+  },
+  "devDependencies": {
+    "openapi-typescript": "7.13.0"
+  }
+}

@@ -33,6 +33,43 @@ describe('loadConfig', () => {
   });
 
   it('returns_the_release_when_complete', () => {
-    expect(loadConfig({ DB: database, RELEASE: 'abc123' })).toEqual({ release: 'abc123' });
+    expect(loadConfig({ DB: database, RELEASE: 'abc123' })).toEqual({
+      release: 'abc123',
+      googleClientId: null,
+    });
+  });
+
+  it.each([undefined, '', '   '])('google_client_id_%j_is_optional_and_reads_as_null', (value) => {
+    expect(
+      loadConfig({ DB: database, RELEASE: 'r1', GOOGLE_CLIENT_ID: value }).googleClientId,
+    ).toBe(null);
+  });
+
+  it('returns_a_configured_google_client_id', () => {
+    const id = '123456789012-abcdefghijklmnopqrstuvwxyz012345.apps.googleusercontent.com';
+    expect(loadConfig({ DB: database, RELEASE: 'r1', GOOGLE_CLIENT_ID: ` ${id} ` })).toEqual({
+      release: 'r1',
+      googleClientId: id,
+    });
+  });
+
+  it.each([
+    'not-a-client-id',
+    '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al',
+    '123-abc.apps.googleusercontent.com.evil.example',
+    'https://123-abc.apps.googleusercontent.com',
+    42,
+  ])('rejects_google_client_id_%j_by_name', (value) => {
+    const error = failure({ DB: database, RELEASE: 'r1', GOOGLE_CLIENT_ID: value });
+    expect(error.variables).toEqual(['GOOGLE_CLIENT_ID']);
+    expect(error.message).toContain('GOOGLE_CLIENT_ID');
+    expect(error.message).not.toContain(String(value));
+  });
+
+  it('names_missing_and_invalid_variables_together', () => {
+    expect(failure({ DB: database, GOOGLE_CLIENT_ID: 'x' }).variables).toEqual([
+      'RELEASE',
+      'GOOGLE_CLIENT_ID',
+    ]);
   });
 });

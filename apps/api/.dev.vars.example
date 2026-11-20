@@ -3,3 +3,8 @@
 
 # Identifies the running build in logs; the commit SHA once deployed.
 RELEASE=local-development
+
+# Optional. Google's public OAuth web client id, served to the clients by GET /api/v1/config.
+# Leave empty until one is registered (P-05): Google sign-in is then off and /config says null.
+# When set it must have the form <digits>-<letters and digits>.apps.googleusercontent.com.
+GOOGLE_CLIENT_ID=

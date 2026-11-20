@@ -8,6 +8,7 @@ export type Database = BaseSQLiteDatabase<'async', unknown>;
 export interface WorkerBindings {
   DB?: D1Database;
   RELEASE?: string;
+  GOOGLE_CLIENT_ID?: string;
 }
 
 export interface Deadline {
@@ -38,7 +39,11 @@ export function createWorkersPlatform(
   overrides: Partial<Pick<Platform, 'startDeadline'>> = {},
 ): Platform {
   return {
-    configuration: { DB: bindings.DB, RELEASE: bindings.RELEASE },
+    configuration: {
+      DB: bindings.DB,
+      RELEASE: bindings.RELEASE,
+      GOOGLE_CLIENT_ID: bindings.GOOGLE_CLIENT_ID,
+    },
     database() {
       if (!bindings.DB) throw new Error('The DB binding is not configured');
       return drizzle(bindings.DB);

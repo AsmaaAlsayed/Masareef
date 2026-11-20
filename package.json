@@ -16,6 +16,8 @@
     "lint": "eslint . --max-warnings=0",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "openapi:generate": "npm run openapi:generate --workspace @masareef/api && npm run generate --workspace @masareef/api-types",
+    "openapi:check": "npm run openapi:check --workspace @masareef/api && npm run check --workspace @masareef/api-types",
     "typecheck": "tsc --project tsconfig.json --noEmit && tsc --project apps/api/tsconfig.json --noEmit",
     "test": "vitest run --coverage",
     "test:integration": "npm run test:integration --workspaces --if-present",
@@ -36,6 +38,12 @@
   "overrides": {
     "@esbuild-kit/core-utils": {
       "esbuild": "0.25.12"
+    },
+    "openapi-typescript": {
+      "typescript": "$typescript"
+    },
+    "@cloudflare/vitest-plugin": {
+      "zod": "4.6.7"
     }
   }
 }

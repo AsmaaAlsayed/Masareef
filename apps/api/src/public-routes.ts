@@ -11,4 +11,5 @@ export interface PublicRoute {
 export const PUBLIC_ROUTES: readonly PublicRoute[] = [
   { method: 'GET', path: '/api/v1/health/live' },
   { method: 'GET', path: '/api/v1/health/ready' },
+  { method: 'GET', path: '/api/v1/config' },
 ];
