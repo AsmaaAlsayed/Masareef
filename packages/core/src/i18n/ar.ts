@@ -32,6 +32,23 @@ export const ar = {
   placeholder: {
     body: 'هذه الصفحة غير متاحة بعد.',
   },
+  date: {
+    /** Gregorian month names as used in Egypt, "16 نوفمبر 2026" (FR-022 criterion 3). */
+    months: {
+      jan: 'يناير',
+      feb: 'فبراير',
+      mar: 'مارس',
+      apr: 'أبريل',
+      may: 'مايو',
+      jun: 'يونيو',
+      jul: 'يوليو',
+      aug: 'أغسطس',
+      sep: 'سبتمبر',
+      oct: 'أكتوبر',
+      nov: 'نوفمبر',
+      dec: 'ديسمبر',
+    },
+  },
   pages: {
     signIn: 'تسجيل الدخول',
     signUp: 'إنشاء حساب',
