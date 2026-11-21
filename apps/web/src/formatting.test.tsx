@@ -7,6 +7,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { createWebApp, deviceLanguageStore } from './bootstrap.js';
 import type { WebApp } from './bootstrap.js';
 import { Amount, UserText } from './formatting.js';
+import { devicePolicySeenStore } from './policies/notice.js';
 import { memoryStorage } from './testing/storage.js';
 
 const NBSP = ' ';
@@ -20,6 +21,7 @@ function renderIn(language: 'en' | 'ar', ui: ReactNode): { app: WebApp; containe
   const app = createWebApp({
     languages: [language],
     store: deviceLanguageStore(() => storage),
+    policySeen: devicePolicySeenStore(() => storage),
     api,
     document,
   });

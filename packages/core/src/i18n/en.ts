@@ -66,4 +66,23 @@ export const en = {
     privacy: 'Privacy policy',
     terms: 'Terms of use',
   },
+  /** Around the privacy policy and terms; the documents' own text is in src/policies. */
+  policy: {
+    draftTitle: 'Draft for review',
+    draftBody:
+      'This page is a draft, written by the team that builds Masareef to describe how the service works. It is not legal text and is awaiting legal review.',
+    version: 'Version',
+    effectiveDate: 'Effective date',
+    /** Shown instead of the document when its text in this language is missing (FR-039 c5). */
+    notAvailable: 'This document is not available in English yet.',
+    /** Stands for the contact address until it exists (prerequisite P-12). */
+    contactPending: 'The contact address will be published here.',
+    pendingLabel: 'To be added after legal review',
+  },
+  /** The notice that a document has a new version (FR-039 criterion 4). */
+  policyNotice: {
+    title: 'Documents updated',
+    body: 'A new version of the following has been published. Please read it:',
+    dismiss: 'Dismiss',
+  },
 } as const;

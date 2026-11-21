@@ -67,3 +67,64 @@ button {
   color: var(--error);
   text-align: start;
 }
+
+/* Privacy policy and terms (FR-039). Long text: comfortable line length, wraps at 320 px. */
+.policy {
+  overflow-wrap: anywhere;
+}
+
+.policy h2 {
+  margin-block-start: calc(var(--space) * 1.5);
+}
+
+.policy ul {
+  padding-inline-start: calc(var(--space) * 1.5);
+}
+
+.policy li + li {
+  margin-block-start: calc(var(--space) / 2);
+}
+
+/* Marked by a heavy border and its own title, not by colour alone. */
+.policy-draft {
+  border: 3px solid currentcolor;
+  padding-block: calc(var(--space) / 2);
+  padding-inline: var(--space);
+}
+
+.policy-draft p {
+  margin-block: calc(var(--space) / 2);
+}
+
+.policy-draft-title,
+.policy-pending-label {
+  font-weight: 700;
+}
+
+.policy-facts {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: calc(var(--space) / 4) var(--space);
+}
+
+/* A gap the legal text will fill (OQ-06). */
+.policy-pending {
+  border: 2px dashed currentcolor;
+  padding-inline: var(--space);
+}
+
+/* The change notice (FR-039 criterion 4), above the screen's content on every screen. */
+.policy-notice {
+  margin-block: var(--space);
+  margin-inline: var(--space);
+  padding-block: calc(var(--space) / 2);
+  padding-inline: var(--space);
+  max-inline-size: 40rem;
+  border: 2px solid var(--accent);
+  border-inline-start-width: 6px;
+}
+
+.policy-notice h2 {
+  margin-block: calc(var(--space) / 2);
+  font-size: 1.125rem;
+}

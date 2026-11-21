@@ -1,16 +1,14 @@
 import { ApiError } from '@masareef/api-types';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { configQuery } from './config-query.js';
 import { useWebApp } from './web-app-context.js';
 
 /** The skeleton page: proves the build, the API client and both languages end to end. */
 export function HomePage() {
   const { t } = useTranslation();
   const { api } = useWebApp();
-  const config = useQuery({
-    queryKey: ['config'],
-    queryFn: ({ signal }) => api.getConfig({ signal }),
-  });
+  const config = useQuery(configQuery(api));
 
   return (
     <>
