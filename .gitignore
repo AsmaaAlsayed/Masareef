@@ -7,6 +7,8 @@ build/
 coverage/
 *.tsbuildinfo
 .wrangler/
+# End-to-end run output: report, traces and screenshots (uploaded by CI, never committed)
+apps/web/e2e/output/
 .gradle/
 *.apk
 *.aab
