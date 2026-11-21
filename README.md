@@ -26,6 +26,7 @@ npm ci
 | `npm test`                 | Unit tests with coverage; fails under 80% line coverage                                           |
 | `npm run build`            | Builds every workspace that has a `build` script                                                  |
 | `npm run test:integration` | API tests in the Workers runtime with a local D1 database, with coverage (fails under 80% lines)  |
+| `npm run e2e`              | End-to-end, axe and pseudo-locale tests on the local stack (needs `npm run build`; see below)     |
 | `npm run audit`            | `npm audit --audit-level=high`                                                                    |
 | `npm run voice:validate`   | Validates the voice test-set manifests                                                            |
 | `npm run voice:score`      | Writes the parser-only score on typed transcripts                                                 |
@@ -65,6 +66,22 @@ The Worker runs first for every request (`run_worker_first` in `apps/api/wrangle
 
 All interface text is in `packages/core/src/i18n` (`en.ts` is the key list; `ar.ts` must match it) and is shown with `t()` from react-i18next. Lint refuses literal text in components and in user-visible attributes, physical CSS properties (`margin-left`, `text-align: left`) in style sheets and inline styles, and `dangerouslySetInnerHTML`. The first visit uses the browser's preferred languages (any `ar` variant gives Arabic, anything else English); the language control in the header switches in place and stores the choice under `masareef.language` in the device's local storage, the only thing the web app stores. System fonts only.
 
+## End-to-end, accessibility and screenshots
+
+```sh
+npm run build                     # the harness serves this build; it builds nothing itself
+npx playwright install chromium firefox webkit   # once per Playwright version (downloads browsers)
+npm run e2e                       # every engine at 320 and 1,920 CSS pixels
+npm run e2e:chromium              # one engine (also e2e:firefox, e2e:webkit)
+npm run e2e -- --project=webkit-320 --grep "home"   # any Playwright option after --
+```
+
+Playwright ([`apps/web/e2e/playwright.config.ts`](apps/web/e2e/playwright.config.ts)) starts the API Worker with `wrangler dev --local` on `http://127.0.0.1:8790`, serving `apps/web/dist` with `RELEASE=e2e-local`, its own local database under `apps/api/.wrangler/e2e` and Wrangler's telemetry off; it needs no Cloudflare account and stops the server when the run ends. It is not part of `npm test`.
+
+[`apps/web/e2e/screens.ts`](apps/web/e2e/screens.ts) is the screen inventory: each screen's id, path and states (for example `loading` and `error`, produced by answering an API path in the test). **A pull request that adds or changes a screen adds its entry and its loading, empty and error states there.** For every entry, state, language (`en`, `ar`, chosen through the browser language) and project, `screens.spec.ts` checks `lang` and `dir`, runs axe with the WCAG 2.2 A and AA tags (`wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa`, `wcag22aa`) and saves a full-page screenshot. `pseudo-locale.spec.ts` repeats each entry with every English text lengthened by 40%, accented and bracketed (`[Šîĝñ îñ ~~~]`), and fails on text that is clipped or spills out of its box, or that is not from the translations. `harness.spec.ts` proves the scan still fails on a planted contrast fault and an unlabelled control, and that clipped text is detected.
+
+Output goes to `apps/web/e2e/output/` (ignored by git): the HTML report in `report/`, traces of failures in `test-results/` and screenshots in `screenshots/`, named `<screen>--<state>--<language>--<engine>-<width>.png`. The pipeline uploads that folder as the `e2e-<commit>` artefact.
+
 ## API
 
 ```sh
@@ -82,7 +99,7 @@ Every route is registered with `createRouter().openapi(createRoute(...), handler
 
 ## Pipeline
 
-[`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on every pull request and on `main`: install from the lockfile, lint, format check and the OpenAPI drift check, type check, unit tests with coverage, build, integration tests, security (gitleaks, Semgrep, `npm audit`, osv-scanner), then upload of the build output named after the commit SHA. Any failing stage stops the run.
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on every pull request and on `main`: install from the lockfile, lint, format check and the OpenAPI drift check, type check, unit tests with coverage, build, integration tests, end-to-end tests (Playwright and axe, report and screenshots uploaded), security (gitleaks, Semgrep, `npm audit`, osv-scanner), then upload of the build output named after the commit SHA. Any failing stage stops the run.
 
 Dependency updates are raised by Renovate ([`renovate.json`](renovate.json)). A dependency deliberately held below its latest version needs a decision record in `docs/adr/` and an entry in `.software-house/deps-allow.json`.
 
