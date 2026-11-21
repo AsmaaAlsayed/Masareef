@@ -66,6 +66,18 @@ The Worker runs first for every request (`run_worker_first` in `apps/api/wrangle
 
 All interface text is in `packages/core/src/i18n` (`en.ts` is the key list; `ar.ts` must match it) and is shown with `t()` from react-i18next. Lint refuses literal text in components and in user-visible attributes, physical CSS properties (`margin-left`, `text-align: left`) in style sheets and inline styles, and `dangerouslySetInnerHTML`. The first visit uses the browser's preferred languages (any `ar` variant gives Arabic, anything else English); the language control in the header switches in place and stores the choice under `masareef.language` in the device's local storage, the only thing the web app stores. System fonts only.
 
+### Numbers, dates and user text
+
+Amounts and dates on screen come from the formatters in `packages/core` (`src/format.ts`), never from `Intl` or `toLocale*`, which lint refuses in `packages/core/src` and `apps/web/src` outside tests. They use Western digits in both languages and fixed tables, so the output is the same in every browser and WebView:
+
+| Call                                    | English        | Arabic           |
+| --------------------------------------- | -------------- | ---------------- |
+| `formatAmount(123450, 'EGP', language)` | `1,234.50 EGP` | `1,234.50 ج.م`   |
+| `formatAmount(1250, 'KWD', language)`   | `1.250 KWD`    | `1.250 KWD`      |
+| `formatDate('2026-11-16', language)`    | `16 Nov 2026`  | `16 نوفمبر 2026` |
+
+Amounts are integer minor units; the space before the currency label is a no-break space. Month names are interface texts (`date.months` in `src/i18n`). In components, show an amount with `<Amount minor currency />` (the number in `<bdi dir="ltr">`, then the label) and anything a user typed with `<UserText text />` (`<bdi dir="auto">`, shown exactly as typed), both from `apps/web/src/formatting.tsx`.
+
 ## End-to-end, accessibility and screenshots
 
 ```sh
