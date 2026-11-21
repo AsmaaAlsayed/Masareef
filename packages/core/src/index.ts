@@ -64,3 +64,30 @@ export type {
 } from './parser/index.js';
 export { AMOUNT_LABEL_SEPARATOR, formatAmount, formatAmountParts, formatDate } from './format.js';
 export type { AmountParts } from './format.js';
+export {
+  checkPolicies,
+  describePolicyProblem,
+  POLICY_CONTACT,
+  POLICY_KINDS,
+  POLICY_LIBRARY,
+  POLICY_SOURCES,
+  POLICY_VERSIONS,
+  policyDocument,
+  policyReleaseReport,
+  policyTexts,
+} from './policies/index.js';
+export type {
+  PolicyBlock,
+  PolicyContact,
+  PolicyDocument,
+  PolicyKind,
+  PolicyLibrary,
+  PolicyProblem,
+  PolicyProblemKind,
+  PolicyReleaseReport,
+  PolicyRun,
+  PolicySection,
+  PolicyText,
+  PolicyVersion,
+  ServedPolicyVersions,
+} from './policies/index.js';

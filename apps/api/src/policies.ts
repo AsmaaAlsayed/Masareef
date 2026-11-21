@@ -1,10 +1,13 @@
+import { POLICY_VERSIONS as DOCUMENTS } from '@masareef/core';
+
 /**
  * The current versions of the terms and the privacy policy, served by `GET /config` and recorded
- * with each account's acceptance. One constant for now: no document is published yet, so these
- * mark the drafts. T-023 writes the documents (FR-039) and owns these values from then on; a
- * published change raises the version, which is what makes the change notice appear.
+ * with each account's acceptance (FR-003 criterion 4). They are read from the documents themselves
+ * in packages/core (src/policies/versions.ts), the one place a version is raised, which the
+ * `/privacy` and `/terms` pages show too; `npm run release:check-policies` confirms that this
+ * route serves what the documents say.
  */
 export const POLICY_VERSIONS = {
-  terms: '0',
-  privacy: '0',
+  terms: DOCUMENTS.terms.version,
+  privacy: DOCUMENTS.privacy.version,
 } as const;

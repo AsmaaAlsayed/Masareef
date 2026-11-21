@@ -4,8 +4,13 @@ import { Link, Outlet } from 'react-router';
 import type { RouteObject } from 'react-router';
 import { HomePage } from './HomePage.js';
 import { LanguageSwitch } from './LanguageSwitch.js';
+import { PolicyNotice } from './policies/PolicyNotice.js';
+import { PolicyPage } from './policies/PolicyPage.js';
 
-/** Every screen sits inside this layout, so the language control is on every screen (FR-021 c3). */
+/**
+ * Every screen sits inside this layout, so the language control (FR-021 c3) and the policy change
+ * notice (FR-039 c4) are on every screen.
+ */
 export function Layout() {
   const { t } = useTranslation();
   return (
@@ -16,6 +21,7 @@ export function Layout() {
         </Link>
         <LanguageSwitch />
       </header>
+      <PolicyNotice />
       <main>
         <Outlet />
       </main>
@@ -82,8 +88,8 @@ export const appRoutes: RouteObject[] = [
       placeholder('settings', 'settings'),
       placeholder('delete-account', 'deleteAccount'),
       placeholder('download', 'download'),
-      placeholder('privacy', 'privacy'),
-      placeholder('terms', 'terms'),
+      { path: 'privacy', element: <PolicyPage kind="privacy" /> },
+      { path: 'terms', element: <PolicyPage kind="terms" /> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },

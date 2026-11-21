@@ -2,7 +2,10 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "noEmit": true,
-    "types": ["@cloudflare/workers-types", "@cloudflare/vitest-plugin/types"]
+    "types": ["@cloudflare/workers-types", "@cloudflare/vitest-plugin/types"],
+    // Workspace packages are checked against their TypeScript sources (the `masareef-source`
+    // export condition), so the check does not need them built first.
+    "customConditions": ["masareef-source"]
   },
   "include": ["src/**/*", "vitest.config.ts", "drizzle.config.ts"]
 }

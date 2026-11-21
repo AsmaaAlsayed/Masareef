@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { SCREENS } from './screens.js';
+import { POLICY_VERSIONS_STORAGE_KEY } from '../src/policies/notice.js';
+import { POLICY_VERSIONS_KEY, SCREENS } from './screens.js';
 import { text } from './support/text.js';
 
 const SLUG = /^[a-z0-9]+(-[a-z0-9]+)*$/;
@@ -10,6 +11,17 @@ describe('the screen inventory', () => {
     expect(home?.states.map((state) => state.name)).toEqual(
       expect.arrayContaining(['ready', 'loading', 'error']),
     );
+  });
+
+  it('lists the policy pages and the change notice (FR-039)', () => {
+    const paths = SCREENS.map((screen) => screen.path);
+    expect(paths).toEqual(expect.arrayContaining(['/privacy', '/terms']));
+    const notice = SCREENS.find((screen) => screen.path === '/')?.states.find(
+      (state) => state.name === 'policy-notice',
+    );
+    expect(notice?.storage).toBeDefined();
+    expect(POLICY_VERSIONS_KEY).toBe(POLICY_VERSIONS_STORAGE_KEY);
+    expect(Object.keys(notice?.storage ?? {})).toEqual([POLICY_VERSIONS_STORAGE_KEY]);
   });
 
   it('names screens and states so screenshot names are unique and portable', () => {

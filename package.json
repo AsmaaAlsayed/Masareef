@@ -29,7 +29,8 @@
     "build": "npm run build --workspaces --if-present",
     "audit": "npm audit --json | node scripts/audit.js",
     "voice:validate": "npm run build && npm run validate --workspace @masareef/poc-voice",
-    "voice:score": "npm run build && npm run score --workspace @masareef/poc-voice"
+    "voice:score": "npm run build && npm run score --workspace @masareef/poc-voice",
+    "release:check-policies": "npm run release:check-policies --workspace @masareef/api"
   },
   "devDependencies": {
     "@eslint/css": "2.0.1",

@@ -8,7 +8,7 @@
  * that holds an English text with its pseudo-locale form, before the first paint and on every
  * later render. Nothing of it is in the web build, so no user can reach it.
  */
-import { englishTexts } from './text.js';
+import { englishPolicyTexts, englishTexts } from './text.js';
 
 // prettier-ignore
 const ACCENTED: Readonly<Record<string, string>> = {
@@ -44,9 +44,16 @@ export function pseudoLocalize(english: string): string {
   return `[${accented} ${words.join(' ')}]`;
 }
 
-/** English text and its pseudo-locale form, for every text in the English resources. */
+/**
+ * English text and its pseudo-locale form, for every text in the English resources and every run of
+ * text in the English policy documents (packages/core/src/policies), so the clipping check covers
+ * the long document text too.
+ */
 export function pseudoLocaleTexts(): [english: string, pseudo: string][] {
-  return englishTexts().map((english) => [english, pseudoLocalize(english)]);
+  return [...englishTexts(), ...englishPolicyTexts()].map((english) => [
+    english,
+    pseudoLocalize(english),
+  ]);
 }
 
 /*

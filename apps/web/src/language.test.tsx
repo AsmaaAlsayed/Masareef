@@ -7,6 +7,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { App } from './App.js';
 import { createWebApp, deviceLanguageStore, LANGUAGE_STORAGE_KEY } from './bootstrap.js';
 import type { LanguageStore } from './bootstrap.js';
+import { devicePolicySeenStore } from './policies/notice.js';
 import { appRoutes, Layout } from './routes.js';
 import { failingStorage, memoryStorage, withGlobalLocalStorage } from './testing/storage.js';
 
@@ -30,9 +31,12 @@ function storeWith(initial?: string, storage = memoryStorage()): LanguageStore {
   return deviceLanguageStore(() => storage);
 }
 
+/** The policy versions seen, kept apart from the language store these tests inspect. */
+const ownPolicyStore = () => devicePolicySeenStore(() => memoryStorage());
+
 /** Opens the app as a visit would: the browser's language list and the device store. */
 function open(languages: readonly string[], store: LanguageStore, routes = appRoutes): void {
-  const app = createWebApp({ languages, store, api, document });
+  const app = createWebApp({ languages, store, policySeen: ownPolicyStore(), api, document });
   const router = createMemoryRouter(routes, { initialEntries: ['/'] });
   render(<App app={app} router={router} />);
 }
@@ -139,7 +143,13 @@ describe('language control (FR-021 criterion 3)', () => {
   it('the_control_is_on_every_declared_screen', async () => {
     const paths = ['/', '/sign-in', '/expenses/new', '/expenses/abc', '/privacy', '/no-such-page'];
     for (const path of paths) {
-      const app = createWebApp({ languages: ['ar'], store: storeWith(), api, document });
+      const app = createWebApp({
+        languages: ['ar'],
+        store: storeWith(),
+        policySeen: ownPolicyStore(),
+        api,
+        document,
+      });
       const router = createMemoryRouter(appRoutes, { initialEntries: [path] });
       render(<App app={app} router={router} />);
       expect(await screen.findByRole('heading', { level: 1 }), path).toBeDefined();

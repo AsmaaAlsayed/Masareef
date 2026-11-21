@@ -8,11 +8,13 @@
     "dev": "wrangler dev",
     "db:generate": "drizzle-kit generate",
     "test:integration": "vitest run --coverage",
-    "openapi:generate": "tsx scripts/openapi.js",
-    "openapi:check": "tsx scripts/openapi.js --check"
+    "openapi:generate": "tsx --conditions=masareef-source scripts/openapi.js",
+    "openapi:check": "tsx --conditions=masareef-source scripts/openapi.js --check",
+    "release:check-policies": "tsx --conditions=masareef-source scripts/check-policies.js"
   },
   "dependencies": {
     "@hono/zod-openapi": "1.6.3",
+    "@masareef/core": "0.0.0",
     "drizzle-orm": "0.45.4",
     "hono": "4.13.19",
     "zod": "4.6.7"

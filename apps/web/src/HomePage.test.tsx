@@ -5,6 +5,7 @@ import { createMemoryRouter } from 'react-router';
 import { afterEach, describe, expect, it } from 'vitest';
 import { App } from './App.js';
 import { createWebApp, deviceLanguageStore } from './bootstrap.js';
+import { devicePolicySeenStore } from './policies/notice.js';
 import { appRoutes } from './routes.js';
 import { memoryStorage } from './testing/storage.js';
 
@@ -47,6 +48,7 @@ function open(language: 'en' | 'ar', fetch: Fetch, path = '/'): void {
   const app = createWebApp({
     languages: [language],
     store: deviceLanguageStore(() => device),
+    policySeen: devicePolicySeenStore(() => device),
     api: createApiClient({ fetch }),
     document,
   });
