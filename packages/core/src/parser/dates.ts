@@ -1,3 +1,4 @@
+import { parseCalendarDate } from '../calendar.js';
 import { normalize } from './normalize.js';
 import { readNumber } from './numbers.js';
 import {
@@ -288,17 +289,6 @@ export function findDates(tokens: readonly string[]): DateMatch[] {
 // Calendar arithmetic on day numbers counted from 1970-01-01, with no Date object and no time
 // zone (H. Hinnant, "chrono-compatible low-level date algorithms").
 
-const ISO_DATE = /^([0-9]{4})-([0-9]{2})-([0-9]{2})$/;
-
-const isLeapYear = (year: number) => (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
-
-function daysInMonth(year: number, month: number): number {
-  if (month === 2) {
-    return isLeapYear(year) ? 29 : 28;
-  }
-  return [4, 6, 9, 11].includes(month) ? 30 : 31;
-}
-
 function toDayNumber(year: number, month: number, day: number): number {
   const y = month <= 2 ? year - 1 : year;
   const era = Math.floor(y / 400);
@@ -332,20 +322,11 @@ function fromDayNumber(dayNumber: number): string {
 
 /** Reads an injected "today"; a malformed or impossible date is a programming error. */
 function readToday(today: string): number {
-  const parts = ISO_DATE.exec(today);
-  const [year, month, day] = (parts?.slice(1) ?? []).map(Number);
-  if (
-    year === undefined ||
-    month === undefined ||
-    day === undefined ||
-    month < 1 ||
-    month > 12 ||
-    day < 1 ||
-    day > daysInMonth(year, month)
-  ) {
+  const date = parseCalendarDate(today);
+  if (date === undefined) {
     throw new RangeError(`today must be a calendar date written YYYY-MM-DD, got "${today}"`);
   }
-  return toDayNumber(year, month, day);
+  return toDayNumber(date.year, date.month, date.day);
 }
 
 /** 0 for Sunday to 6 for Saturday; day 0 (1970-01-01) was a Thursday. */
