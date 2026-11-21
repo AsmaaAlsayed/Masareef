@@ -24,6 +24,13 @@ const PLANTED = [
 
 const eslint = new ESLint({ cwd: ROOT });
 
+/**
+ * The first call loads the whole lint configuration (typescript-eslint, @eslint/css). That takes
+ * about 2 seconds alone but can pass Vitest's 5-second default while every other test file runs in
+ * parallel, so this test is given longer; it is not slow because of anything it asserts.
+ */
+const ESLINT_LOAD_TIMEOUT = 30_000;
+
 async function ruleFor(file) {
   const config = await eslint.calculateConfigForFile(path.join(ROOT, file));
   return config.rules?.[RULE];
@@ -35,24 +42,28 @@ function errorsIn(code, rule) {
 }
 
 describe('no locale-dependent formatting in shipped code (FR-022)', () => {
-  it('every_planted_use_is_reported_in_core_and_web_sources', async () => {
-    for (const file of [
-      'packages/core/src/format.ts',
-      'apps/web/src/formatting.tsx',
-      'apps/web/src/bootstrap.ts',
-    ]) {
-      const rule = await ruleFor(file);
-      expect(rule, file).toBeDefined();
-      for (const code of PLANTED) {
-        const messages = errorsIn(code, rule);
-        expect(
-          messages.map((message) => message.ruleId),
-          `${file}: ${code}`,
-        ).toEqual([RULE]);
-        expect(messages[0]?.severity).toBe(2);
+  it(
+    'every_planted_use_is_reported_in_core_and_web_sources',
+    async () => {
+      for (const file of [
+        'packages/core/src/format.ts',
+        'apps/web/src/formatting.tsx',
+        'apps/web/src/bootstrap.ts',
+      ]) {
+        const rule = await ruleFor(file);
+        expect(rule, file).toBeDefined();
+        for (const code of PLANTED) {
+          const messages = errorsIn(code, rule);
+          expect(
+            messages.map((message) => message.ruleId),
+            `${file}: ${code}`,
+          ).toEqual([RULE]);
+          expect(messages[0]?.severity).toBe(2);
+        }
       }
-    }
-  });
+    },
+    ESLINT_LOAD_TIMEOUT,
+  );
 
   it('the_formatters_own_code_passes', async () => {
     const rule = await ruleFor('packages/core/src/format.ts');
