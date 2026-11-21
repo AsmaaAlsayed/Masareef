@@ -45,8 +45,9 @@ packages/    shared packages
              small typed fetch client for the API
   core/      pure TypeScript used by the web app and the API: the category and currency
              lists, digit conversion, money conversion to and from minor units, the
-             interface texts in both languages (src/i18n) and the utterance parser
-             (src/parser; its word lists are in src/parser/lexicon)
+             interface texts in both languages (src/i18n), the privacy policy and terms
+             with their versions (src/policies) and the utterance parser (src/parser;
+             its word lists are in src/parser/lexicon)
 poc/
   voice/     voice proof of concept: the test-set manifests, their validator, and the
              parser-only score on typed transcripts (see poc/voice/README.md)
@@ -64,7 +65,7 @@ npm run dev --workspace @masareef/api      # http://localhost:8787: the web app 
 
 The Worker runs first for every request (`run_worker_first` in `apps/api/wrangler.jsonc`), so pages and files carry the same security headers and Content-Security-Policy as the API. A GET or HEAD outside `/api` is handed to the static-assets binding, which answers client-side routes such as `/expenses/new` with `index.html`; any `/api` path, known or not, goes through the API's access control and is never answered with `index.html`. For fast reloads while editing, run `npm run dev --workspace @masareef/web` (Vite on port 5173, `/api` proxied to port 8787); the Vite server does not send the production headers.
 
-All interface text is in `packages/core/src/i18n` (`en.ts` is the key list; `ar.ts` must match it) and is shown with `t()` from react-i18next. Lint refuses literal text in components and in user-visible attributes, physical CSS properties (`margin-left`, `text-align: left`) in style sheets and inline styles, and `dangerouslySetInnerHTML`. The first visit uses the browser's preferred languages (any `ar` variant gives Arabic, anything else English); the language control in the header switches in place and stores the choice under `masareef.language` in the device's local storage, the only thing the web app stores. System fonts only.
+All interface text is in `packages/core/src/i18n` (`en.ts` is the key list; `ar.ts` must match it) and is shown with `t()` from react-i18next. Lint refuses literal text in components and in user-visible attributes, physical CSS properties (`margin-left`, `text-align: left`) in style sheets and inline styles, and `dangerouslySetInnerHTML`. The first visit uses the browser's preferred languages (any `ar` variant gives Arabic, anything else English); the language control in the header switches in place and stores the choice under `masareef.language` in the device's local storage. The only other thing the web app stores there is `masareef.policyVersions`, the policy versions the device last saw (see "Privacy policy and terms" below). System fonts only.
 
 ### Numbers, dates and user text
 
@@ -107,7 +108,23 @@ Every route needs a session unless it is listed in `apps/api/src/public-routes.t
 
 Every route is registered with `createRouter().openapi(createRoute(...), handler)` from `apps/api/src/openapi.ts`, which validates its input (a failure is `400 validation_failed` with the field names) and puts it in the OpenAPI description. After changing a route, run `npm run openapi:generate` and commit `apps/api/openapi.json` and `packages/api-types/src/schema.ts`. A route added any other way, for example `app.get(...)`, fails the route inventory test and the generator, and the pipeline fails when either committed file is out of date.
 
-`GET /api/v1/config` returns `{ googleClientId, termsVersion, privacyVersion, release }`. `googleClientId` comes from the optional variable `GOOGLE_CLIENT_ID` (see `.dev.vars.example`) and is `null` when it is not set; the policy versions are in `apps/api/src/policies.ts`.
+`GET /api/v1/config` returns `{ googleClientId, termsVersion, privacyVersion, release }`. `googleClientId` comes from the optional variable `GOOGLE_CLIENT_ID` (see `.dev.vars.example`) and is `null` when it is not set; the policy versions come from `packages/core/src/policies/versions.ts` through `apps/api/src/policies.ts`. The API imports `@masareef/core` from its TypeScript sources: `customConditions` in `apps/api/tsconfig.json`, an alias in `apps/api/vitest.config.ts` and `alias` in `apps/api/wrangler.jsonc`, so no build of `packages/core` is needed first.
+
+## Privacy policy and terms
+
+`/privacy` and `/terms` are public pages in both languages (FR-039). Their text is in `packages/core/src/policies`, one module per document and language (`privacy.en.ts`, `privacy.ar.ts`, `terms.en.ts`, `terms.ar.ts`), as sections of paragraphs, lists, a contact block and a marked gap for the legal text; `sources.ts` names, for every section, the requirement, architecture section or ADR it comes from. Version 1 is a **draft** factual description written by the delivery team, shown under a "Draft for review" banner; it is not legal text (OQ-06), which replaces it in T-086.
+
+`versions.ts` is the one place a document's version and effective date are set. Versions are whole numbers, raised by one for each published change; the pages show them, `GET /api/v1/config` serves them, and each language text carries the version it was written for. A language whose text is missing, empty or written for another version shows "not available in this language" in that language: a page never falls back to the other language. To publish a change: edit both language texts, raise `version` in `versions.ts` and in both texts, set the effective date, then run `npm run release:check-policies`.
+
+The change notice on every screen compares the versions from `GET /config` with those last seen on the device (`masareef.policyVersions` in local storage) and links to each changed document until it is dismissed. A device that has seen nothing records the current versions and shows no notice. Who is shown the notice is decided in `apps/web/src/policies/audience.ts`: every visitor for now, signed-in users only once sign-in exists.
+
+## Release checks
+
+```sh
+npm run release:check-policies
+```
+
+Fails, naming each problem, when either document lacks an English or an Arabic text (or it is empty, written for another version, or has Arabic-Indic digits), a version is not a whole number, an effective date is not a calendar date, `GET /api/v1/config` serves a different version from the documents, a document is still a draft, or the privacy contact address is still a placeholder (P-12). It is part of the release checklist, not the pull-request pipeline: until the legal text (T-086) and the contact address exist it fails, by design.
 
 ## Pipeline
 
