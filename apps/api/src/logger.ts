@@ -45,7 +45,8 @@ const ALLOWED_FIELDS: Record<keyof LogFields, (value: unknown) => unknown> = {
   level: matching(/^(?:info|error)$/),
   request_id: matching(/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/),
   method: (value) => (typeof value === 'string' && METHODS.has(value) ? value : undefined),
-  route: matching(/^(?:unmatched|\/[\w\-./:*]*)$/),
+  // `static`: a page or file of the web build, whose path is not logged (T-017).
+  route: matching(/^(?:unmatched|static|\/[\w\-./:*]*)$/),
   status: (value) =>
     Number.isInteger(value) && (value as number) >= 100 && (value as number) <= 599
       ? value

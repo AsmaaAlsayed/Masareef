@@ -8,11 +8,16 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "masareef-source": "./src/index.ts",
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     }
   },
   "scripts": {
-    "build": "tsc --project tsconfig.build.json"
+    "build": "tsc --project tsconfig.build.json",
+    "i18n:check": "tsx scripts/check-translations.js"
+  },
+  "devDependencies": {
+    "tsx": "4.23.15"
   }
 }

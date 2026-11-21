@@ -9,6 +9,21 @@ export {
 } from './currencies.js';
 export type { Currency, CurrencyCode } from './currencies.js';
 export { toWesternDigits } from './digits.js';
+export { checkTranslations, TRANSLATIONS } from './i18n/index.js';
+export type {
+  EnglishTranslation,
+  Translation,
+  TranslationProblem,
+  TranslationProblemKind,
+  TranslationTree,
+} from './i18n/index.js';
+export {
+  DEFAULT_LANGUAGE,
+  isLanguage,
+  LANGUAGES,
+  languageFromPreferences,
+  textDirection,
+} from './language.js';
 export type { Language, Localized } from './language.js';
 export { fromMinor, MAX_AMOUNT, toMinor } from './money.js';
 export type { ToMinorRejection, ToMinorResult } from './money.js';

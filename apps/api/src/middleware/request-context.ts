@@ -8,6 +8,7 @@ import type { Platform, WorkerBindings } from '../platform.js';
 
 /** The registered template, never the raw path, which could hold personal data. */
 function routeTemplate(c: Context<AppEnv>): string {
+  if (c.get('servedStatic') === true) return 'static';
   const template = routePath(c, -1);
   return template.endsWith('*') ? 'unmatched' : template;
 }

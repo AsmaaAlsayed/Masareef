@@ -1,5 +1,5 @@
 import type { OpenAPIHono } from '@hono/zod-openapi';
-import { problem, unexpectedError } from './http.js';
+import { isPageRequest, problem, unexpectedError } from './http.js';
 import type { AppEnv } from './http.js';
 import { accessControl } from './middleware/access-control.js';
 import { bodyLimit } from './middleware/body-limit.js';
@@ -33,7 +33,16 @@ export function createApp(
   app.route('/api/v1/health', healthRoutes);
   app.route('/api/v1', configRoutes);
 
-  app.notFound((c) => problem(c, 404, 'not_found'));
+  // No API route matched. A GET or HEAD outside /api is a page or file of the web build: it reaches
+  // here only through every layer above, so it carries the same headers as the API (NFR-020).
+  app.notFound(async (c) => {
+    const serveStatic = c.get('platform').serveStatic;
+    if (serveStatic === undefined || !isPageRequest(c.req.method, c.req.path)) {
+      return problem(c, 404, 'not_found');
+    }
+    c.set('servedStatic', true);
+    return serveStatic(c.req.raw);
+  });
   app.onError((error, c) => unexpectedError(c, error));
 
   return app;

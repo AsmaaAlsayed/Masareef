@@ -24,7 +24,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `packages/api-types`: client types generated from `openapi.json` with openapi-typescript, and a small typed `fetch` client with `getConfig()`, a generic `request()` and problem-details errors as `ApiError` (T-016).
 - API security layers: every response carries HSTS, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy` and the Content-Security-Policy from the architecture; CORS allows exactly `https://localhost`, without credentials; request bodies over 16,384 bytes get `413 too_large`, counted on the bytes received; routes are denied by default, with public routes listed in `apps/api/src/public-routes.ts` (T-015, NFR-019, NFR-020, FR-019).
 
+- Web app scaffold in `apps/web`: a React single-page app built with Vite (target chrome111, firefox128, safari16.4) and served by the API Worker on the same origin. Routes from the architecture are declared, each with a translated placeholder; the home page shows the app name and the `release` from `GET /api/v1/config`, with translated loading and error states and the request id on error. English and Arabic throughout, with `lang` and `dir` set on `<html>`: the first visit follows the browser's languages (any Arabic variant gives Arabic, anything else English), a control on every screen switches at once without unmounting open forms, and the choice is remembered on the device (T-017, FR-020, FR-021, NFR-028).
+- Interface texts for both languages in `packages/core/src/i18n`, with `npm run i18n:check` in the pipeline's lint stage: it fails when a text is missing or empty in either language, uses Arabic-Indic digits, or names different placeholders (T-017, NFR-009, FR-022).
+- Lint rules: no literal user-facing text in web components (text and attributes such as `aria-label`, `title`, `placeholder`, `alt`), no physical CSS properties in style sheets (`@eslint/css`) or inline styles, no `dangerouslySetInnerHTML` (T-017, NFR-009).
+
 ### Changed
+
+- Pages and files of the web build now answer GET and HEAD outside `/api`, through the same security layers as the API, instead of `404`; other methods there still get `404 not_found`. A path with an encoded slash after `api` (`/api%2Fv1/...`) is treated as an API path, so it gets `401` without a session rather than `404` (T-017, NFR-020).
 
 - Without a session, an unknown `/api` path or a wrong method on a public path now gets `401 unauthenticated` instead of `404`, so an anonymous caller cannot tell which routes exist (T-015, FR-019).
 - Utterance parser, fixes from the typed-transcript score (T-007a, FR-025, FR-026, FR-028, NFR-001 to NFR-003):

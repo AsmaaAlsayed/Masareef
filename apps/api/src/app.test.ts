@@ -264,8 +264,19 @@ describe('errors', () => {
     await expectProblem(signedIn, 404, 'not_found');
   });
 
+  // Since T-017 a GET outside /api is a page of the web build (assets.test.ts); any other method
+  // there is still refused with problem details.
   it('a_path_outside_the_api_returns_problem_json', async () => {
-    await expectProblem(await get('/not-api'), 404, 'not_found');
+    await expectProblem(await get('/not-api', { method: 'POST' }), 404, 'not_found');
+    await expectProblem(await get('/not-api', { method: 'DELETE' }), 404, 'not_found');
+  });
+
+  it('a_page_request_without_a_web_build_returns_problem_json', async () => {
+    await expectProblem(
+      await appWith({ DB: env.DB, RELEASE: 'r1' }).fetch('/not-api'),
+      404,
+      'not_found',
+    );
   });
 
   it('missing_variable_refuses_the_request_and_logs_the_name_only', async () => {
@@ -300,8 +311,12 @@ describe('response headers', () => {
   });
 
   it('paths_outside_api_are_not_marked_no_store', async () => {
-    const response = await get('/apiary');
-    expect(response.headers.get('Cache-Control')).toBeNull();
+    // A page keeps the caching the static-assets service gives it; a refusal there sets none.
+    const page = await get('/apiary');
+    expect(page.status).toBe(200);
+    expect(page.headers.get('Cache-Control')).not.toBe('no-store');
+    const refused = await get('/apiary', { method: 'POST' });
+    expect(refused.headers.get('Cache-Control')).toBeNull();
   });
 });
 
