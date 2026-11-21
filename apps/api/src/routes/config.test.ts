@@ -1,3 +1,4 @@
+import { POLICY_VERSIONS as DOCUMENT_VERSIONS } from '@masareef/core';
 import { env, exports } from 'cloudflare:workers';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createApp } from '../app.js';
@@ -155,8 +156,18 @@ describe('GET /api/v1/config', () => {
     expect(response.headers.get('Access-Control-Allow-Headers')).toContain('X-Client');
   });
 
-  it('the_policy_versions_are_non_empty', () => {
-    expect(POLICY_VERSIONS.terms).not.toBe('');
-    expect(POLICY_VERSIONS.privacy).not.toBe('');
+  it('serves_the_versions_of_the_policy_documents (FR-039 criterion 4)', async () => {
+    // One source: the documents' versions in packages/core, which the pages show too.
+    const response = await production(CONFIG);
+    expect(await response.json()).toMatchObject({
+      privacyVersion: DOCUMENT_VERSIONS.privacy.version,
+      termsVersion: DOCUMENT_VERSIONS.terms.version,
+    });
+    expect(POLICY_VERSIONS).toEqual({
+      privacy: DOCUMENT_VERSIONS.privacy.version,
+      terms: DOCUMENT_VERSIONS.terms.version,
+    });
+    expect(DOCUMENT_VERSIONS.privacy.version).toMatch(/^[1-9][0-9]*$/);
+    expect(DOCUMENT_VERSIONS.terms.version).toMatch(/^[1-9][0-9]*$/);
   });
 });

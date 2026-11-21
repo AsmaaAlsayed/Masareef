@@ -5,6 +5,11 @@
   "name": "masareef-api-local",
   "main": "src/index.ts",
   "compatibility_date": "2026-11-16",
+  // Workspace packages are bundled from their TypeScript sources, as the web build does, so the
+  // Worker never runs a stale packages/core/dist.
+  "alias": {
+    "@masareef/core": "../../packages/core/src/index.ts",
+  },
   // The web build (apps/web/dist, run 'npm run build' first) on the same origin. The Worker runs
   // first for every request, so pages and files get the same security headers as the API and
   // /api paths can never be answered by index.html; the Worker hands GET and HEAD outside /api to

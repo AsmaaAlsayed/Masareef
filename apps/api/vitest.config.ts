@@ -1,4 +1,5 @@
 import { cloudflareTest } from '@cloudflare/vitest-plugin';
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vitest/config';
 
 // Runs inside workerd with a local D1 database, so it is separate from the root configuration:
@@ -15,6 +16,15 @@ export default defineConfig({
       },
     }),
   ],
+  resolve: {
+    // Tests run before the build (see .github/workflows/ci.yml), so @masareef/core is loaded from
+    // its sources, as in the root configuration and in wrangler.jsonc's `alias`.
+    alias: {
+      '@masareef/core': fileURLToPath(
+        new URL('../../packages/core/src/index.ts', import.meta.url).href,
+      ),
+    },
+  },
   test: {
     include: ['src/**/*.test.ts'],
     coverage: {
