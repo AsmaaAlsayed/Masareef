@@ -36,6 +36,12 @@ export async function openScreen(
   language: LanguageUnderTest,
 ): Promise<void> {
   await fakeApi(page, state.api);
+  if (state.storage !== undefined) {
+    // Before any script of the page runs, on the app's own origin.
+    await page.addInitScript((entries) => {
+      for (const [key, value] of Object.entries(entries)) window.localStorage.setItem(key, value);
+    }, state.storage);
+  }
   await page.goto(screen.path);
   await stateMarker(page, state.marker, language).waitFor();
 }

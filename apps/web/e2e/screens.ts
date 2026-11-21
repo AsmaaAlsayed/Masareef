@@ -30,6 +30,8 @@ export interface ScreenState {
   readonly name: string;
   /** API paths (from the origin, without a query) answered by the test instead of the stack. */
   readonly api?: Readonly<Record<string, ApiFake>>;
+  /** Entries put in the page's local storage before it loads, as an earlier visit would leave. */
+  readonly storage?: Readonly<Record<string, string>>;
   readonly marker: StateMarker;
 }
 
@@ -45,6 +47,14 @@ export interface Screen {
 export const E2E_RELEASE = 'e2e-local';
 
 const CONFIG_PATH = '/api/v1/config';
+
+/**
+ * Where the web app keeps the policy versions a device last saw (apps/web/src/policies/notice.ts;
+ * screens.test.ts checks the two agree). Versions "0" are older than any published version, so
+ * the change notice shows for both documents.
+ */
+export const POLICY_VERSIONS_KEY = 'masareef.policyVersions';
+const SAW_OLDER_POLICIES = { [POLICY_VERSIONS_KEY]: JSON.stringify({ privacy: '0', terms: '0' }) };
 
 /** A declared route whose screen a later task builds: one state, its translated heading. */
 const placeholder = (id: string, path: string, heading: TextKey): Screen => ({
@@ -66,6 +76,12 @@ export const SCREENS: readonly Screen[] = [
       },
       { name: 'error', api: { [CONFIG_PATH]: 'server-error' }, marker: { role: 'alert' } },
       { name: 'offline', api: { [CONFIG_PATH]: 'network-error' }, marker: { role: 'alert' } },
+      // FR-039 criterion 4: this device last saw older versions of both documents.
+      {
+        name: 'policy-notice',
+        storage: SAW_OLDER_POLICIES,
+        marker: { role: 'heading', textKey: 'policyNotice.title' },
+      },
     ],
   },
   placeholder('sign-in', '/sign-in', 'pages.signIn'),
@@ -79,8 +95,18 @@ export const SCREENS: readonly Screen[] = [
   placeholder('settings', '/settings', 'pages.settings'),
   placeholder('delete-account', '/delete-account', 'pages.deleteAccount'),
   placeholder('download', '/download', 'pages.download'),
-  placeholder('privacy', '/privacy', 'pages.privacy'),
-  placeholder('terms', '/terms', 'pages.terms'),
+  // FR-039: the whole document, its version and effective date, and the draft banner. The pages
+  // make no request, so they have no loading or error state.
+  {
+    id: 'privacy',
+    path: '/privacy',
+    states: [{ name: 'ready', marker: { role: 'heading', textKey: 'pages.privacy' } }],
+  },
+  {
+    id: 'terms',
+    path: '/terms',
+    states: [{ name: 'ready', marker: { role: 'heading', textKey: 'pages.terms' } }],
+  },
   {
     id: 'not-found',
     path: '/no-such-page',

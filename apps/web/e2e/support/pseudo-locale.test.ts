@@ -1,4 +1,4 @@
-import { TRANSLATIONS } from '@masareef/core';
+import { POLICY_LIBRARY, TRANSLATIONS } from '@masareef/core';
 import { describe, expect, it } from 'vitest';
 import { PSEUDO_EXPANSION, pseudoLocaleTexts, pseudoLocalize } from './pseudo-locale.js';
 
@@ -34,5 +34,15 @@ describe('pseudoLocalize', () => {
     expect(english).toContain(TRANSLATIONS.en.status.loading);
     expect(english).toContain(TRANSLATIONS.en.pages.terms);
     expect(english).not.toContain(TRANSLATIONS.ar.status.loading);
+  });
+
+  it('covers the English policy documents, trimmed as the page text is matched', () => {
+    const english = pseudoLocaleTexts().map(([text]) => text);
+    const privacy = POLICY_LIBRARY.documents.privacy.en;
+    expect(english).toContain(privacy?.sections[0]?.heading);
+    // A run before a link ends in a space on the page; the match is on the trimmed text.
+    expect(english).toContain('on the website.');
+    expect(english).toContain('account deletion page');
+    for (const text of english) expect(text).toBe(text.trim());
   });
 });
