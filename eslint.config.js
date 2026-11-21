@@ -45,7 +45,14 @@ const webRestrictions = [
 ];
 
 export default defineConfig(
-  globalIgnores(['**/node_modules/', '**/dist/', '**/build/', '**/coverage/', '**/.wrangler/']),
+  globalIgnores([
+    '**/node_modules/',
+    '**/dist/',
+    '**/build/',
+    '**/coverage/',
+    '**/.wrangler/',
+    'apps/web/e2e/output/',
+  ]),
   {
     files: ['**/*.{js,mjs,cjs,ts,mts,cts,tsx}'],
     extends: [js.configs.recommended, tseslint.configs.recommendedTypeChecked],

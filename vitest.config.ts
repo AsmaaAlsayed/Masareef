@@ -13,6 +13,8 @@ export default defineConfig({
     include: [
       'packages/*/src/**/*.test.ts',
       'apps/*/src/**/*.test.{ts,tsx}',
+      // The end-to-end harness's own logic (the Playwright specs are *.spec.ts: npm run e2e).
+      'apps/web/e2e/**/*.test.ts',
       'poc/*/src/**/*.test.ts',
       'scripts/**/*.test.js',
     ],

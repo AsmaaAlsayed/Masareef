@@ -1,0 +1,15 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    // Specs run in Node; the functions in support/pseudo-locale.ts run in the browser under test.
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "types": ["node"],
+    "resolveJsonModule": true,
+    "paths": {
+      "@masareef/core": ["../../../packages/core/src/index.ts"]
+    }
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["output/**"]
+}
