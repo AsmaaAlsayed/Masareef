@@ -62,3 +62,5 @@ export type {
   TokenSpan,
   UtteranceOptions,
 } from './parser/index.js';
+export { AMOUNT_LABEL_SEPARATOR, formatAmount, formatAmountParts, formatDate } from './format.js';
+export type { AmountParts } from './format.js';

@@ -11,6 +11,7 @@ import { describe, expect, it } from 'vitest';
 
 /** Core modules outside the parser that the parser may import: pure data and helpers. */
 const ALLOWED_CORE_MODULES = [
+  '../calendar.ts',
   '../categories.ts',
   '../currencies.ts',
   '../digits.ts',
@@ -21,6 +22,7 @@ const SOURCES: Record<string, string> = import.meta.glob(
   [
     './**/*.ts',
     '!./**/*.test.ts',
+    '../calendar.ts',
     '../categories.ts',
     '../currencies.ts',
     '../digits.ts',

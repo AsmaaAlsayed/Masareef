@@ -44,6 +44,24 @@ const webRestrictions = [
   },
 ];
 
+/**
+ * Locale-dependent formatting. Its output differs between browsers and WebView versions and, for
+ * Arabic, uses Arabic-Indic digits, so amounts, dates and numbers come from the fixed-table
+ * formatters in packages/core instead (FR-022; architecture, "Not chosen as libraries").
+ */
+const LOCALE_FORMATTING_MESSAGE =
+  'Format numbers and dates with formatAmount or formatDate from @masareef/core (FR-022).';
+const NO_LOCALE_FORMATTING = [
+  { object: 'Intl', property: 'NumberFormat', message: LOCALE_FORMATTING_MESSAGE },
+  { object: 'Intl', property: 'DateTimeFormat', message: LOCALE_FORMATTING_MESSAGE },
+  // The same APIs reached through the global object.
+  { object: 'globalThis', property: 'Intl', message: LOCALE_FORMATTING_MESSAGE },
+  { object: 'window', property: 'Intl', message: LOCALE_FORMATTING_MESSAGE },
+  { property: 'toLocaleString', message: LOCALE_FORMATTING_MESSAGE },
+  { property: 'toLocaleDateString', message: LOCALE_FORMATTING_MESSAGE },
+  { property: 'toLocaleTimeString', message: LOCALE_FORMATTING_MESSAGE },
+];
+
 export default defineConfig(
   globalIgnores([
     '**/node_modules/',
@@ -73,6 +91,12 @@ export default defineConfig(
     files: ['apps/web/src/**/*.tsx'],
     ignores: ['**/*.test.tsx'],
     rules: { 'no-restricted-syntax': ['error', ...webRestrictions] },
+  },
+  {
+    // Shipped code of the shared core and the web app; tests may compare against these APIs.
+    files: ['packages/core/src/**/*.ts', 'apps/web/src/**/*.{ts,tsx}'],
+    ignores: ['**/*.test.{ts,tsx}'],
+    rules: { 'no-restricted-properties': ['error', ...NO_LOCALE_FORMATTING] },
   },
   {
     // Logical properties only (margin-inline-start, not margin-left; text-align: start), so every
