@@ -75,6 +75,34 @@ jobs:
       - name: Integration tests
         run: npm run test:integration
 
+      # End-to-end, accessibility and pseudo-locale tests (T-018): the Worker serving the web build
+      # from the Build step, in local mode, driven in Chromium, Firefox and WebKit at 320 and 1,920
+      # CSS pixels. Browser builds are cached per Playwright version; their system libraries are
+      # installed on every run. No secrets are used.
+      - name: Read the Playwright version
+        id: playwright
+        run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+      - name: Cache Playwright browsers
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
+      - name: Install Playwright browsers and their system libraries
+        run: npx playwright install --with-deps chromium firefox webkit
+      - name: End-to-end tests
+        env:
+          WRANGLER_SEND_METRICS: 'false'
+        run: npm run e2e
+      # The report, traces of failures and every screenshot, for the screen-by-screen review.
+      - name: Upload end-to-end report and screenshots
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: e2e-${{ github.event.pull_request.head.sha || github.sha }}
+          path: apps/web/e2e/output/
+          if-no-files-found: error
+          retention-days: 14
+
       # 7. Security: secret scan, static analysis, dependency audit
       - name: Secret scan (gitleaks)
         run: |
