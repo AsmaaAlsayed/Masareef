@@ -47,3 +47,7 @@ Google's Android developer verification, read on Google's own pages on 2026-11-1
 - https://support.google.com/android-developer-console/answer/16561738
 - https://android-developers.googleblog.com/2026/03/android-developer-verification.html
 - https://developers.cloudflare.com/workers/platform/limits/
+
+## Note 2026-11-27 (CR-05)
+
+Added by change control; the decision above is unchanged. Decision 2 assumed "a protected GitHub environment that requires manual approval". On 2026-11-16 the product owner chose a **public** repository on GitHub Free (PQ-01; ADR 0012). On GitHub Free, environment secrets and required reviewers are available only in public repositories [VERIFIED 2026-11-27: docs.github.com, Actions, "Deployments and environments"], so decision 2 can be built as written at no cost. The signing secret's location does not change. Settings that follow: the `release` environment accepts only `v*` tags; the operator is its required reviewer; "prevent self-review" stays off, because the operator is also the one who pushes the tag; pull requests, including from forks, never reach the environment (architecture "Secrets", threat T-22). A separate staging keystore lives in the `staging` environment (plan PA-07).
