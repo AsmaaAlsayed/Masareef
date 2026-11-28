@@ -2,18 +2,26 @@
 
 | | |
 |---|---|
-| Version | 0.2 (NFR-017 password minimum raised from 8 to 15 on 2026-11-16, change request CR-01, decided by the product owner) |
-| Date | 2026-11-16 |
-| Status | Draft (awaiting sign-off) |
-| Source | docs/01-vision.md; product owner's answers of 2026-11-16 |
+| Version | 0.3 (change control of 2026-11-27: CR-03, CR-04, CR-06, CR-08, CR-14 (PQ-11) and PQ-15; see "Change log") |
+| Date | 2026-11-27 |
+| Status | v0.2 signed off on 2026-11-16. v0.3 changes the signed text and is **awaiting re-sign** of the requirements gate (CR-04) |
+| Source | docs/01-vision.md; product owner's answers of 2026-11-16; product owner's decisions of 2026-11-16 (CR-01), 2026-11-18 (PQ-09) and 2026-11-27 (CR-06, PQ-11, PQ-15); docs/04-plan.md change-control table |
 
 Changing this document after sign-off reopens the gate: it must be signed off again before release.
+
+## Change log
+
+| Version | Date | Change | Decided by |
+|---|---|---|---|
+| 0.1 | 2026-11-16 | First version | Planner |
+| 0.2 | 2026-11-16 | CR-01: NFR-017 password minimum 8 to 15 | Product owner, 2026-11-16 |
+| 0.3 | 2026-11-27 | **CR-03:** three short-lived technical records (rate-limit counters, sign-in lockout records, deletion ledger) added to "Data" with purpose and retention; retention rules proposed in RA-41. **CR-04 (editorial):** the PoC is described as the first build milestone, not a Design-phase activity (header notes, Glossary); OQ-08 and OQ-10 now block the PoC decision (plan task T-012), not the Design gate; status line corrected. **CR-06:** NFR-026's verification for Safari on iOS: WebKit engine in CI plus a manual check of the critical journeys on a real iPhone; journey list proposed in RA-42. **CR-08:** FR-025 criterion 7 reworded: the amount next to a currency word wins, flagged. **CR-14 (PQ-11):** FR-027 gains "last night" (= yesterday) and "a week ago" (= 7 days ago); a bare weekday stays flagged. **PQ-15:** FR-021 criteria 1 and 2 state that the first language in the preference list that Masareef offers decides | Product owner: CR-06, PQ-11, PQ-15 on 2026-11-27; PQ-09 (CR-08) on 2026-11-18. CR-03 and CR-04 raised by the planner, accepted by re-signing |
 
 How to read this document:
 
 - Every functional requirement carries a **Source** line. **FACT** means the product owner stated it (in the brief, in the confirmed scope items 1 to 17 of the vision, or in the answers of 2026-11-16). **PROPOSED** means the planner filled it in; the reference (RA-nn) points to the Assumptions table near the end. A requirement can be a fact while some of its numbers or rules are proposed; in that case the Notes say which.
 - Signing this document off means accepting the proposals in the Assumptions table as written, unless they are changed first.
-- "R1" is the first public release. "PoC" is the voice proof of concept run at the start of the Design phase.
+- "R1" is the first public release. "PoC" is the voice proof of concept. By the product owner's decision of 2026-11-16 it is the first build milestone (M0 in docs/04-plan.md), not a Design-phase activity; its result is decided at plan task T-012 (CR-04).
 
 ## Glossary
 
@@ -25,7 +33,7 @@ How to read this document:
 | Review screen | The screen shown after voice entry with the parsed fields, all editable, and Save and Cancel actions. Nothing is saved before Save is pressed here |
 | Utterance | One spoken sentence describing one expense |
 | On-device | Processed entirely on the user's phone or inside the user's browser. No audio, and no data derived from audio other than the confirmed expense, is sent over the network |
-| PoC | The time-boxed voice proof of concept at the start of Design (vision R-1) |
+| PoC | The time-boxed voice proof of concept (vision R-1), run as the first build milestone by the product owner's decision of 2026-11-16 (CR-04; the vision's wording "at the start of Design" predates that decision) |
 | Voice test set | The fixed set of recorded utterances with expected amount, category and date used to measure NFR-001 to NFR-003, agreed before implementation |
 | Piastre (قرش) | One hundredth of an Egyptian pound. Stored as decimals of a pound (50 piastres = 0.50 EGP) |
 | Western digits | The digits 0 1 2 3 4 5 6 7 8 9, as opposed to Arabic-Indic digits ٠ to ٩ |
@@ -286,11 +294,11 @@ Unless a requirement says otherwise, it applies to both the web app and the Andr
 
 ### FR-021 Language selection and default
 - **Priority:** Must
-- **Source:** FACT (scope item 15). Where the choice is remembered is PROPOSED (RA-18).
+- **Source:** FACT (scope item 15). Where the choice is remembered is PROPOSED (RA-18). The rule for a list of several preferred languages (criteria 1 and 2) is FACT: product owner's answer to PQ-15 on 2026-11-27, "first offered language", which is the behaviour already built in plan task T-017.
 - **Story:** As a user, I want the app to start in my device's language and let me switch at any time.
 - **Acceptance criteria:**
-  1. Given a first visit with the device or browser language set to Arabic (any regional variant), when the app opens, then the interface is in Arabic.
-  2. Given a first visit with the device or browser language set to anything other than Arabic, including languages Masareef does not offer, when the app opens, then the interface is in English.
+  1. Given a first visit, when the app opens, then the interface uses the first language in the device's or browser's ordered list of preferred languages that Masareef offers, where any regional variant counts as the language (`ar-EG` and `ar-SA` are Arabic, `en-GB` is English). Examples: a list of Arabic only gives Arabic; French then Arabic gives Arabic; English then Arabic gives English; Arabic then English gives Arabic (PQ-15).
+  2. Given a first visit with no Arabic and no English entry anywhere in the preferred-language list (for example French only, or an empty list), when the app opens, then the interface is in English.
   3. Given any screen, including sign-in and sign-up before the user has an account, when the user uses the language control, then the interface switches immediately without signing the user out and without losing values typed into an open form.
   4. Given a signed-in user has chosen a language, when they sign in on another device, then the interface uses the chosen language regardless of that device's language.
   5. Given a user has chosen a language while signed out, when they reopen the app on the same device, then that choice is still applied.
@@ -349,7 +357,7 @@ The accuracy of voice entry as a whole is set by NFR-001 to NFR-003. The individ
   4. Given "ألف وميتين وخمسين جنيه" or "one thousand two hundred and fifty pounds", when parsed, then the amount is 1250.00.
   5. Given a transcript in which the recogniser has already written the number as digits, in Western or Arabic-Indic form (for example "٥٠ جنيه"), when parsed, then the amount is the same as for the spoken words.
   6. Given a transcript with no amount ("اشتريت غدا"), when parsed, then the amount field on the review screen is empty and marked as needing attention, and Save is refused until an amount is entered.
-  7. Given a transcript with two unrelated amounts ("50 pounds lunch and 20 taxi"), when parsed, then the first amount is used, the amount field is marked as needing attention, and only one expense is offered.
+  7. Given a transcript with two or more unrelated amounts, when parsed, then the first amount that has a currency word next to it is used, or the first amount if none has one; in every case the amount field is marked as needing attention and only one expense is offered. Examples: "50 lunch and 20 pounds taxi" gives 20; "50 pounds lunch and 20 taxi" gives 50; "50 lunch and 20 taxi" gives 50 (CR-08: product owner's answer to PQ-09 on 2026-11-18, matching ADR 0003 step 4; was "the first amount is used").
   8. Given a spoken amount above 9,999,999.99 or with more precision than the currency allows, when the user presses Save, then FR-010 validation applies.
 
 ### FR-026 Category from speech
@@ -365,7 +373,7 @@ The accuracy of voice entry as a whole is set by NFR-001 to NFR-003. The individ
 
 ### FR-027 Dates from speech, including relative dates
 - **Priority:** Must
-- **Source:** FACT (relative dates answer 2026-11-16). The exact list of supported expressions and the "no date means today" rule are PROPOSED (RA-25; the latter is vision assumption A-16).
+- **Source:** FACT (relative dates answer 2026-11-16). "Last night" and "a week ago" (criteria 7 and 8) are FACT: product owner's answer to PQ-11 on 2026-11-27, change request CR-14. The rest of the list of supported expressions and the "no date means today" rule are PROPOSED (RA-25; the latter is vision assumption A-16).
 - **Story:** As a user, I want to say "yesterday" and have the right date filled in.
 - **Acceptance criteria:**
   1. Given an utterance with no date expression, when parsed, then the date is today in the device's time zone.
@@ -373,8 +381,10 @@ The accuracy of voice entry as a whole is set by NFR-001 to NFR-003. The individ
   3. Given "من تلات أيام" or "three days ago", when parsed on 16 Nov 2026, then the date is 13 Nov 2026.
   4. Given "يوم الجمعة اللي فات" or "last Friday", when parsed on Monday 16 Nov 2026, then the date is 13 Nov 2026 (the most recent such weekday before today).
   5. Given "yesterday" spoken on the first day of a month or year, when parsed, then the date is the last day of the previous month or year.
-  6. Given a date expression that refers to the future ("بكرة", "tomorrow") or one the app does not support, when parsed, then the date is set to today and marked as needing attention.
-- **Notes:** Supported in R1: today, yesterday, the day before yesterday, N days ago for N from 1 to 30, and last <weekday>, each in Egyptian Arabic and English. Other date expressions are handled by criterion 6.
+  6. Given a date expression that refers to the future ("بكرة", "tomorrow") or one the app does not support, when parsed, then the date is set to today and marked as needing attention. This includes a weekday named without "last" or "اللي فات" ("on Friday", "يوم الجمعة"): it stays today and marked, because it does not say which Friday (PQ-11, 2026-11-27).
+  7. Given "امبارح بالليل" or "last night", when parsed on 16 Nov 2026, then the date is 15 Nov 2026 (the same as "yesterday") and the date is not marked as needing attention; given "last night" on 1 Jan 2027, then 31 Dec 2026 (CR-14).
+  8. Given "من أسبوع" or "a week ago", when parsed on 16 Nov 2026, then the date is 9 Nov 2026 (7 days before today) and the date is not marked as needing attention; given "a week ago" on 3 Mar 2027, then 24 Feb 2027 (CR-14).
+- **Notes:** Supported in R1: today, yesterday, last night (= yesterday), the day before yesterday, N days ago for N from 1 to 30, a week ago (= 7 days ago), and last <weekday>, each in Egyptian Arabic and English. Other date expressions, including a bare weekday, "two weeks ago" and "last week", are handled by criterion 6. The Arabic and English phrasings in criteria 7 and 8 are the ones decided; other phrasings of the same meaning (for example "إمبارح بليل") are added only after the native-speaker review (plan PQ-08, T-085).
 
 ### FR-028 Currency from speech
 - **Priority:** Should
@@ -576,7 +586,7 @@ Each states a number and how it will be measured. The numbers in NFR-001 to NFR-
 | NFR-023 | Privacy: data minimisation | The personal data stored is limited to the fields listed under Data below; adding a field requires a change to this document. 0 occurrences of email addresses, passwords, session credentials, amounts or notes in application logs. Personal data is encrypted at rest | Data-model review against the Data table; automated scan of logs produced by the end-to-end run for seeded marker values; provider encryption setting recorded |
 | NFR-024 | Privacy: retention and deletion | After account deletion: 0 of the user's records in the live database within 60 seconds and in backups within 30 days. Unverified accounts are deleted 7 days after creation. Application logs are kept at most 30 days. Account and expense data is otherwise kept until the user deletes the account (see OQ-05 on inactive accounts) | API and database test for live deletion; backup retention setting shown to be 30 days; clean-up job test with a controllable clock |
 | NFR-025 | Accessibility | WCAG 2.2 level AA on every screen of the web app and website pages and, as far as the criteria apply to native apps, every screen of the Android app, in both languages (FACT: answer 2026-11-16). Measured as: 0 violations from an automated axe scan with WCAG 2.2 A and AA rules on every web screen in English and Arabic; every function operable by keyboard alone on the web with a visible focus indicator; every screen and the complete add-by-voice and add-manually journeys completed with a screen reader in English and in Arabic on Android (TalkBack) and on the web (NVDA with Chrome or Firefox, and VoiceOver with Safari); text contrast at least 4.5:1; touch and pointer targets at least 24 by 24 CSS pixels; content usable at 200% text size and at 320 CSS pixels width without horizontal scrolling | axe scan in CI; Android Accessibility Scanner; manual keyboard and screen-reader pass recorded per screen in the test report |
-| NFR-026 | Browser and device support | Android app: Android 8.0 (API level 26) and later (FACT). Web app: the current stable version, and the one before it, of Chrome, Firefox, Safari and Edge on desktop, and Chrome on Android and Safari on iOS, at widths from 320 to 1,920 CSS pixels ("current" is FACT; "and the one before it", mobile browsers and the width range are PROPOSED, RA-37). The full end-to-end suite passes on each | End-to-end suite run on Android 8.0 and the latest Android (emulator) plus the reference phone, and on each listed browser; versions recorded in the test report |
+| NFR-026 | Browser and device support | Android app: Android 8.0 (API level 26) and later (FACT). Web app: the current stable version, and the one before it, of Chrome, Firefox, Safari and Edge on desktop, and Chrome on Android and Safari on iOS, at widths from 320 to 1,920 CSS pixels ("current" is FACT; "and the one before it", mobile browsers and the width range are PROPOSED, RA-37). The full end-to-end suite passes on each, except Safari on iOS, which is verified as decided by the product owner on 2026-11-27 (CR-06): the full end-to-end suite passes on Playwright's WebKit engine in CI, including at 320 CSS pixels, and every critical journey listed in RA-42 passes when checked by hand on a real iPhone, in English and in Arabic, before each release. No paid device-testing service is used | End-to-end suite run on Android 8.0 and the latest Android (emulator) plus the reference phone, and on each listed browser other than Safari on iOS; for Safari on iOS, the CI WebKit run for the release commit plus the manual iPhone checklist, recorded in the test report with iPhone model, iOS and Safari versions, date, tester and a pass or fail per journey and language; versions recorded in the test report |
 | NFR-027 | Android distribution | 100% of released APKs are signed with the one release key and pass signature verification; the published SHA-256 checksum matches the published file. Total download needed before first voice entry (APK plus any speech data) is 150 MB or less (PROPOSED, RA-38; to be revisited after the PoC) | Signature verification and checksum comparison as a CI release step; file sizes recorded per release |
 | NFR-028 | Observability | The operator is alerted within 15 minutes when the API or web app is unreachable. Every server error is logged with a correlation identifier that is also shown to the user in the error message, and without personal data. An alert fires when recurring cost reaches 80% of the ceiling in NFR-010 | Induced outage and induced error on staging; alert receipt recorded with timestamps |
 
@@ -614,8 +624,11 @@ What is stored on the server (PROPOSED field list, RA-01, following the data-min
 | Session records | Yes | Keeping the user signed in; sign-out | Expiry (NFR-018) or account deletion |
 | Application logs: time, endpoint, status, correlation identifier | No personal data by rule (NFR-023) | Operation and fault-finding | 30 days |
 | Anonymous usage events and counts (FR-040, FR-041) | No (NFR-022) | Success measures S-11 and S-12 | Not limited |
+| Rate-limit counters (CR-03): the name of the limit, the start of its time window, a count, and a keyed hash (HMAC-SHA256 with a server secret) of the IP address, of the lower-cased email address or of the account identifier the limit applies to. No IP address or email address is stored as such | Pseudonymous: the hash can be matched to a person only by someone who holds the server secret and already knows the address or identifier | Enforcing the limits in NFR-019 (FR-001 criterion 5, FR-002 criterion 4, FR-007 criterion 5) | Each window lasts at most 1 hour. A row whose window has ended is deleted by the next daily clean-up, so no row is older than 25 hours (RA-41) |
+| Sign-in lockout records (CR-03): a keyed hash of the lower-cased email address, the number of consecutive failed sign-ins, the time the lock ends if one is in force, and the time of the last change. A record exists for an email with no account too, so lockout reveals nothing about registration | Pseudonymous, as above | The 5-failure, 15-minute lock in NFR-019 (FR-004 criterion 3) | Reset by a successful sign-in (the failures are no longer consecutive). Deleted by the daily clean-up once no lock is in force and the last failure is more than 15 minutes old, so no record outlives its last failure by more than about 25 hours (RA-41) |
+| Deletion ledger (CR-03): a keyed hash of the identifier of a deleted account, and the time of deletion. No email address | Pseudonymous: it refers to an account that no longer exists | After a database restore from a backup, deleting again every account that was deleted after that backup was taken, so a deleted account does not reappear (FR-009 criterion 4, NFR-024) | 30 days after the deletion, the same as the backups (NFR-015, NFR-024); deleted by the daily clean-up |
 
-Not stored anywhere: voice audio, recognised transcripts, name, phone number, date of birth, address, location, contacts, device identifiers, advertising identifiers, payment details.
+Not stored anywhere: voice audio, recognised transcripts, name, phone number, date of birth, address, location, contacts, device identifiers, advertising identifiers, payment details. IP addresses are not stored either: the rate-limit counters hold only a keyed hash of them (CR-03).
 
 Who may see it: each user sees only their own data (FR-019). The operator has technical access to the database for running the service and must not read users' expenses except where needed to fix a reported fault; this is to be stated in the privacy policy (PROPOSED, RA-33). No data is shared with or sold to third parties. Service providers that host the data or send email act on the operator's behalf and are named in the architecture document and the privacy policy.
 
@@ -718,6 +731,8 @@ Everything in this table was filled in by the planner. None of it was stated by 
 | RA-38 | Total download before first voice entry is 150 MB or less | NFR-027 |
 | RA-39 | The "discovered" out-of-scope list above | Out of scope |
 | RA-40 | Early load is the vision's A-17 (up to 500 MAU in the first 90 days), still unconfirmed | NFR-010, NFR-011, NFR-013 |
+| RA-41 | (Added in v0.3, CR-03) Retention of the technical records: rate-limit rows are deleted by the daily clean-up once their window (at most 1 hour) has ended; lockout records are reset by a successful sign-in and deleted by the daily clean-up once no lock is in force and the last failure is more than 15 minutes old; deletion-ledger rows are kept 30 days. The clean-up runs once a day, so a record can outlive its purpose by up to 24 hours | Data, NFR-019, NFR-023, NFR-024 |
+| RA-42 | (Added in v0.3, CR-06) The critical journeys checked by hand on a real iPhone in Safari, each in English and in Arabic: sign up and open the verification link; sign in with email and password, and sign out; sign in with Google; password reset; add an expense manually; edit and delete an expense; expense list with a date range and a category filter; monthly summary; switch the interface language (Arabic shown right to left); the download page, which explains that the app is for Android (FR-035 criterion 5); delete the account. One iPhone running the current iOS version is used; the previous Safari version on iOS is covered only by the WebKit engine run in CI | NFR-026 |
 
 ## Open questions
 
@@ -732,9 +747,9 @@ Ordered by importance. Vision question numbers are given where the question is c
 | OQ-05 | Should accounts that have not been used for a long time be deleted automatically (for example after 24 months, with a warning email)? Proposed for R1: no; data is kept until the user deletes the account. Data-minimisation principles and the legal advice in OQ-02 and OQ-04 may require a limit | Release gate | Product owner, with legal adviser |
 | OQ-06 | Who writes the legal text of the privacy policy and terms in both languages, and who reviews it? The delivery team can build the pages and supply a factual description of what the product does with data (FR-039 criterion 3), but does not write legal terms | Release gate | Product owner |
 | OQ-07 | CLOSED IN PART 2026-11-16: the product owner has no accounts yet; every account is new, on free tiers where possible, with a new domain, and all are owned by the product owner (domain, Google project, email-sending account, hosting account, signing key backup). The full list is in docs/03-architecture.md, "Prerequisites the product owner must complete". STILL OPEN: what is the public contact address for privacy requests? | Release gate (contact address) | Product owner |
-| OQ-08 | If the PoC shows on-device Egyptian Arabic accuracy is below target, the decision is to lower the target. Is there a floor below which voice in Arabic should not ship at all (for example, below 50% all-fields-correct)? No floor has been set | Design gate | Product owner |
+| OQ-08 | If the PoC shows on-device Egyptian Arabic accuracy is below target, the decision is to lower the target. Is there a floor below which voice in Arabic should not ship at all (for example, below 50% all-fields-correct)? No floor has been set | The PoC decision (plan task T-012): it must be answered before the PoC result is assessed. Was "Design gate"; corrected in v0.3 because the PoC moved to the first build milestone (CR-04) | Product owner |
 | OQ-09 | (Vision Q-12) What is the motivation and evidence for the product, and is it intended to earn money later? Not asked on 2026-11-16. It does not change R1 scope; it would shape priorities among Should and Could items and how S-11 is read. The vision listed it as needed by the Requirements gate; the planner's view is that sign-off can proceed without it, and the signer should confirm that | Requirements gate (signer to confirm it is not blocking) | Product owner |
-| OQ-10 | Is the pass criterion for web voice in RA-30 acceptable (same accuracy as Android, in at least desktop Chrome), or would the product owner ship web voice at a lower accuracy, or English-only on the web? | Design gate | Product owner |
+| OQ-10 | Is the pass criterion for web voice in RA-30 acceptable (same accuracy as Android, in at least desktop Chrome), or would the product owner ship web voice at a lower accuracy, or English-only on the web? | The PoC decision (plan task T-012), before the web part of the PoC is assessed. Was "Design gate"; corrected in v0.3 (CR-04) | Product owner |
 | OQ-11 | Confirm the planner's proposals that most affect what users see: email verification before first use (RA-02), the ten categories (RA-13), "pounds" meaning EGP in speech (RA-26), 30-day sessions (RA-08), and immediate irreversible account deletion (RA-09) | Requirements gate (accepted by signing) | Product owner |
 
 ## Sign-off

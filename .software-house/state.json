@@ -5,15 +5,15 @@
   "gates": {
     "requirements": {
       "by": "Amr Samy",
-      "at": "2026-11-16T16:47:36.287Z",
+      "at": "2026-11-28T09:08:36.051Z",
       "doc": "docs/02-requirements.md",
-      "sha256": "0b139eeb54b0a56198833ab98bbe8c1954d9fff30f4234312acee24a8ef6aaea"
+      "sha256": "4569bb2c39e84f63cf1f3ff1bd6ec21882b0a216effb9d5fd2cfccc6641dfe0b"
     },
     "design": {
       "by": "Amr Samy",
-      "at": "2026-11-16T16:48:02.528Z",
+      "at": "2026-11-28T09:08:36.204Z",
       "doc": "docs/03-architecture.md",
-      "sha256": "8a9c758b59048a1c480d5a701ee54c4c7a5b37cdd3de6284d9d900ced2a39580"
+      "sha256": "1a5721dbc4d64ed688e6b62b1afc0718c3928462150eacf65fe519db9f3607ac"
     },
     "release": null
   },
@@ -65,6 +65,18 @@
       "at": "2026-11-16T17:13:40.965Z",
       "event": "phase",
       "phase": "implement"
+    },
+    {
+      "at": "2026-11-28T09:08:36.061Z",
+      "event": "signoff",
+      "gate": "requirements",
+      "by": "Amr Samy"
+    },
+    {
+      "at": "2026-11-28T09:08:36.205Z",
+      "event": "signoff",
+      "gate": "design",
+      "by": "Amr Samy"
     }
   ]
 }
